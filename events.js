@@ -1,8 +1,13 @@
-// Toggle menu (mobile)
-const menuToggle = document.querySelector('.menu-toggle');
-const menu = document.querySelector('#menu');
+// Mobile Navbar Toggle
+const menuToggle = document.getElementById('menuToggle');
+const menu = document.getElementById('menu');
+
 menuToggle.addEventListener('click', () => {
   menu.classList.toggle('active');
+});
+
+document.querySelectorAll('#menu a').forEach(link => {
+  link.addEventListener('click', () => menu.classList.remove('active'));
 });
 
 // Event category switch
