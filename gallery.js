@@ -37,3 +37,10 @@ lightbox.addEventListener('click', (e) => {
     lightbox.style.display = 'none';
   }
 });
+
+const menuToggle = document.getElementById('mobile-menu');
+  const navMenu = document.getElementById('menu');
+
+  menuToggle.addEventListener('click', () => {
+    navMenu.classList.toggle('active');
+  });
