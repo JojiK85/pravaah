@@ -852,7 +852,7 @@ footer {
   }
 }
 
-/* 📱 PERFECT RESPONSIVE DESIGN — PRAVAAH */
+/* 📱 OPTIMIZED MOBILE DESIGN — PRAVAAH */
 @media (max-width: 900px) {
 
   /* ---------- NAVBAR ---------- */
@@ -923,7 +923,7 @@ footer {
   }
 
   #monthYear {
-    font-size: 1.4rem;   /* 🔹 Properly scaled month text */
+    font-size: 1.4rem;
     text-shadow: 0 0 10px cyan;
   }
 
@@ -950,12 +950,12 @@ footer {
   }
 
   .slider-track {
-    animation: scrollLoop 25s linear infinite; /* 🔹 Speed increased */
+    animation: scrollLoop 20s linear infinite; /* ⏩ faster speed */
   }
 
   .slide {
-    width: 90%;
-    height: 200px;
+    width: 75%; /* smaller cards */
+    height: 160px;
     margin: 0 auto;
   }
 
@@ -966,7 +966,7 @@ footer {
 
   .aftermovie {
     width: 92%;
-    height: 65vw;  /* 🔹 Makes it rectangular like laptop */
+    height: 58vw; /* rectangle aspect like desktop */
     border-radius: 20px;
   }
 
@@ -996,43 +996,60 @@ footer {
 
   .social-card {
     width: 45%;
-    height: 170px;
+    height: 160px;
   }
 
-  /* ---------- FOOTER (SIDE-BY-SIDE EVEN ON MOBILE) ---------- */
+  /* ---------- FOOTER (HORIZONTAL ON MOBILE) ---------- */
   footer {
     background: #0b0b0b;
     padding: 2rem 1rem;
   }
 
   .footer-container {
-    flex-direction: row;   /* 🔹 Keep sideways layout */
-    justify-content: space-between;
-    align-items: flex-start;
+    flex-direction: row;
     flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
     width: 95%;
     margin: 0 auto;
-    gap: 1.5rem;
+    gap: 1rem;
   }
 
   .footer-left {
     flex: 1;
     align-items: flex-start;
+    text-align: left;
+  }
+
+  .footer-logo {
+    width: 100px;
   }
 
   .footer-links {
     flex: 2;
     flex-direction: row;
     justify-content: space-evenly;
-    gap: 2rem;
+    gap: 1rem;
+    text-align: left;
+  }
+
+  .footer-column h3 {
+    font-size: 1rem;
+  }
+
+  .footer-column ul li a {
+    font-size: 0.85rem;
   }
 
   .footer-social {
-    justify-content: flex-end;
-    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
   }
 
   .footer-bottom p {
     font-size: 0.8rem;
+    text-align: center;
   }
 }
