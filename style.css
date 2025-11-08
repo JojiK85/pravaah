@@ -40,6 +40,20 @@ nav {
   z-index: 1000;
 }
 
+.menu-toggle {
+  display: none;
+  font-size: 1.8rem;
+  color: cyan;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Show only on mobile/tablet */
+@media (max-width: 900px) {
+  .menu-toggle {
+    display: block;
+  }
+}
 /* LOGO (clean, no glow) */
 .logo {
   font-size: 1.6rem;
@@ -177,20 +191,38 @@ nav {
 }
 
 /* 🔹 Continuous, seamless highlight scroll */
+/* 🔹 Seamless Infinite Scroll (No Gaps) */
 .slider-track {
   display: flex;
   flex-wrap: nowrap;
   gap: 30px;
   animation: scrollSeamless 40s linear infinite;
+  width: calc(200%); /* ensure both batches fit exactly */
 }
 
-/* 🔁 Seamless infinite scroll (no abrupt jump) */
 @keyframes scrollSeamless {
   0% {
     transform: translateX(0);
   }
   100% {
     transform: translateX(-50%);
+  }
+}
+
+/* Prevent shrinking and maintain alignment */
+.slide {
+  flex-shrink: 0;
+}
+
+/* Pause on hover (optional) */
+.highlights-carousel:hover .slider-track {
+  animation-play-state: paused;
+}
+
+/* Faster on mobile */
+@media (max-width: 900px) {
+  .slider-track {
+    animation: scrollSeamless 18s linear infinite;
   }
 }
 
