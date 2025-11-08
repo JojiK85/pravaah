@@ -16,16 +16,22 @@ body {
   padding-top: 80px;
 }
 
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 /* ----- HEADER ----- */
 .register-header {
-  margin-top: 6rem;
+  margin-top: 5rem;   /* ↓ reduced from 6rem */
   color: cyan;
   text-align: center;
   font-size: 3rem;
   font-weight: 700;
   text-shadow: 0 0 15px rgba(0,255,255,0.6);
   letter-spacing: 3px;
-  margin-bottom: 2rem;
+  margin-bottom: 1.3rem;  /* ↓ reduced from 2rem */
 }
 
 /* ----- CONTAINER ----- */
@@ -33,18 +39,23 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 5rem 0;
+  padding: 4rem 0;
 }
 
 .register-box {
   background: rgba(0, 0, 0, 0.7);
   border: 1.5px solid cyan;
-  border-radius: 16px;
+  border-radius: 18px;
   width: 95%;
   max-width: 550px;
   padding: 3rem;
   box-shadow: 0 0 30px rgba(0,255,255,0.25);
   text-align: center;
+  transition: all 0.3s ease;
+}
+
+.register-box:hover {
+  box-shadow: 0 0 40px rgba(0,255,255,0.45);
 }
 
 /* ----- HEADING ----- */
@@ -59,6 +70,7 @@ body {
   color: #bbb;
   font-size: 1rem;
   margin-bottom: 2rem;
+  line-height: 1.4;
 }
 
 /* ----- FORM FIELDS ----- */
@@ -86,15 +98,6 @@ body {
   border-color: cyan;
   box-shadow: 0 0 10px rgba(0,255,255,0.4);
   outline: none;
-}
-
-/* ----- ERROR MESSAGES ----- */
-.error-msg {
-  color: #ff4b4b;
-  font-size: 0.85rem;
-  margin-top: 0.2rem;
-  display: block;
-  text-align: left;
 }
 
 /* ----- BUTTON ----- */
@@ -132,12 +135,89 @@ body {
   text-shadow: 0 0 8px cyan;
 }
 
-/* ----- RESPONSIVE ----- */
-@media (max-width: 500px) {
-  .register-box {
-    padding: 2rem;
-  }
+/* ---------- MOBILE RESPONSIVE ---------- */
+@media (max-width: 600px) {
   .register-header {
-    font-size: 2.4rem;
+    font-size: 2.3rem;
+    margin-top: 3.8rem;   /* ↓ was 4rem */
+    margin-bottom: 1rem;  /* ↓ was 1.5rem */
+  }
+
+  .registration-container {
+    padding: 2rem 0;
+  }
+
+  .register-box {
+    width: 90%;
+    max-width: 100%;
+    padding: 2rem 1.5rem;
+    border-radius: 14px;
+  }
+
+  .register-box h2 {
+    font-size: 1.7rem;
+  }
+
+  .form-subtext {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .register-box label {
+    font-size: 0.9rem;
+  }
+
+  .register-box input {
+    font-size: 0.95rem;
+    padding: 10px 12px;
+  }
+
+  .submit-btn {
+    margin-top: 2rem;
+    padding: 10px 30px;
+    font-size: 0.95rem;
+  }
+
+  .already {
+    font-size: 0.9rem;
+  }
+}
+
+/* ---------- NAVBAR FIX FOR MOBILE ---------- */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: cyan;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .menu-toggle { display: block; }
+
+  #menu {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    position: absolute;
+    top: 70px;
+    left: 0;
+    padding: 20px 0;
+    gap: 20px;
+    z-index: 1000;
+  }
+
+  #menu.active { display: flex; }
+
+  #menu li a {
+    font-size: 1rem;
+    color: #ddd;
+    text-decoration: none;
+  }
+
+  #menu li a:hover {
+    color: cyan;
   }
 }
