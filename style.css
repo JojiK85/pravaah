@@ -852,3 +852,67 @@ footer {
   }
 }
 
+/* 📱 MOBILE MENU FIX */
+.menu-toggle {
+  display: none;
+  color: cyan;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+/* For Mobile Screens */
+@media (max-width: 900px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  #menu {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    background: rgba(0,0,0,0.85);
+    border-top: 1px solid cyan;
+    padding: 15px 0;
+    gap: 20px;
+  }
+
+  #menu.active {
+    display: flex;
+  }
+
+  /* Calendar responsive */
+  .container {
+    flex-direction: column;
+    width: 95%;
+    height: auto;
+  }
+
+  .calendar-container,
+  .feed-container {
+    width: 100%;
+  }
+
+  .calendar-grid .day {
+    width: 100%;
+    max-width: 45px;
+    height: 45px;
+    font-size: 0.8rem;
+  }
+
+  .days-of-week {
+    font-size: 0.85rem;
+  }
+
+  .feed-title {
+    font-size: 1.2rem;
+  }
+
+  .calendar-title {
+    font-size: 1.8rem;
+  }
+
+  .highlights {
+    margin-top: 3rem;
+  }
+}
