@@ -8,11 +8,14 @@
   <script src="script.js" defer></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
-<body>
 
+<body>
   <!-- 🔹 NAVBAR -->
   <nav>
     <div class="logo">PRAVAAH</div>
+    <div class="menu-toggle" id="mobileMenu">
+      <i class="fas fa-bars"></i>
+    </div>
     <ul id="menu">
       <li><a href="index.html" class="active">Home</a></li>
       <li><a href="events.html">Events</a></li>
@@ -25,42 +28,35 @@
   </nav>
 
   <!-- 📅 CALENDAR + FEED -->
-    <h2 class="calendar-title">📅 PRAVAAH'26 CALENDAR</h2>
+  <h2 class="calendar-title">📅 PRAVAAH'26 CALENDAR</h2>
 
-    <div class="container" id="feed">
-      <div class="calendar-container">
-        <div class="header">
-          <button id="prevMonth">❮</button>
-          <h2 id="monthYear"></h2>
-          <button id="nextMonth">❯</button>
-        </div>
-
-        <div class="days-of-week">
-          <div>Sun</div><div>Mon</div><div>Tue</div>
-          <div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-        </div>
-
-        <div id="calendar" class="calendar-grid"></div>
+  <div class="container" id="feed">
+    <div class="calendar-container">
+      <div class="header">
+        <button id="prevMonth">❮</button>
+        <h2 id="monthYear"></h2>
+        <button id="nextMonth">❯</button>
       </div>
 
-      <div class="feed-container">
-        <h2 class="feed-title">Chronicle Feed 🧾</h2>
-        <div class="feed-list" id="feedList"></div>
+      <div class="days-of-week">
+        <div>Sun</div><div>Mon</div><div>Tue</div>
+        <div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
       </div>
+
+      <div id="calendar" class="calendar-grid"></div>
     </div>
 
-  <!-- 🖼️ HIGHLIGHTS (Moved Below Calendar) -->
+    <div class="feed-container">
+      <h2 class="feed-title">Chronicle Feed 🧾</h2>
+      <div class="feed-list" id="feedList"></div>
+    </div>
+  </div>
+
+  <!-- 🖼️ HIGHLIGHTS -->
   <section class="highlights" id="highlights">
     <h2 class="section-title">✨ HIGHLIGHTS OF 2K25 ✨</h2>
     <div class="highlights-carousel">
       <div class="slider-track">
-        <div class="slide" data-title="Opening Ceremony"><img src="DSC09133.JPG" alt="Highlight 1"></div>
-        <div class="slide" data-title="Cultural Night"><img src="DSC09133.JPG" alt="Highlight 2"></div>
-        <div class="slide" data-title="Tech Expo"><img src="DSC09133.JPG" alt="Highlight 3"></div>
-        <div class="slide" data-title="Sports Gala"><img src="DSC09133.JPG" alt="Highlight 4"></div>
-        <div class="slide" data-title="Prize Distribution"><img src="DSC09133.JPG" alt="Highlight 5"></div>
-
-        <!-- Duplicate slides for perfect infinite scroll -->
         <div class="slide" data-title="Opening Ceremony"><img src="DSC09133.JPG" alt="Highlight 1"></div>
         <div class="slide" data-title="Cultural Night"><img src="DSC09133.JPG" alt="Highlight 2"></div>
         <div class="slide" data-title="Tech Expo"><img src="DSC09133.JPG" alt="Highlight 3"></div>
@@ -106,7 +102,6 @@
       <div class="footer-left">
         <img src="pravah-logo.png" alt="Pravaah Logo" class="footer-logo">
         <a href="registrationPravaah.html" class="register-btn">Register Now</a>
-
       </div>
 
       <div class="footer-links">
@@ -147,6 +142,5 @@
       <p><span>@PRAVAAH'26 IIT BHUBANESWAR</span> | MADE WITH 💜 BY WEB TEAM | All Rights Reserved</p>
     </div>
   </footer>
-
 </body>
 </html>
