@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+
+body {
+  font-family: 'Orbitron', sans-serif;
+  background: linear-gradient(120deg, #2c1a55, #3e5d75, #022c43, #5b2a86);
+  background-size: 400% 400%;
+  animation: gradientMove 15s ease infinite;
+  color: white;
+  margin: 0;
+  padding-top: 80px;
+}
+
+/* ---------- HEADING ---------- */
+.pg-heading {
+  text-align: center;
+  margin-top: 120px;
+  font-size: 2.8rem;
+  color: cyan;
+  text-shadow: 0 0 10px rgba(0,255,255,0.6);
+}
+
+.pg-subtext {
+  text-align: center;
+  color: #bbb;
+  margin-top: 10px;
+  margin-bottom: 60px;
+  font-size: 1rem;
+}
+
+/* ---------- TEAM GRID ---------- */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 60px 50px; /* increased spacing between rows & columns */
+  padding: 0 100px 100px;
+  justify-items: center;
+}
+
+/* ---------- TEAM CARD ---------- */
+.team-card {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1.5px solid cyan;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 300px;
+  text-align: center;
+  padding: 30px 20px;
+  box-shadow: 0 0 25px rgba(0,255,255,0.15);
+  transition: all 0.4s ease;
+}
+
+.team-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 0 35px rgba(0,255,255,0.5);
+}
+
+/* ---------- IMAGE ---------- */
+.team-card img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid cyan;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+}
+
+.team-card:hover img {
+  box-shadow: 0 0 15px cyan;
+}
+
+/* ---------- TEXT ---------- */
+.team-card h3 {
+  color: cyan;
+  font-size: 1.3rem;
+  margin-bottom: 8px;
+}
+
+.team-card p {
+  color: #ccc;
+  font-size: 0.9rem;
+  margin: 4px 0;
+}
+
+/* ---------- BUTTONS ---------- */
+.card-actions {
+  margin-top: 18px;
+}
+
+.card-actions a {
+  display: inline-block;
+  margin: 0 10px;
+  padding: 8px 18px;
+  border: 1.5px solid cyan;
+  border-radius: 25px;
+  color: cyan;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.card-actions a:hover {
+  background: cyan;
+  color: black;
+  transform: scale(1.08);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 1300px) {
+  .team-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 50px;
+    padding: 0 80px 80px;
+  }
+}
+
+@media (max-width: 950px) {
+  .team-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    padding: 0 60px 80px;
+  }
+}
+
+@media (max-width: 650px) {
+  .team-grid {
+    grid-template-columns: 1fr;
+    padding: 0 40px 60px;
+  }
+
+  .team-card {
+    max-width: 320px;
+  }
+}

@@ -1,0 +1,854 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Orbitron', sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(120deg, #2c1a55, #3e5d75, #022c43, #5b2a86);
+  background-size: 400% 400%;
+  animation: gradientMove 15s ease infinite;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 80px;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ---------- NAVBAR ---------- */
+nav {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 60px;
+  background: linear-gradient(to right, #0b141a, #15232e);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+/* LOGO (clean, no glow) */
+.logo {
+  font-size: 1.6rem;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-shadow: none;
+}
+
+/* MENU */
+#menu {
+  display: flex;
+  list-style: none;
+  gap: 40px;
+}
+
+/* MENU LINKS */
+/* MENU LINKS */
+#menu li a {
+  color: #e0e0e0;
+  text-decoration: none;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  position: relative;
+  transition: color 0.3s ease, transform 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* Underline Effect */
+#menu li a::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0%;
+  height: 2px;
+  background: cyan;
+  box-shadow: 0 0 8px rgba(0,255,255,0.6);
+  transition: width 0.3s ease;
+}
+
+/* Hover: color + glow + slight rise */
+#menu li a:hover {
+  color: cyan;
+  transform: translateY(-2px);
+  text-shadow: 0 0 8px cyan;
+}
+
+#menu li a:hover::after {
+  width: 100%;
+}
+
+/* Active Page Link */
+#menu li a.active {
+  color: cyan;
+  text-shadow: 0 0 10px cyan;
+}
+
+#menu li a.active::after {
+  width: 100%;
+}
+
+
+/* LINE EFFECT UNDER TEXT */
+#menu li a::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0%;
+  height: 2px;
+  background: cyan;
+  transition: width 0.3s ease;
+}
+
+/* Hover: color + animated underline */
+#menu li a:hover {
+  color: cyan;
+}
+
+#menu li a:hover::after {
+  width: 100%;
+}
+
+/* Active (optional, if you add active class) */
+#menu li a.active {
+  color: cyan;
+}
+#menu li a.active::after {
+  width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  nav {
+    flex-direction: column;
+    padding: 20px 0;
+  }
+
+  .logo {
+    margin-bottom: 10px;
+  }
+
+  #menu {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+  }
+}
+
+/* ---------- HIGHLIGHTS SECTION ---------- */
+.highlights {
+  width: 100%;
+  overflow: hidden;
+  text-align: center;
+  margin: 7rem -1rem;
+}
+
+.section-title {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  text-shadow: 0 0 15px cyan;
+  letter-spacing: 2px;
+}
+
+.highlights-carousel {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px 0;
+}
+
+.slider-track {
+  display: flex;
+  gap: 30px;
+  width: max-content;
+  animation: scrollLoop 50s linear infinite;
+}
+
+/* 🔹 Highlight Card (Edge Glow Only) */
+.slide {
+  width: 320px;
+  height: 200px;
+  border-radius: 18px;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+  border: 2px solid cyan;
+  box-shadow: 0 0 12px rgba(0,255,255,0.4);
+  transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+/* Image inside highlight */
+.slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+  display: block;
+}
+
+/* Neon edge highlight */
+.slide:hover {
+  transform: scale(1.05);
+  border-color: #00ffff;
+  box-shadow: 0 0 20px #00ffff, 0 0 40px rgba(0,255,255,0.6);
+}
+
+.slide:hover img {
+  transform: scale(1.1);
+}
+
+/* Caption overlay */
+.slide::after {
+  content: attr(data-title);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px 0;
+  font-size: 1.1rem;
+  background: rgba(0, 0, 0, 0.6);
+  color: cyan;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s ease;
+  border-radius: 0 0 18px 18px;
+}
+
+.slide:hover::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Infinite loop animation */
+@keyframes scrollLoop {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.highlights-carousel:hover .slider-track {
+  animation-play-state: paused;
+}
+
+/* Subtle breathing border glow */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(0,255,255,0.3); }
+  50% { box-shadow: 0 0 20px rgba(0,255,255,0.8); }
+}
+
+/* ---------- CALENDAR + FEED ---------- */
+/* ---------- PRAVAAH'26 CALENDAR TITLE ---------- */
+.calendar-title {
+  text-align: center;
+  font-size: 2.5rem;
+  color: cyan;
+  text-shadow: 0 0 15px cyan;
+  margin-top: 5rem;
+  margin-bottom: 2rem;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+.calendar-title::after {
+  content: "";
+  display: block;
+  width: 120px;
+  height: 3px;
+  background: cyan;
+  margin: 10px auto 0;
+  box-shadow: 0 0 10px cyan;
+  animation: underlineGlow 2.5s ease-in-out infinite alternate;
+}
+
+.container {
+  display: flex;
+  width: 90%;
+  height: 75vh;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(0,0,0,0.4);
+  backdrop-filter: blur(10px);
+}
+
+/* Calendar styles */
+.calendar-container {
+  width: 60%;
+  padding: 25px;
+  background: rgba(0,0,0,0.4);
+  border-right: 2px solid rgba(255,255,255,0.2);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.header button {
+  background: transparent;
+  color: white;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.header button:hover { color: cyan; }
+
+#monthYear {
+  font-size: 1.8rem;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px cyan;
+}
+
+.days-of-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 12px;
+  color: #ddd;
+  font-size: 1.05rem;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+  justify-items: center;
+  align-items: center;
+  padding: 10px 5px;
+}
+
+.day {
+  width: 85px;
+  height: 55px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  color: white;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.day:hover { background: rgba(255,255,255,0.25); transform: scale(1.05); }
+.today { background: #00ffff33; border: 1px solid #00ffff; }
+.selected { background: #00ffff55; box-shadow: 0 0 12px #00ffff; }
+
+.calendar-grid.fade-out {
+  opacity: 0;
+  transform: scale(0.97);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.calendar-grid.fade-in {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Feed section */
+.feed-container {
+  width: 40%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  flex-direction: column;
+  padding: 15px 20px;
+  overflow: hidden;
+}
+
+.feed-title {
+  text-align: center;
+  color: cyan;
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+  text-shadow: 0 0 10px cyan;
+}
+
+.feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding-right: 5px;
+  flex: 1;
+  min-height: 0;
+}
+
+.feed-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px 16px;
+  transition: background 0.3s ease, transform 0.3s ease;
+  flex-shrink: 0;          /* 👈 Prevents items from collapsing */
+  position: relative;
+  min-height: 70px;        /* 👈 Ensures each row stays distinct */
+}
+
+.feed-item:hover {
+  background: rgba(0, 255, 255, 0.15);
+  transform: scale(1.02);
+  z-index: 2;              /* 👈 Avoids stacking during hover scale */
+}
+
+.feed-item img {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  object-fit: cover;
+  border: 2px solid #00ffff80;
+}
+
+.feed-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.feed-details h4,
+.feed-details p {
+  margin: 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.feed-list.fade-out {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.4s ease;
+  pointer-events: none;
+}
+
+.feed-list.fade-in {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.4s ease;
+  pointer-events: auto;
+}
+
+
+.feed-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 10px;
+  transition: 0.3s ease;
+  cursor: pointer;
+}
+
+.feed-item:hover {
+  background: rgba(0,255,255,0.15);
+  transform: scale(1.02);
+}
+
+.feed-item img {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #00ffff80;
+}
+
+.feed-details {
+  flex: 1;
+}
+
+.feed-details h4 {
+  margin-bottom: 4px;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.feed-details p {
+  color: #bbb;
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+.feed-time {
+  font-size: 0.8rem;
+  color: #aaa;
+  min-width: 40px;
+  text-align: right;
+}
+
+.feed-placeholder {
+  text-align: center;
+  color: #bbb;
+  margin-top: 20%;
+}
+
+/* Scrollbar */
+.feed-list::-webkit-scrollbar {
+  width: 6px;
+}
+.feed-list::-webkit-scrollbar-thumb {
+  background: rgba(0,255,255,0.5);
+  border-radius: 10px;
+}
+
+/* ---------- AFTERMOVIE ---------- */
+.aftermovie-section {
+  text-align: center;
+  margin: 1rem 0;
+  position: relative;
+  width: 100%;
+}
+
+.aftermovie-section h2 {
+  font-size: 2.5rem;
+  color: #00ffff;
+  text-shadow: 0 0 6px rgba(0,255,255,0.6); /* 🔹 Softer glow */
+  margin-bottom: 1.5rem;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+
+/* ✅ Big Screen: nearly full viewport height */
+.aftermovie {
+  position: relative;
+  width: 70%;                 /* make it wide */
+  height: 75vh;               /* takes up 80% of the screen height */
+  margin: 0 auto;
+  border-radius: 25px;
+  border: 2px solid cyan;
+  background: rgba(0, 0, 0, 0.9);
+  box-shadow: 0 0 30px rgba(0,255,255,0.5), inset 0 0 20px rgba(0,255,255,0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  transition: all 0.5s ease;
+}
+
+.aftermovie:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 50px rgba(0,255,255,0.7);
+}
+
+/* "COMING SOON" text */
+.coming-soon {
+  color: cyan;
+  font-size: 3rem;
+  letter-spacing: 2px;
+  text-shadow: 0 0 15px cyan;
+  animation: glowPulse 2s ease-in-out infinite;
+  text-transform: uppercase;
+}
+
+/* Pulsing glow effect */
+@keyframes glowPulse {
+  0%, 100% { text-shadow: 0 0 15px cyan; opacity: 1; }
+  50% { text-shadow: 0 0 35px #00ffff; opacity: 0.8; }
+}
+
+/* Responsive: smaller on mobile */
+@media (max-width: 900px) {
+  .aftermovie {
+    width: 95%;
+    height: 55vh;
+  }
+
+  .coming-soon {
+    font-size: 1.8rem;
+  }
+}
+
+/* ---------- VIDEO WRAPPER (For Aftermovie) ---------- */
+.video-wrapper {
+  width: 100%;
+  height: 100%;
+  border-radius: 25px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: black;
+}
+
+.video-wrapper video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;  /* fills the screen, no black bars */
+  border-radius: 25px;
+  display: block;
+}
+
+/* Hover glow for video area */
+.aftermovie:hover .video-wrapper {
+  box-shadow: 0 0 40px rgba(0,255,255,0.6);
+  transform: scale(1.01);
+  transition: all 0.4s ease;
+}
+/* ---------- VIDEO SWITCH BUTTONS ---------- */
+.video-switch {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 2rem;
+}
+
+.video-switch button {
+  background: none;
+  border: none;
+  color: #bfbfbf;
+  font-size: 1.1rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+/* subtle underline animation */
+.video-switch button::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0%;
+  height: 2px;
+  background: cyan;
+  box-shadow: 0 0 8px rgba(0,255,255,0.6);
+  transition: width 0.3s ease;
+}
+
+.video-switch button:hover {
+  color: cyan;
+  transform: translateY(-2px);
+}
+
+.video-switch button:hover::after {
+  width: 100%;
+}
+
+/* Active button (underline visible) */
+.video-switch button.active {
+  color: cyan;
+}
+
+.video-switch button.active::after {
+  width: 100%;
+}
+
+/* Responsive tweak */
+@media (max-width: 900px) {
+  .video-switch {
+    gap: 20px;
+  }
+  .video-switch button {
+    font-size: 0.95rem;
+  }
+}
+
+
+/* ---------- SOCIAL SECTION ---------- */
+.social-section {
+  width: 90%;
+  margin: 6rem 0;
+  text-align: center;
+}
+
+.social-section h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  text-shadow: 0 0 10px cyan;
+  letter-spacing: 1px;
+}
+
+.social-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  justify-items: center;
+}
+
+.social-card {
+  width: 220px;
+  height: 220px;
+  background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(0,0,0,0.4));
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.5s ease;
+}
+
+.social-card:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 35px rgba(0,255,255,0.5);
+  background: rgba(0,255,255,0.15);
+}
+
+.inner-card {
+  background: black;
+  width: 80%;
+  height: 80%;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.inner-card h3 { font-size: 1.8rem; color: #fff; }
+.inner-card p { margin-top: 10px; color: #ccc; }
+
+/* ---------- FOOTER ---------- */
+footer {
+  background: #0b0b0b;
+  color: #ddd;
+  padding: 3rem 2rem 1rem;
+  width: 100%;
+  text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  width: 90%;
+  margin: 0 auto 2rem;
+  gap: 2rem;
+}
+
+/* Left section */
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  flex: 1;
+  min-width: 220px;
+}
+
+.footer-logo {
+  width: 140px;
+}
+
+.register-btn {
+  background: linear-gradient(90deg, #6a5acd, #00ffff);
+  text-decoration: none; 
+  border: none;
+  padding: 10px 25px;
+  border-radius: 25px;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.register-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 12px rgba(0,255,255,0.5);
+  text-decoration: none; 
+}
+
+/* Footer links */
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 5rem;
+  flex: 2;
+  flex-wrap: wrap;
+  min-width: 300px;
+}
+
+.footer-column h3 { color: #fff; margin-bottom: 1rem; }
+.footer-column ul { list-style: none; }
+.footer-column ul li { margin: 8px 0; }
+.footer-column ul li a {
+  text-decoration: none;
+  color: #bbb;
+  transition: color 0.3s;
+}
+.footer-column ul li a:hover { color: cyan; }
+
+/* Social icons */
+.footer-social {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 1.2rem;
+}
+
+.footer-social a {
+  color: cyan;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.footer-social a:hover {
+  color: white;
+  transform: translateY(-3px);
+}
+
+.footer-line {
+  width: 90%;
+  margin: 0 auto 1.2rem;
+  border: none;
+  height: 1px;
+  background: rgba(255,255,255,0.2);
+}
+
+.footer-bottom {
+  color: #aaa;
+  font-size: 0.9rem;
+  padding-bottom: 0.5rem;
+}
+
+.footer-bottom span {
+  color: cyan;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .footer-container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .footer-links {
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+  }
+}
+

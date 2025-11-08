@@ -1,0 +1,214 @@
+/* ---------- PAGE HEADING ---------- */
+.pg-heading {
+  text-align: center;
+  margin-top: 120px;
+  font-size: 2.5rem;
+  color: cyan;
+  text-shadow: 0 0 10px rgba(0,255,255,0.6);
+  letter-spacing: 2px;
+}
+
+/* ---------- CATEGORY SWITCH ---------- */
+.category-switch {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 35px 0;
+  gap: 40px;
+}
+
+.category-switch button {
+  background: transparent;
+  border: none;
+  color: cyan;
+  padding: 14px 40px;       /* Balanced size */
+  border-radius: 30px;
+  font-size: 1.1rem;        /* Slightly bigger font */
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
+}
+
+/* Active button — subtle glow, not bulky */
+.category-switch button.active {
+  background: rgba(0, 255, 255, 0.15);
+  box-shadow: 0 0 18px rgba(0,255,255,0.4);
+  color: cyan;
+  transform: scale(1.07);
+}
+
+/* Hover effect — soft neon text glow */
+.category-switch button:hover {
+  color: cyan;
+  text-shadow: 0 0 6px cyan;
+  transform: scale(1.05);
+}
+
+/* Optional subtle glow animation (for active button) */
+@keyframes glowPulse {
+  0% { box-shadow: 0 0 15px rgba(0,255,255,0.4); }
+  100% { box-shadow: 0 0 15px rgba(0,255,255,0.8); }
+}
+
+.category-switch button.active {
+  animation: glowPulse 2.5s infinite ease-in-out;
+}
+
+/* ---------- EVENT GRID ---------- */
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 50px;
+  padding: 50px 80px;
+  justify-items: center;
+  align-items: start;
+}
+
+/* ---------- EVENT CARD ---------- */
+.event-card {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  height: 240px; /* Ensures equal size for all boxes */
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1.5px solid cyan;
+  background: rgba(0,0,0,0.6);
+  box-shadow: 0 0 20px rgba(0,255,255,0.3);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  cursor: pointer;
+}
+
+.event-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 35px rgba(0,255,255,0.6);
+}
+
+/* ---------- IMAGE ---------- */
+.event-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: filter 0.4s ease;
+}
+
+.event-card:hover .event-img {
+  filter: blur(5px) brightness(0.7);
+}
+
+/* ---------- OVERLAY ---------- */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
+  opacity: 0;
+  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.5);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  transform: translateY(20px);
+  padding: 20px;
+  z-index: 2;
+}
+
+.event-card:hover .overlay {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------- TITLE (VISIBLE BEFORE HOVER) ---------- */
+.event-title {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.75);
+  padding: 10px 0;
+  color: cyan;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 1;
+}
+
+.event-card:hover .event-title {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+/* ---------- BUTTONS INSIDE OVERLAY ---------- */
+.btn-group {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1.5px solid cyan;
+  background: rgba(0,255,255,0.1);
+  color: cyan;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  background: cyan;
+  color: black;
+  transform: translateY(-2px);
+}
+
+/* ---------- TEXT INSIDE OVERLAY ---------- */
+.overlay h3 {
+  color: cyan;
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  text-shadow: 0 0 10px cyan;
+}
+
+.overlay p {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #e0e0e0;
+  max-width: 280px;
+  margin-bottom: 20px;
+}
+
+/* ---------- SECTION TOGGLE ANIMATION ---------- */
+.event-section {
+  display: none;
+  opacity: 0;
+  transform: translateY(15px);
+  transition: all 0.5s ease;
+}
+
+.event-section.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 1100px) {
+  .event-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+  }
+}
+
+@media (max-width: 750px) {
+  .event-grid {
+    grid-template-columns: 1fr;
+  }
+}
