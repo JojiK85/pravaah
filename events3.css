@@ -41,35 +41,40 @@
     display: flex;
   }
 
-  .pg-heading {
-    font-size: 2rem;
-    margin-top: 5.5rem;
-  }
-
+  /* ✅ Keep Technopreneurship & Cultural side-by-side */
   .category-switch {
-    flex-direction: column;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
     gap: 20px;
+    flex-wrap: wrap;
   }
 
   .category-switch button {
-    padding: 10px 25px;
+    padding: 12px 28px;
     font-size: 1rem;
+    border-radius: 25px;
   }
 
+  /* Events grid: 1 per row for mobile */
   .event-grid {
     grid-template-columns: 1fr;
     padding: 30px 20px;
+  }
+
+  /* 🔹 Make event title bar taller and more visible */
+  .event-title {
+    font-size: 1.1rem;
+    padding: 14px 0;
+    background: rgba(0, 0, 0, 0.85);
+    letter-spacing: 1px;
   }
 
   .event-card {
     max-width: 90%;
     height: auto;
     aspect-ratio: 4 / 3;
-  }
-
-  .event-title {
-    font-size: 1rem;
-    padding: 8px 0;
   }
 
   footer {
@@ -84,6 +89,15 @@
     font-size: 1.6rem;
   }
 
+  .category-switch {
+    gap: 15px;
+  }
+
+  .category-switch button {
+    font-size: 0.9rem;
+    padding: 10px 24px;
+  }
+
   .overlay h3 {
     font-size: 1rem;
   }
@@ -95,5 +109,10 @@
   .btn {
     font-size: 0.8rem;
     padding: 6px 15px;
+  }
+
+  .event-title {
+    font-size: 1rem;
+    padding: 12px 0;
   }
 }
