@@ -19,8 +19,8 @@ body {
 /* ---------- HEADER ---------- */
 .gallery-header {
   text-align: center;
-  margin-bottom: 25px; /* reduced spacing */
-  padding: 40px 10%;
+  margin-bottom: 30px; /* 🔹 slightly increased gap below the text */
+  padding: 35px 10% 10px;
 }
 
 .gallery-header h1 {
@@ -33,11 +33,12 @@ body {
   color: #ccc;
   font-size: 1.1rem;
   margin-top: 10px;
+  line-height: 1.5;
 }
 
 /* ---------- GALLERY GRID ---------- */
 .gallery-container {
-  padding: 40px 7%; /* reduced top padding for tighter layout */
+  padding: 15px 7%; /* 🔹 added small top padding to create clean gap */
 }
 
 .gallery-grid {
@@ -128,10 +129,10 @@ body {
 
 /* ---------- 📱 MOBILE VIEW ---------- */
 @media (max-width: 600px) {
-  /* Gallery header */
+  /* Header adjustments */
   .gallery-header {
-    padding: 30px 8%;     /* less padding on mobile */
-    margin-bottom: 15px;  /* smaller gap below title */
+    padding: 25px 8% 0;
+    margin-bottom: 20px; /* 🔹 added small bottom gap between text and photos */
   }
 
   .gallery-header h1 {
@@ -140,21 +141,27 @@ body {
 
   .gallery-header p {
     font-size: 1rem;
+    margin-bottom: 0;
   }
 
   /* Gallery grid layout */
+  .gallery-container {
+    padding: 10px 6%; /* 🔹 added clean small spacing below text */
+  }
+
   .gallery-grid { 
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px; /* reduced gap between boxes */
+    gap: 18px;
   }
 
   .gallery-item {
-    aspect-ratio: 4 / 3; /* 🔹 slightly taller for mobile for better visibility */
-    border-radius: 12px;
+    aspect-ratio: 5 / 4;
+    border-radius: 14px;
+    box-shadow: 0 0 25px rgba(0,255,255,0.4);
   }
 
-  .gallery-container {
-    padding: 25px 6%; /* reduced padding to tighten layout */
+  .gallery-item img {
+    object-fit: cover;
   }
 }
 
