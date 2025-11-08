@@ -42,7 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ----- 📱 NAVBAR TOGGLE -----
-  const menuToggle = document.getElementById('menuToggle'); // ✅ fixed ID
+  const menuToggle = document.getElementById('mobile-menu');
+ // ✅ fixed ID
   const navMenu = document.getElementById('menu');
 
   if (menuToggle && navMenu) {
