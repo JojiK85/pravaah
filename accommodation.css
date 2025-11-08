@@ -302,4 +302,69 @@
     line-height: 1.5;
   }
 }
+/* 🌐 MOBILE BOX ALIGNMENT FIX — Equal Height for Pricing / Guidelines / Do's & Don'ts */
+@media (max-width: 900px) {
+  /* Make all cards and rule cards the same height */
+  .card,
+  .rule-card {
+    width: 92%;
+    max-width: 600px;
+    min-height: 420px; /* 🔹 Increased height for better readability */
+    padding: 28px 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    text-align: justify;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+  }
+
+  /* Headings */
+  .card h2,
+  .rule-card h3 {
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+    text-align: center;
+    height: 40px; /* 🔹 Keeps all heading levels uniform */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Text inside cards */
+  .card p,
+  .rule-card li {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 6px 0;
+  }
+
+  /* Lists in rule-card */
+  .rule-card ul {
+    padding-left: 10px;
+    list-style: none;
+  }
+
+  .rule-card li::before {
+    content: "•";
+    color: cyan;
+    position: absolute;
+    left: 0;
+  }
+
+  /* Keep spacing even between sections */
+  .accommodation-cards,
+  .rules-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding: 45px 5%;
+  }
+
+  /* Add gentle margin below each section for separation */
+  .accommodation-guidelines {
+    margin-bottom: 60px;
+  }
+}
 
