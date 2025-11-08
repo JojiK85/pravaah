@@ -1,38 +1,30 @@
-// ---------- CATEGORY SWITCH ----------
 const techBtn = document.getElementById("techBtn");
 const cultBtn = document.getElementById("cultBtn");
 const techSection = document.querySelector(".tech-events");
 const cultSection = document.querySelector(".cult-events");
 
+function switchSection(showSection, hideSection, activeBtn, inactiveBtn) {
+  // Remove current animations
+  hideSection.classList.remove("slide-in");
+  showSection.classList.remove("slide-in");
+
+  // Animate out old section
+  hideSection.classList.add("slide-out");
+
+  // Wait for animation end before switching visibility
+  setTimeout(() => {
+    hideSection.classList.remove("active", "slide-out");
+    showSection.classList.add("active", "slide-in");
+  }, 300);
+
+  activeBtn.classList.add("active");
+  inactiveBtn.classList.remove("active");
+}
+
 techBtn.addEventListener("click", () => {
-  techSection.classList.add("active");
-  cultSection.classList.remove("active");
-  techBtn.classList.add("active");
-  cultBtn.classList.remove("active");
+  switchSection(techSection, cultSection, techBtn, cultBtn);
 });
 
 cultBtn.addEventListener("click", () => {
-  cultSection.classList.add("active");
-  techSection.classList.remove("active");
-  cultBtn.classList.add("active");
-  techBtn.classList.remove("active");
-});
-
-// ---------- MOBILE NAVBAR TOGGLE ----------
-const menuToggle = document.createElement("div");
-menuToggle.classList.add("menu-toggle");
-menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-document.querySelector("nav").prepend(menuToggle);
-
-const menu = document.getElementById("menu");
-
-menuToggle.addEventListener("click", () => {
-  menu.classList.toggle("active");
-});
-
-// Close menu when a link is clicked
-document.querySelectorAll("#menu a").forEach(link => {
-  link.addEventListener("click", () => {
-    menu.classList.remove("active");
-  });
+  switchSection(cultSection, techSection, cultBtn, techBtn);
 });
