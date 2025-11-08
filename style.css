@@ -852,14 +852,15 @@ footer {
   }
 }
 
-/* 📱 MOBILE OPTIMIZATION */
+/* 📱 PERFECT RESPONSIVE DESIGN — PRAVAAH */
 @media (max-width: 900px) {
 
-  /* NAVBAR */
+  /* ---------- NAVBAR ---------- */
   nav {
     flex-direction: row;
     justify-content: space-between;
-    padding: 10px 25px;
+    align-items: center;
+    padding: 12px 25px;
   }
 
   .logo {
@@ -868,24 +869,23 @@ footer {
 
   .menu-toggle {
     display: block;
+    color: cyan;
     font-size: 1.8rem;
     cursor: pointer;
-    color: cyan;
   }
 
   #menu {
     display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
     position: absolute;
     top: 70px;
     left: 0;
-    width: 100%;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    background: rgba(0, 0, 0, 0.92);
-    padding: 20px 0;
+    background: rgba(0, 0, 0, 0.95);
     border-top: 1px solid cyan;
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+    padding: 20px 0;
     z-index: 999;
   }
 
@@ -898,10 +898,17 @@ footer {
     padding: 10px;
   }
 
-  /* CALENDAR + FEED */
+  /* ---------- CALENDAR SECTION ---------- */
+  .calendar-title {
+    font-size: 1.6rem;
+    margin-top: 5rem;
+    text-align: center;
+    letter-spacing: 1.5px;
+  }
+
   .container {
     flex-direction: column;
-    width: 95%;
+    width: 92%;
     height: auto;
     margin: 0 auto;
     border-radius: 20px;
@@ -912,91 +919,117 @@ footer {
   .feed-container {
     width: 100%;
     border: none;
-    padding: 20px;
+    padding: 20px 10px;
+  }
+
+  #monthYear {
+    font-size: 1.4rem;   /* 🔹 Properly scaled month text */
+    text-shadow: 0 0 10px cyan;
   }
 
   .calendar-grid {
     grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
+    gap: 6px;
   }
 
   .day {
     width: 100%;
-    height: 45px;
-    font-size: 0.85rem;
+    max-width: 42px;
+    height: 42px;
+    font-size: 0.75rem;
   }
 
   .days-of-week {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
   }
 
-  .calendar-title {
-    font-size: 1.8rem;
-    margin-top: 4rem;
-  }
-
-  /* HIGHLIGHTS */
+  /* ---------- HIGHLIGHTS ---------- */
   .highlights {
     margin-top: 3rem;
-    padding: 0 10px;
+    overflow: hidden;
+  }
+
+  .slider-track {
+    animation: scrollLoop 25s linear infinite; /* 🔹 Speed increased */
   }
 
   .slide {
-    width: 85%;
-    height: 180px;
+    width: 90%;
+    height: 200px;
     margin: 0 auto;
   }
 
-  /* AFTERMOVIE */
+  /* ---------- AFTERMOVIE ---------- */
   .aftermovie-section h2 {
     font-size: 2rem;
   }
 
   .aftermovie {
-    width: 95%;
-    height: 55vh;
+    width: 92%;
+    height: 65vw;  /* 🔹 Makes it rectangular like laptop */
+    border-radius: 20px;
+  }
+
+  .video-wrapper video {
+    object-fit: cover;
+    border-radius: 20px;
   }
 
   .video-switch {
     gap: 20px;
+    font-size: 0.9rem;
   }
 
-  /* SOCIAL SECTION */
+  /* ---------- SOCIAL SECTION ---------- */
   .social-section {
     width: 95%;
-    margin-top: 4rem;
+    text-align: center;
+    margin-top: 5rem;
   }
 
   .social-cards {
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
   }
 
   .social-card {
-    width: 100%;
-    height: 180px;
+    width: 45%;
+    height: 170px;
   }
 
-  /* FOOTER */
+  /* ---------- FOOTER (SIDE-BY-SIDE EVEN ON MOBILE) ---------- */
   footer {
-    text-align: center;
+    background: #0b0b0b;
     padding: 2rem 1rem;
   }
 
   .footer-container {
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row;   /* 🔹 Keep sideways layout */
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    width: 95%;
+    margin: 0 auto;
     gap: 1.5rem;
   }
 
+  .footer-left {
+    flex: 1;
+    align-items: flex-start;
+  }
+
   .footer-links {
-    flex-direction: column;
-    align-items: center;
+    flex: 2;
+    flex-direction: row;
+    justify-content: space-evenly;
     gap: 2rem;
   }
 
   .footer-social {
-    gap: 1.5rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
   }
 
   .footer-bottom p {
