@@ -21,9 +21,9 @@
   background: transparent;
   border: none;
   color: cyan;
-  padding: 14px 40px;       /* Balanced size */
+  padding: 14px 40px;
   border-radius: 30px;
-  font-size: 1.1rem;        /* Slightly bigger font */
+  font-size: 1.1rem;
   font-weight: 600;
   letter-spacing: 1px;
   cursor: pointer;
@@ -32,29 +32,25 @@
   text-transform: uppercase;
 }
 
-/* Active button — subtle glow, not bulky */
+/* Active button glow */
 .category-switch button.active {
   background: rgba(0, 255, 255, 0.15);
   box-shadow: 0 0 18px rgba(0,255,255,0.4);
   color: cyan;
   transform: scale(1.07);
+  animation: glowPulse 2.5s infinite ease-in-out;
 }
 
-/* Hover effect — soft neon text glow */
-.category-switch button:hover {
-  color: cyan;
-  text-shadow: 0 0 6px cyan;
-  transform: scale(1.05);
-}
-
-/* Optional subtle glow animation (for active button) */
 @keyframes glowPulse {
   0% { box-shadow: 0 0 15px rgba(0,255,255,0.4); }
   100% { box-shadow: 0 0 15px rgba(0,255,255,0.8); }
 }
 
-.category-switch button.active {
-  animation: glowPulse 2.5s infinite ease-in-out;
+/* Hover effect */
+.category-switch button:hover {
+  color: cyan;
+  text-shadow: 0 0 6px cyan;
+  transform: scale(1.05);
 }
 
 /* ---------- EVENT GRID ---------- */
@@ -72,7 +68,7 @@
   position: relative;
   width: 100%;
   max-width: 360px;
-  height: 240px; /* Ensures equal size for all boxes */
+  height: 240px;
   border-radius: 20px;
   overflow: hidden;
   border: 1.5px solid cyan;
@@ -124,7 +120,7 @@
   transform: translateY(0);
 }
 
-/* ---------- TITLE (VISIBLE BEFORE HOVER) ---------- */
+/* ---------- TITLE ---------- */
 .event-title {
   position: absolute;
   bottom: 0;
@@ -144,7 +140,7 @@
   transform: translateY(10px);
 }
 
-/* ---------- BUTTONS INSIDE OVERLAY ---------- */
+/* ---------- BUTTONS ---------- */
 .btn-group {
   display: flex;
   gap: 15px;
@@ -185,7 +181,7 @@
   margin-bottom: 20px;
 }
 
-/* ---------- SECTION TOGGLE ANIMATION ---------- */
+/* ---------- SECTION TOGGLE ---------- */
 .event-section {
   display: none;
   opacity: 0;
@@ -197,18 +193,10 @@
   display: block;
   opacity: 1;
   transform: translateY(0);
+  animation: fadeIn 0.6s ease forwards;
 }
 
-/* ---------- RESPONSIVE ---------- */
-@media (max-width: 1100px) {
-  .event-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 40px;
-  }
-}
-
-@media (max-width: 750px) {
-  .event-grid {
-    grid-template-columns: 1fr;
-  }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
