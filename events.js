@@ -1,30 +1,26 @@
+// Toggle menu (mobile)
+const menuToggle = document.querySelector('.menu-toggle');
+const menu = document.querySelector('#menu');
+menuToggle.addEventListener('click', () => {
+  menu.classList.toggle('active');
+});
+
+// Event category switch
 const techBtn = document.getElementById("techBtn");
 const cultBtn = document.getElementById("cultBtn");
 const techSection = document.querySelector(".tech-events");
 const cultSection = document.querySelector(".cult-events");
 
-function switchSection(showSection, hideSection, activeBtn, inactiveBtn) {
-  // Remove current animations
-  hideSection.classList.remove("slide-in");
-  showSection.classList.remove("slide-in");
-
-  // Animate out old section
-  hideSection.classList.add("slide-out");
-
-  // Wait for animation end before switching visibility
-  setTimeout(() => {
-    hideSection.classList.remove("active", "slide-out");
-    showSection.classList.add("active", "slide-in");
-  }, 300);
-
-  activeBtn.classList.add("active");
-  inactiveBtn.classList.remove("active");
-}
-
 techBtn.addEventListener("click", () => {
-  switchSection(techSection, cultSection, techBtn, cultBtn);
+  techSection.classList.add("active");
+  cultSection.classList.remove("active");
+  techBtn.classList.add("active");
+  cultBtn.classList.remove("active");
 });
 
 cultBtn.addEventListener("click", () => {
-  switchSection(cultSection, techSection, cultBtn, techBtn);
+  cultSection.classList.add("active");
+  techSection.classList.remove("active");
+  cultBtn.classList.add("active");
+  techBtn.classList.remove("active");
 });
