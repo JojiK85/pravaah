@@ -182,7 +182,7 @@ body {
   }
 }
 
-/* ---------- 📱 MOBILE VIEW (FIXED) ---------- */
+/* ---------- 📱 MOBILE VIEW (Hover-enabled overlay) ---------- */
 @media (max-width: 600px) {
   .workshop_header {
     font-size: 2.3rem;
@@ -212,10 +212,15 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: brightness(0.6); /* slightly darken for readability */
+    transition: filter 0.4s ease, transform 0.4s ease;
   }
 
-  /* Overlay transparent enough to show image */
+  .workshop-box:hover img {
+    filter: blur(4px) brightness(0.75);
+    transform: scale(1.08);
+  }
+
+  /* Hide overlay by default */
   .overlay {
     position: absolute;
     inset: 0;
@@ -224,10 +229,18 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
-    background: rgba(0, 0, 0, 0.45); /* semi-transparent */
     color: white;
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    background: rgba(0, 0, 0, 0.55);
+    transition: opacity 0.4s ease, transform 0.4s ease, background 0.4s ease;
+  }
+
+  /* Show overlay on hover/tap */
+  .workshop-box:hover .overlay {
     opacity: 1;
-    padding: 20px;
+    transform: translateY(0) scale(1);
+    background: rgba(0, 0, 0, 0.75);
   }
 
   .overlay h3 {
