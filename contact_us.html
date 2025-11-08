@@ -9,20 +9,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-  <!-- CSS Files -->
-  <link rel="stylesheet" href="style.css" /> <!-- Navbar + Footer -->
-  <link rel="stylesheet" href="contact_us.css" /> <!-- This page -->
+  <!-- External CSS -->
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="contact_us.css" />
   <link rel="shortcut icon" href="pravaah.. Logo.png" type="image/png" />
 </head>
+
 <body>
 
-  <!-- 🔹 HEADER -->
+  <!-- 🔹 NAVBAR -->
   <nav>
     <div class="logo">PRAVAAH</div>
+    <div class="menu-toggle" id="menuToggle">&#9776;</div>
     <ul id="menu">
       <li><a href="index.html">Home</a></li>
       <li><a href="events.html">Events</a></li>
-      <li><a href="accommodation.html" >Accommodation</a></li>
+      <li><a href="accommodation.html">Accommodation</a></li>
       <li><a href="photogallery.html">Gallery</a></li>
       <li><a href="registrationPravaah.html">Register</a></li>
       <li><a href="contact_us.html" class="active">Contact Us</a></li>
@@ -113,6 +115,7 @@
         <img src="pravah-logo.png" alt="PRAVAAH Logo" class="footer-logo">
         <a href="registrationPravaah.html" class="register-btn">Register Now</a>
       </div>
+
       <div class="footer-links">
         <div class="footer-column">
           <h3>Quick Links</h3>
@@ -122,6 +125,7 @@
             <li><a href="#">Join the Community</a></li>
           </ul>
         </div>
+
         <div class="footer-column">
           <h3>Explore More</h3>
           <ul>
@@ -130,6 +134,7 @@
             <li><a href="#">Brochure</a></li>
           </ul>
         </div>
+
         <div class="footer-column">
           <h3>Reach Out to Us</h3>
           <ul>
@@ -138,16 +143,51 @@
         </div>
       </div>
     </div>
+
     <div class="footer-social">
       <a href="#"><i class="fab fa-instagram"></i></a>
       <a href="#"><i class="fab fa-linkedin-in"></i></a>
       <a href="#"><i class="fab fa-youtube"></i></a>
     </div>
+
     <hr class="footer-line">
     <div class="footer-bottom">
       <p>@PRAVAAH'26 IIT BHUBANESWAR | MADE WITH 💜 BY WEB TEAM | All Rights Reserved</p>
     </div>
   </footer>
-  
+
+  <!-- 📜 Navbar Toggle + Click Outside Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const menuToggle = document.getElementById('menuToggle');
+      const menu = document.getElementById('menu');
+
+      // Toggle navbar
+      menuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        menu.classList.toggle('active');
+      });
+
+      // Close on clicking a link
+      menu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => menu.classList.remove('active'));
+      });
+
+      // Close when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!menu.contains(e.target) && !menuToggle.contains(e.target)) {
+          menu.classList.remove('active');
+        }
+      });
+
+      // Optional: Close on pressing ESC
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          menu.classList.remove('active');
+        }
+      });
+    });
+  </script>
+
 </body>
 </html>
