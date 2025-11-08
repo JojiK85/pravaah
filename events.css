@@ -1,89 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Orbitron', sans-serif;
-}
-
-body {
-  min-height: 100vh;
-  background: linear-gradient(120deg, #2c1a55, #3e5d75, #022c43, #5b2a86);
-  background-size: 400% 400%;
-  animation: gradientMove 15s ease infinite;
-  color: #fff;
-  padding-top: 90px;
-}
-
-@keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* ---------- NAVBAR ---------- */
-nav {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 60px;
-  background: linear-gradient(to right, #0b141a, #15232e);
-  position: fixed;
-  top: 0;
-  left: 0;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  z-index: 1000;
-}
-
-.logo {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: white;
-}
-
-.menu-toggle {
-  display: none;
-  color: cyan;
-  font-size: 2rem;
-  cursor: pointer;
-}
-
-#menu {
-  list-style: none;
-  display: flex;
-  gap: 35px;
-}
-
-#menu li a {
-  color: #ddd;
-  text-decoration: none;
-  position: relative;
-  transition: color 0.3s ease;
-}
-
-#menu li a::after {
-  content: "";
-  position: absolute;
-  bottom: -6px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0%;
-  height: 2px;
-  background: cyan;
-  transition: width 0.3s ease;
-}
-
-#menu li a:hover {
-  color: cyan;
-}
-
-#menu li a:hover::after,
-#menu li a.active::after {
-  width: 100%;
-}
-
 /* ---------- PAGE HEADING ---------- */
 .pg-heading {
   text-align: center;
@@ -114,7 +28,6 @@ nav {
   text-transform: uppercase;
   transition: all 0.3s ease;
   box-shadow: 0 0 10px rgba(0,255,255,0.25);
-  text-shadow: 0 0 8px rgba(0,255,255,0.3);
 }
 
 .category-switch button.active {
@@ -129,24 +42,35 @@ nav {
   transform: scale(1.07);
 }
 
+/* Mobile: stack vertically */
+@media (max-width: 700px) {
+  .category-switch {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .category-switch button {
+    width: 80%;
+    max-width: 320px;
+    padding: 12px;
+  }
+}
+
 /* ---------- EVENT SECTIONS ---------- */
 .event-section {
-  display: none;
+  position: relative;
   opacity: 0;
   transform: translateY(20px);
-  transition: all 0.5s ease;
+  pointer-events: none;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  display: none;
 }
 
 .event-section.active {
   display: block;
   opacity: 1;
   transform: translateY(0);
-  animation: fadeIn 0.6s ease forwards;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+  pointer-events: auto;
 }
 
 /* ---------- EVENT GRID ---------- */
@@ -156,6 +80,21 @@ nav {
   gap: 50px;
   padding: 50px 80px;
   justify-items: center;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.event-section.active .event-grid {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Smooth fade-out for transitions */
+.event-section.fade-out .event-grid {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
 /* ---------- EVENT CARD ---------- */
@@ -169,27 +108,60 @@ nav {
   border: 1.5px solid cyan;
   background: rgba(0,0,0,0.6);
   box-shadow: 0 0 20px rgba(0,255,255,0.25);
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
   cursor: pointer;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: transform 0.4s ease, box-shadow 0.4s ease, opacity 0.4s ease, border-color 0.4s ease;
 }
 
+/* Animate cards in one by one */
+.event-section.active .event-card {
+  animation: cardFadeIn 0.6s ease forwards;
+}
+
+.event-section.active .event-card:nth-child(1) { animation-delay: 0.1s; }
+.event-section.active .event-card:nth-child(2) { animation-delay: 0.25s; }
+.event-section.active .event-card:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ---------- POP HOVER EFFECT ---------- */
 .event-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 30px rgba(0,255,255,0.5);
+  transform: translateY(-10px) scale(1.05);
+  box-shadow: 0 0 25px rgba(0,255,255,0.7), 0 0 40px rgba(0,255,255,0.4);
+  border-color: cyan;
+  animation: cardPop 0.6s ease forwards;
 }
 
-/* ---------- IMAGE & OVERLAY ---------- */
+@keyframes cardPop {
+  0% { transform: scale(1); }
+  50% { transform: translateY(-5px) scale(1.06); }
+  100% { transform: translateY(-10px) scale(1.05); }
+}
+
+/* ---------- IMAGE ---------- */
 .event-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: filter 0.4s ease;
+  transition: filter 0.4s ease, transform 0.4s ease;
 }
 
 .event-card:hover .event-img {
   filter: blur(4px) brightness(0.75);
+  transform: scale(1.1);
 }
 
+/* ---------- OVERLAY ---------- */
 .overlay {
   position: absolute;
   inset: 0;
@@ -201,44 +173,24 @@ nav {
   color: white;
   opacity: 0;
   backdrop-filter: blur(10px);
-  background: rgba(0, 0, 0, 0.5);
-  transition: opacity 0.4s ease, transform 0.4s ease;
-  transform: translateY(20px);
+  background: rgba(0, 0, 0, 0.55);
+  transition: opacity 0.4s ease, transform 0.4s ease, background 0.4s ease;
+  transform: translateY(20px) scale(0.95);
   padding: 20px;
   z-index: 2;
 }
 
 .event-card:hover .overlay {
   opacity: 1;
-  transform: translateY(0);
-}
-
-/* ---------- HIDE TITLE ON HOVER ---------- */
-.event-card:hover .event-title {
-  opacity: 0;
-  transform: translateY(15px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-/* ---------- OVERLAY TEXT ---------- */
-.overlay h3 {
-  color: cyan;
-  font-size: 1.3rem;
-  margin-bottom: 10px;
-  text-shadow: 0 0 10px cyan;
-}
-
-.overlay p {
-  font-size: 0.9rem;
-  color: #e0e0e0;
-  max-width: 280px;
-  margin-bottom: 20px;
+  transform: translateY(0) scale(1);
+  background: rgba(0, 0, 0, 0.7);
 }
 
 /* ---------- BUTTONS ---------- */
 .btn-group {
   display: flex;
   gap: 10px;
+  justify-content: center;
 }
 
 .btn {
@@ -255,6 +207,7 @@ nav {
 .btn:hover {
   background: cyan;
   color: black;
+  box-shadow: 0 0 15px cyan;
 }
 
 /* ---------- TITLE ---------- */
@@ -275,15 +228,7 @@ nav {
   .event-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-@media (max-width: 900px) {
-  .menu-toggle { display: block; }
-  #menu { display: none; flex-direction: column; align-items: center; width: 100%; background: rgba(0,0,0,0.9); top: 70px; left: 0; position: absolute; }
-  #menu.active { display: flex; }
+@media (max-width: 800px) {
   .event-grid { grid-template-columns: 1fr; padding: 30px 20px; }
+  .event-card { height: 260px; }
 }
-
-@media (max-width: 600px) {
-  .pg-heading { font-size: 2rem; }
-  .category-switch button { font-size: 1rem; padding: 10px 35px; }
-}
-
