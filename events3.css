@@ -1,4 +1,62 @@
-/* ---------- TABLET & LAPTOP ---------- */
+/* ---------- SECTION TOGGLE ANIMATION ---------- */
+.event-section {
+  display: none;
+  opacity: 0;
+  transform: translateY(15px);
+  transition: all 0.5s ease;
+}
+
+.event-section.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+  animation: fadeIn 0.6s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- SLIDE EFFECT (for Tech ↔ Cultural switch) ---------- */
+.event-section.slide-in {
+  animation: slideIn 0.6s ease forwards;
+}
+
+.event-section.slide-out {
+  animation: slideOut 0.6s ease forwards;
+  opacity: 0;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateX(50px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50px);
+    opacity: 0;
+  }
+}
+
+/* ---------- RESPONSIVE ADJUSTMENTS ---------- */
 @media (max-width: 1100px) {
   .event-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -6,8 +64,8 @@
   }
 }
 
-/* ---------- MOBILE VIEW ---------- */
 @media (max-width: 900px) {
+  /* Navigation for phones */
   nav {
     flex-direction: row;
     justify-content: space-between;
@@ -41,40 +99,46 @@
     display: flex;
   }
 
-  /* ✅ Keep Technopreneurship & Cultural side-by-side */
+  /* 🔹 Category Buttons (side-by-side & scrollable) */
   .category-switch {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: 20px;
-    flex-wrap: wrap;
+    gap: 18px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .category-switch::-webkit-scrollbar {
+    display: none;
   }
 
   .category-switch button {
-    padding: 12px 28px;
-    font-size: 1rem;
+    padding: 10px 24px;
+    font-size: 0.95rem;
     border-radius: 25px;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
-  /* Events grid: 1 per row for mobile */
+  /* 🔸 Cards */
   .event-grid {
     grid-template-columns: 1fr;
     padding: 30px 20px;
   }
 
-  /* 🔹 Make event title bar taller and more visible */
+  .event-card {
+    max-width: 90%;
+    aspect-ratio: 4 / 3;
+  }
+
   .event-title {
     font-size: 1.1rem;
     padding: 14px 0;
     background: rgba(0, 0, 0, 0.85);
     letter-spacing: 1px;
-  }
-
-  .event-card {
-    max-width: 90%;
-    height: auto;
-    aspect-ratio: 4 / 3;
   }
 
   footer {
@@ -83,19 +147,18 @@
   }
 }
 
-/* ---------- EXTRA SMALL DEVICES ---------- */
 @media (max-width: 600px) {
   .pg-heading {
     font-size: 1.6rem;
   }
 
   .category-switch {
-    gap: 15px;
+    gap: 12px;
   }
 
   .category-switch button {
-    font-size: 0.9rem;
-    padding: 10px 24px;
+    font-size: 0.85rem;
+    padding: 8px 18px;
   }
 
   .overlay h3 {
