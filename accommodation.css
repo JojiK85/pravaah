@@ -54,7 +54,6 @@ nav {
 #menu li a {
   color: #ddd;
   text-decoration: none;
-  position: relative;
   transition: color 0.3s ease;
 }
 
@@ -74,7 +73,7 @@ nav {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    background: rgba(0, 0, 0, 0.95);
+    background: rgba(0,0,0,0.95);
     position: absolute;
     top: 70px;
     left: 0;
@@ -88,7 +87,7 @@ nav {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 60px 10%;
+  padding: 80px 10%;
 }
 
 .accommodation-content {
@@ -97,7 +96,6 @@ nav {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 3rem;
-  text-align: left;
 }
 
 .accommodation-content h1 {
@@ -110,6 +108,7 @@ nav {
   font-size: 1.1rem;
   margin: 20px 0;
   color: #ddd;
+  line-height: 1.5;
 }
 
 .hero-buttons {
@@ -141,22 +140,20 @@ nav {
   box-shadow: 0 0 25px rgba(0,255,255,0.4);
 }
 
-/* 🧾 ACCOMMODATION CARDS (stacked & uniform) */
-/* 🧾 ACCOMMODATION CARDS — Wider & shorter on PC, stacked on mobile */
+/* 🧾 ACCOMMODATION CARDS — Wider, shorter, aligned */
 .accommodation-cards {
   display: flex;
   justify-content: center;
-  align-items: stretch;        /* Equal height for all */
-  flex-wrap: nowrap;           /* Keep them side by side */
+  align-items: stretch;
+  flex-wrap: nowrap;
   gap: 40px;
   padding: 60px 8%;
-  box-sizing: border-box;
 }
 
 .card {
-  flex: 1 1 400px;             /* Wider cards */
-  max-width: 420px;            /* Allow more horizontal room */
-  min-height: 300px;           /* Reduced height */
+  flex: 1 1 400px;
+  max-width: 420px;
+  min-height: 300px;
   background: rgba(0, 0, 0, 0.65);
   border-radius: 20px;
   border: 1px solid cyan;
@@ -167,6 +164,7 @@ nav {
   flex-direction: column;
   justify-content: flex-start;
   text-align: justify;
+  box-sizing: border-box;
 }
 
 .card:hover {
@@ -174,19 +172,18 @@ nav {
   box-shadow: 0 0 35px rgba(0,255,255,0.6);
 }
 
-/* Headings stay perfectly level */
+/* Aligned headings */
 .card h2 {
   color: cyan;
   font-size: 1.7rem;
   text-align: center;
   margin-bottom: 15px;
-  height: 45px;                /* Ensures all headings align horizontally */
+  height: 45px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Neatly aligned text */
 .card p {
   color: #ddd;
   line-height: 1.6;
@@ -196,27 +193,7 @@ nav {
   padding-left: 10px;
 }
 
-/* 📱 Responsive — stack vertically on smaller screens */
-@media (max-width: 900px) {
-  .accommodation-cards {
-    flex-direction: column;
-    align-items: center;
-    padding: 40px 6%;
-  }
-
-  .card {
-    width: 90%;
-    max-width: 600px;
-    min-height: auto;
-  }
-
-  .card h2 {
-    height: auto;
-  }
-}
-
-
-/* 📋 GUIDELINES SECTION */
+/* 📋 GUIDELINES SECTION — Same format as cards */
 .accommodation-guidelines {
   text-align: center;
   padding: 60px 8%;
@@ -232,11 +209,10 @@ nav {
 .rules-container {
   display: flex;
   justify-content: center;
-  align-items: stretch;       /* Equal height for both boxes */
+  align-items: stretch;
   flex-wrap: nowrap;
   gap: 40px;
   padding: 0 8%;
-  box-sizing: border-box;
 }
 
 .rule-card {
@@ -247,7 +223,7 @@ nav {
   border: 1px solid cyan;
   border-radius: 20px;
   box-shadow: 0 0 25px rgba(0,255,255,0.3);
-  padding: 35px 35px;
+  padding: 35px;
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
@@ -261,7 +237,6 @@ nav {
   box-shadow: 0 0 35px rgba(0,255,255,0.6);
 }
 
-/* Icon & heading alignment */
 .rule-card i {
   font-size: 2.2rem;
   color: cyan;
@@ -273,15 +248,14 @@ nav {
   font-size: 1.5rem;
   text-align: center;
   margin-bottom: 15px;
-  height: 40px;                 /* Keep both headings aligned */
+  height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* Text inside lists is justified and aligned */
 .rule-card ul {
-  list-style-type: none;
+  list-style: none;
   padding-left: 0;
   margin: 0;
   color: #ddd;
@@ -296,7 +270,6 @@ nav {
   padding-left: 12px;
 }
 
-/* Optional subtle cyan bullet style */
 .rule-card li::before {
   content: "•";
   color: cyan;
@@ -304,8 +277,49 @@ nav {
   left: 0;
 }
 
-/* 📱 Responsive — stack vertically on mobile */
+/* 🌐 RESPONSIVE DESIGN */
 @media (max-width: 900px) {
+  /* Hero section mobile fix */
+  .accommodation-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .accommodation-content .image img {
+    width: 100%;
+    max-width: 360px;
+    margin-top: 20px;
+  }
+
+  /* Buttons vertical on mobile */
+  .hero-buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .hero-buttons button {
+    width: 80%;
+  }
+
+  /* Accommodation cards stack */
+  .accommodation-cards {
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 6%;
+  }
+
+  .card {
+    width: 90%;
+    max-width: 600px;
+    min-height: auto;
+  }
+
+  .card h2 {
+    height: auto;
+  }
+
+  /* Guidelines stack */
   .rules-container {
     flex-direction: column;
     align-items: center;
