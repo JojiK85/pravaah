@@ -10,92 +10,106 @@ body {
   padding-top: 80px;
 }
 
-/* ---------- HEADING ---------- */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ---------- PAGE TITLE ---------- */
 .pg-heading {
   text-align: center;
-  margin-top: 120px;
+  margin-top: 110px;
   font-size: 2.8rem;
   color: cyan;
-  text-shadow: 0 0 10px rgba(0,255,255,0.6);
+  text-shadow: 0 0 12px rgba(0,255,255,0.6);
 }
 
 .pg-subtext {
   text-align: center;
   color: #bbb;
   margin-top: 10px;
-  margin-bottom: 60px;
+  margin-bottom: 40px;
   font-size: 1rem;
 }
 
 /* ---------- TEAM GRID ---------- */
 .team-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 60px 50px; /* increased spacing between rows & columns */
-  padding: 0 100px 100px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 70px 60px;
+  padding: 0 8% 100px;
   justify-items: center;
 }
 
 /* ---------- TEAM CARD ---------- */
 .team-card {
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.65);
   border: 1.5px solid cyan;
   border-radius: 20px;
   width: 100%;
-  max-width: 300px;
+  max-width: 460px;
   text-align: center;
-  padding: 30px 20px;
+  padding: 45px 35px;
   box-shadow: 0 0 25px rgba(0,255,255,0.15);
   transition: all 0.4s ease;
 }
 
 .team-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 0 35px rgba(0,255,255,0.5);
+  box-shadow: 0 0 40px rgba(0,255,255,0.6);
 }
 
 /* ---------- IMAGE ---------- */
 .team-card img {
-  width: 120px;
-  height: 120px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid cyan;
-  margin-bottom: 15px;
+  margin-bottom: 18px;
   transition: all 0.3s ease;
 }
 
 .team-card:hover img {
-  box-shadow: 0 0 15px cyan;
+  box-shadow: 0 0 18px cyan;
 }
 
 /* ---------- TEXT ---------- */
 .team-card h3 {
   color: cyan;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   margin-bottom: 8px;
 }
 
 .team-card p {
   color: #ccc;
-  font-size: 0.9rem;
-  margin: 4px 0;
+  font-size: 1rem;
+  margin: 5px 0;
+  text-align: justify;
 }
 
-/* ---------- BUTTONS ---------- */
+/* ---------- BUTTONS (FIXED SIDE BY SIDE) ---------- */
 .card-actions {
-  margin-top: 18px;
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px; /* spacing between Email & Call */
+  flex-wrap: nowrap; /* prevents wrapping to next line */
 }
 
 .card-actions a {
   display: inline-block;
-  margin: 0 10px;
-  padding: 8px 18px;
+  min-width: 100px; /* keeps both buttons same width */
+  text-align: center;
+  padding: 10px 20px;
   border: 1.5px solid cyan;
   border-radius: 25px;
   color: cyan;
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 1rem;
+  font-weight: 500;
   transition: all 0.3s ease;
 }
 
@@ -105,30 +119,69 @@ body {
   transform: scale(1.08);
 }
 
-/* ---------- RESPONSIVE ---------- */
-@media (max-width: 1300px) {
-  .team-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 50px;
-    padding: 0 80px 80px;
-  }
-}
-
-@media (max-width: 950px) {
+/* ---------- TABLET VIEW ---------- */
+@media (max-width: 1200px) {
   .team-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 40px;
-    padding: 0 60px 80px;
-  }
-}
-
-@media (max-width: 650px) {
-  .team-grid {
-    grid-template-columns: 1fr;
-    padding: 0 40px 60px;
+    gap: 60px;
+    padding: 0 8% 80px;
   }
 
   .team-card {
-    max-width: 320px;
+    max-width: 420px;
+  }
+}
+
+/* ---------- 📱 MOBILE VIEW ---------- */
+@media (max-width: 650px) {
+  .pg-heading {
+    font-size: 2.2rem;
+    margin-top: 100px;
+  }
+
+  .pg-subtext {
+    font-size: 0.95rem;
+    margin-bottom: 25px;
+  }
+
+  /* Stack all team cards vertically */
+  .team-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 8% 60px;
+    gap: 35px;
+  }
+
+  .team-card {
+    width: 95%;
+    max-width: 480px;
+    padding: 35px 25px;
+    box-shadow: 0 0 30px rgba(0,255,255,0.25);
+  }
+
+  .team-card img {
+    width: 130px;
+    height: 130px;
+  }
+
+  .team-card h3 {
+    font-size: 1.35rem;
+  }
+
+  .team-card p {
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .card-actions {
+    gap: 15px;
+    flex-wrap: nowrap; /* ensures buttons stay side by side */
+  }
+
+  .card-actions a {
+    font-size: 0.9rem;
+    padding: 8px 22px;
+    min-width: 90px;
   }
 }
