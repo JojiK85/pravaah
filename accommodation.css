@@ -96,6 +96,7 @@ nav {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 3rem;
+  text-align: left;
 }
 
 .accommodation-content h1 {
@@ -108,12 +109,13 @@ nav {
   font-size: 1.1rem;
   margin: 20px 0;
   color: #ddd;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .hero-buttons {
   display: flex;
   gap: 20px;
+  flex-wrap: wrap;
 }
 
 .hero-buttons button {
@@ -140,7 +142,7 @@ nav {
   box-shadow: 0 0 25px rgba(0,255,255,0.4);
 }
 
-/* 🧾 ACCOMMODATION CARDS — Wider, shorter, aligned */
+/* 🧾 ACCOMMODATION CARDS (PC: Side-by-side, Mobile: Vertical) */
 .accommodation-cards {
   display: flex;
   justify-content: center;
@@ -164,7 +166,6 @@ nav {
   flex-direction: column;
   justify-content: flex-start;
   text-align: justify;
-  box-sizing: border-box;
 }
 
 .card:hover {
@@ -172,28 +173,21 @@ nav {
   box-shadow: 0 0 35px rgba(0,255,255,0.6);
 }
 
-/* Aligned headings */
 .card h2 {
   color: cyan;
-  font-size: 1.7rem;
   text-align: center;
+  font-size: 1.6rem;
   margin-bottom: 15px;
-  height: 45px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .card p {
   color: #ddd;
-  line-height: 1.6;
   font-size: 1.05rem;
-  text-align: justify;
+  line-height: 1.6;
   margin: 8px 0;
-  padding-left: 10px;
 }
 
-/* 📋 GUIDELINES SECTION — Same format as cards */
+/* 📋 GUIDELINES SECTION (Same look as cards) */
 .accommodation-guidelines {
   text-align: center;
   padding: 60px 8%;
@@ -229,7 +223,6 @@ nav {
   flex-direction: column;
   justify-content: flex-start;
   text-align: justify;
-  box-sizing: border-box;
 }
 
 .rule-card:hover {
@@ -248,10 +241,6 @@ nav {
   font-size: 1.5rem;
   text-align: center;
   margin-bottom: 15px;
-  height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .rule-card ul {
@@ -277,21 +266,21 @@ nav {
   left: 0;
 }
 
-/* 🌐 RESPONSIVE DESIGN */
+/* 🌐 RESPONSIVE DESIGN (MOBILE) */
 @media (max-width: 900px) {
-  /* Hero section mobile fix */
+  /* HERO SECTION — Stack text & image */
   .accommodation-content {
     flex-direction: column;
     text-align: center;
   }
 
   .accommodation-content .image img {
-    width: 100%;
-    max-width: 360px;
-    margin-top: 20px;
+    width: 90%;
+    max-width: 380px;
+    margin-top: 15px;
   }
 
-  /* Buttons vertical on mobile */
+  /* HERO BUTTONS — Stack vertically */
   .hero-buttons {
     flex-direction: column;
     align-items: center;
@@ -300,9 +289,10 @@ nav {
 
   .hero-buttons button {
     width: 80%;
+    max-width: 260px;
   }
 
-  /* Accommodation cards stack */
+  /* ACCOMMODATION CARDS — Stack vertically */
   .accommodation-cards {
     flex-direction: column;
     align-items: center;
@@ -315,11 +305,7 @@ nav {
     min-height: auto;
   }
 
-  .card h2 {
-    height: auto;
-  }
-
-  /* Guidelines stack */
+  /* GUIDELINES SECTION — Stack vertically */
   .rules-container {
     flex-direction: column;
     align-items: center;
@@ -333,7 +319,7 @@ nav {
     min-height: auto;
   }
 
-  .rule-card h3 {
-    height: auto;
+  .accommodation-guidelines h2 {
+    font-size: 1.8rem;
   }
 }
