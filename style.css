@@ -1020,9 +1020,6 @@ footer {
     padding: 0;
   }
 
-  .slider-track {
-    animation: scrollLoop 10s linear infinite; /* 💨 faster speed */
-  }
 
   .slide {
     width: 65%;          /* narrower width */
