@@ -136,3 +136,8 @@ themeBtn.addEventListener("click", () => {
   aftermovieBtn.classList.remove("active");
   mainVideo.play();
 });
+
+// 📱 Mobile Navbar Toggle
+document.getElementById('mobileMenu').addEventListener('click', () => {
+  document.getElementById('menu').classList.toggle('active');
+});
