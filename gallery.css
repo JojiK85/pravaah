@@ -1,6 +1,3 @@
-/* gallery.css */
-/* 🖼️ PRAVAAH — Gallery Styling */
-
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
 
 body {
@@ -22,29 +19,25 @@ body {
 /* ---------- HEADER ---------- */
 .gallery-header {
   text-align: center;
-  margin: 60px auto 40px;
-  padding: 0 10%;
+  margin-bottom: 40px;
+  padding: 40px 10%;
 }
 
 .gallery-header h1 {
   font-size: 3rem;
   color: cyan;
-  text-shadow: 0 0 15px rgba(0,255,255,0.6);
-  margin-bottom: 10px;
+  text-shadow: 0 0 15px cyan;
 }
 
 .gallery-header p {
-  color: #bbb;
+  color: #ccc;
   font-size: 1.1rem;
-  line-height: 1.6;
-  text-align: justify;
-  max-width: 800px;
-  margin: auto;
+  margin-top: 10px;
 }
 
 /* ---------- GALLERY GRID ---------- */
 .gallery-container {
-  padding: 40px 7%;
+  padding: 50px 7%;
 }
 
 .gallery-grid {
@@ -57,44 +50,40 @@ body {
 /* ---------- IMAGE CARD ---------- */
 .gallery-item {
   width: 100%;
+  aspect-ratio: 16 / 10;
   background: rgba(0,0,0,0.6);
   border: 1px solid cyan;
-  border-radius: 12px;
+  border-radius: 15px;
   overflow: hidden;
   box-shadow: 0 0 20px rgba(0,255,255,0.3);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  aspect-ratio: 16 / 10;
-  position: relative;
 }
 
 .gallery-item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
-  display: block;
   transition: transform 0.3s ease;
 }
 
 .gallery-item:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 25px rgba(0,255,255,0.6);
+  box-shadow: 0 0 30px cyan;
 }
 
 .gallery-item:hover img {
-  transform: scale(1.08);
+  transform: scale(1.1);
 }
 
 /* ---------- LIGHTBOX ---------- */
 .lightbox {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.92);
+  background: rgba(0,0,0,0.9);
   display: none;
   justify-content: center;
   align-items: center;
-  z-index: 10000;
-  backdrop-filter: blur(4px);
+  z-index: 1000;
 }
 
 .lightbox img {
@@ -103,22 +92,15 @@ body {
   border: 2px solid cyan;
   border-radius: 10px;
   box-shadow: 0 0 25px cyan;
-  transition: transform 0.3s ease;
 }
 
-.lightbox img:hover {
-  transform: scale(1.02);
-}
-
-/* ---------- LIGHTBOX CONTROLS ---------- */
 .lightbox-controls {
   position: absolute;
   top: 25px;
   right: 40px;
   display: flex;
-  align-items: center;
   gap: 20px;
-  z-index: 10001;
+  align-items: center;
 }
 
 .close-btn, .download-btn {
@@ -127,78 +109,73 @@ body {
   color: cyan;
   font-size: 1.8rem;
   cursor: pointer;
-  transition: transform 0.25s ease, color 0.25s ease, text-shadow 0.25s ease;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .close-btn:hover, .download-btn:hover {
   color: white;
-  text-shadow: 0 0 10px cyan;
   transform: scale(1.2);
 }
 
-/* ---------- RESPONSIVE DESIGN ---------- */
+/* ---------- RESPONSIVE ---------- */
 @media (max-width: 1200px) {
-  .gallery-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
+  .gallery-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
 @media (max-width: 900px) {
-  .gallery-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  .gallery-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
-/* 📱 MOBILE VIEW — Two per row with perfect spacing */
 @media (max-width: 600px) {
-  .gallery-header {
-    margin: 40px auto 30px;
-    padding: 0 8%;
+  .gallery-grid { 
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
 
   .gallery-header h1 {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
 
   .gallery-header p {
-    font-size: 0.95rem;
-    line-height: 1.5;
-    text-align: justify;
-    margin: 10px auto;
+    font-size: 1rem;
   }
+}
 
-  .gallery-container {
-    padding: 30px 5%;
-  }
+/* ---------- NAVBAR MOBILE FIX ---------- */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: cyan;
+  font-size: 2rem;
+  cursor: pointer;
+}
 
-  .gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 18px;
-    justify-items: center;
-  }
+@media (max-width: 900px) {
+  .menu-toggle { display: block; }
 
-  .gallery-item {
+  #menu {
+    display: none;
+    flex-direction: column;
     width: 100%;
-    border-radius: 10px;
-    aspect-ratio: 4 / 3; /* slightly taller for mobile */
-    box-shadow: 0 0 15px rgba(0,255,255,0.25);
+    background: rgba(0, 0, 0, 0.95);
+    position: absolute;
+    top: 70px;
+    left: 0;
+    padding: 20px 0;
+    gap: 20px;
+    z-index: 1000;
   }
 
-  .gallery-item:hover {
-    transform: scale(1.03);
+  #menu.active { display: flex; }
+
+  #menu li a {
+    font-size: 1rem;
+    color: #ddd;
+    text-decoration: none;
   }
 
-  .lightbox img {
-    max-width: 95%;
-    max-height: 75%;
-  }
-
-  .lightbox-controls {
-    top: 15px;
-    right: 20px;
-  }
-
-  .close-btn, .download-btn {
-    font-size: 1.5rem;
+  #menu li a:hover {
+    color: cyan;
   }
 }
