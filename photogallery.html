@@ -7,18 +7,19 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="gallery.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
 
   <!-- 🔹 NAVBAR -->
   <nav>
     <div class="logo">PRAVAAH</div>
-    <div class="menu-toggle" id="menuToggle">&#9776;</div>
+    <button class="menu-toggle" id="mobile-menu" aria-label="Toggle navigation" aria-expanded="false">
+      <i class="fas fa-bars" aria-hidden="true"></i>
+    </button>
     <ul id="menu">
       <li><a href="index.html">Home</a></li>
       <li><a href="events.html">Events</a></li>
-      <li><a href="accommodation.html" >Accommodation</a></li>
+      <li><a href="accommodation.html">Accommodation</a></li>
       <li><a href="photogallery.html" class="active">Gallery</a></li>
       <li><a href="registrationPravaah.html">Register</a></li>
       <li><a href="contact_us.html">Contact Us</a></li>
@@ -35,24 +36,16 @@
   <!-- 📸 GALLERY GRID -->
   <section class="gallery-container">
     <div class="gallery-grid">
+      <!-- Example Images -->
       <div class="gallery-item"><img src="DSC09133.JPG" alt=""></div>
       <div class="gallery-item"><img src="DSC09133.JPG" alt=""></div>
       <div class="gallery-item"><img src="DSC09133.JPG" alt=""></div>
       <div class="gallery-item"><img src="DSC09133.JPG" alt=""></div>
       <div class="gallery-item"><img src="DSC09133.JPG" alt=""></div>
-
       <div class="gallery-item"><img src="DSC09133.JPG" alt=""></div>
       <div class="gallery-item"><img src="DSC09133.JPG" alt=""></div>
       <div class="gallery-item"><img src="DSC09133.JPG" alt=""></div>
       <div class="gallery-item"><img src="DSC09133.JPG" alt=""></div>
-      <div class="gallery-item"><img src="DSC09133.JPG" alt=""></div>
-
-      <div class="gallery-item"><img src="DSC09133.JPG" alt=""></div>
-      <div class="gallery-item"><img src="DSC09133.JPG" alt=""></div>
-      <div class="gallery-item"><img src="DSC09133.JPG" alt=""></div>
-      <div class="gallery-item"><img src="DSC09133.JPG" alt=""></div>
-      <div class="gallery-item"><img src="DSC09133.JPG" alt=""></div>
-
       <div class="gallery-item"><img src="DSC09133.JPG" alt=""></div>
       <div class="gallery-item"><img src="DSC09133.JPG" alt=""></div>
       <div class="gallery-item"><img src="DSC09133.JPG" alt=""></div>
@@ -60,14 +53,13 @@
   </section>
 
   <!-- 🔍 LIGHTBOX POPUP -->
-<div id="lightbox" class="lightbox">
-  <div class="lightbox-controls">
-    <button class="download-btn"><i class="fas fa-download"></i></button>
-    <span class="close-btn">&times;</span>
+  <div id="lightbox" class="lightbox">
+    <div class="lightbox-controls">
+      <button class="download-btn"><i class="fas fa-download"></i></button>
+      <span class="close-btn">&times;</span>
+    </div>
+    <img id="lightbox-img" src="" alt="Full Image">
   </div>
-  <img id="lightbox-img" src="" alt="Full Image">
-</div>
-
 
   <!-- ⚫ FOOTER -->
   <footer>
@@ -75,7 +67,6 @@
       <div class="footer-left">
         <img src="pravah-logo.png" alt="PRAVAAH Logo" class="footer-logo">
         <a href="registrationPravaah.html" class="register-btn">Register Now</a>
-
       </div>
 
       <div class="footer-links">
@@ -103,6 +94,7 @@
         </div>
       </div>
     </div>
+
     <div class="footer-social">
       <a href="#"><i class="fab fa-instagram"></i></a>
       <a href="#"><i class="fab fa-linkedin-in"></i></a>
@@ -113,7 +105,7 @@
       <p>@PRAVAAH'26 IIT BHUBANESWAR | MADE WITH 💜 BY WEB TEAM | All Rights Reserved</p>
     </div>
   </footer>
-  
+
   <script src="gallery.js"></script>
 </body>
 </html>
