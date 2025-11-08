@@ -1,93 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+/* accommodation.css */
+/* 🏨 PRAVAAH — Accommodation Page Specific Styling */
 
-/* 🌌 GLOBAL STYLES */
-body {
-  font-family: 'Orbitron', sans-serif;
-  background: linear-gradient(120deg, #2c1a55, #3e5d75, #022c43, #5b2a86);
-  background-size: 400% 400%;
-  animation: gradientMove 15s ease infinite;
-  color: white;
-  margin: 0;
-  padding-top: 80px;
-}
-
-@keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* 🧭 NAVBAR */
-nav {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 60px;
-  background: linear-gradient(to right, #0b141a, #15232e);
-  position: fixed;
-  top: 0;
-  left: 0;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  z-index: 1000;
-}
-
-.logo {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: white;
-}
-
-.menu-toggle {
-  display: none;
-  color: cyan;
-  font-size: 2rem;
-  cursor: pointer;
-}
-
-#menu {
-  list-style: none;
-  display: flex;
-  gap: 35px;
-}
-
-#menu li a {
-  color: #ddd;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-#menu li a:hover {
-  color: cyan;
-}
-
-#menu li a.active {
-  color: cyan;
-}
-
-/* 📱 Responsive Navbar */
-@media (max-width: 900px) {
-  .menu-toggle { display: block; }
-  #menu {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    background: rgba(0,0,0,0.95);
-    position: absolute;
-    top: 70px;
-    left: 0;
-    padding: 20px 0;
-  }
-  #menu.active { display: flex; }
-}
-
-/* 🏨 HERO SECTION */
 .accommodation-hero {
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 80px 10%;
+  flex-wrap: wrap;
+  gap: 3rem;
 }
 
 .accommodation-content {
@@ -142,7 +62,7 @@ nav {
   box-shadow: 0 0 25px rgba(0,255,255,0.4);
 }
 
-/* 🧾 ACCOMMODATION CARDS (PC: Side-by-side, Mobile: Vertical) */
+/* 🧾 ACCOMMODATION CARDS */
 .accommodation-cards {
   display: flex;
   justify-content: center;
@@ -187,7 +107,7 @@ nav {
   margin: 8px 0;
 }
 
-/* 📋 GUIDELINES SECTION (Same look as cards) */
+/* 📋 GUIDELINES SECTION */
 .accommodation-guidelines {
   text-align: center;
   padding: 60px 8%;
@@ -266,21 +186,38 @@ nav {
   left: 0;
 }
 
-/* 🌐 RESPONSIVE DESIGN (MOBILE) */
+/* 🌐 RESPONSIVE DESIGN */
 @media (max-width: 900px) {
-  /* HERO SECTION — Stack text & image */
+  /* HERO SECTION — stack content neatly */
+  .accommodation-hero {
+    flex-direction: column;
+    text-align: center;
+    padding: 60px 5% 40px;
+  }
+
   .accommodation-content {
     flex-direction: column;
     text-align: center;
+    gap: 1.5rem;
+  }
+
+  .accommodation-content h1 {
+    font-size: 2.5rem;
+  }
+
+  .accommodation-content p {
+    font-size: 1rem;
+    margin: 10px auto;
+    line-height: 1.5;
   }
 
   .accommodation-content .image img {
-    width: 90%;
+    width: 95%;
     max-width: 380px;
     margin-top: 15px;
   }
 
-  /* HERO BUTTONS — Stack vertically */
+  /* Buttons — stacked vertically */
   .hero-buttons {
     flex-direction: column;
     align-items: center;
@@ -288,38 +225,40 @@ nav {
   }
 
   .hero-buttons button {
-    width: 80%;
-    max-width: 260px;
+    width: 85%;
+    max-width: 300px;
   }
 
-  /* ACCOMMODATION CARDS — Stack vertically */
+  /* Accommodation Cards */
   .accommodation-cards {
     flex-direction: column;
     align-items: center;
-    padding: 40px 6%;
+    gap: 25px;
+    padding: 40px 5%;
   }
 
   .card {
-    width: 90%;
+    width: 100%;
     max-width: 600px;
-    min-height: auto;
+    padding: 25px;
   }
 
-  /* GUIDELINES SECTION — Stack vertically */
+  /* Guidelines */
   .rules-container {
     flex-direction: column;
     align-items: center;
-    gap: 40px;
-    padding: 0 5%;
+    gap: 25px;
+    padding: 40px 5%;
   }
 
   .rule-card {
-    width: 90%;
+    width: 100%;
     max-width: 600px;
-    min-height: auto;
+    padding: 25px;
   }
 
   .accommodation-guidelines h2 {
     font-size: 1.8rem;
+    margin-bottom: 25px;
   }
 }
