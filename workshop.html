@@ -14,11 +14,13 @@
   <link rel="stylesheet" href="workshop.css" /> <!-- This Page -->
   <link rel="shortcut icon" href="pravaah.. Logo.png" type="image/png" />
 </head>
+
 <body>
 
   <!-- 🔹 NAVBAR -->
   <nav>
     <div class="logo">PRAVAAH</div>
+    <div class="menu-toggle" id="menuToggle">&#9776;</div>
     <ul id="menu">
       <li><a href="index.html">Home</a></li>
       <li><a href="events.html">Events</a></li>
@@ -114,6 +116,7 @@
         </div>
       </div>
     </div>
+
     <div class="footer-social">
       <a href="#"><i class="fab fa-instagram"></i></a>
       <a href="#"><i class="fab fa-linkedin-in"></i></a>
@@ -124,6 +127,30 @@
       <p>@PRAVAAH'26 IIT BHUBANESWAR | MADE WITH 💜 BY WEB TEAM | All Rights Reserved</p>
     </div>
   </footer>
-  
+
+  <!-- 🔸 NAVBAR TOGGLE SCRIPT -->
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const menu = document.getElementById('menu');
+
+    // Toggle menu visibility
+    menuToggle.addEventListener('click', (event) => {
+      event.stopPropagation();
+      menu.classList.toggle('active');
+    });
+
+    // Close menu when clicking a link
+    document.querySelectorAll('#menu a').forEach(link => {
+      link.addEventListener('click', () => menu.classList.remove('active'));
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (event) => {
+      if (!menu.contains(event.target) && !menuToggle.contains(event.target)) {
+        menu.classList.remove('active');
+      }
+    });
+  </script>
+
 </body>
 </html>
