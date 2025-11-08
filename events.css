@@ -43,18 +43,35 @@
 }
 
 /* Mobile: stack vertically */
-@media (max-width: 700px) {
+/* ---------- CATEGORY SWITCH (Desktop Default: Side-by-Side) ---------- */
+.category-switch {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  margin: 40px 0;
+  flex-wrap: wrap;
+}
+
+/* ---------- MOBILE VERSION (Stacked Vertically) ---------- */
+@media (max-width: 900px) {
   .category-switch {
-    flex-direction: column;
-    gap: 15px;
+    flex-direction: column;       /* stack buttons */
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin: 30px 0 40px 0;
   }
 
   .category-switch button {
-    width: 80%;
-    max-width: 320px;
-    padding: 12px;
+    width: 85%;
+    max-width: 350px;
+    padding: 14px 0;
+    font-size: 1.1rem;
+    border-radius: 50px;
   }
 }
+
 
 /* ---------- EVENT SECTIONS ---------- */
 .event-section {
