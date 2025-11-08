@@ -81,7 +81,7 @@ body {
   box-shadow: 0 0 25px rgba(0,255,255,0.4);
 }
 
-/* 🧾 ACCOMMODATION CARDS — UNIFORM SIZE */
+/* 🧾 ACCOMMODATION CARDS */
 .accommodation-cards {
   display: flex;
   justify-content: center;
@@ -93,14 +93,13 @@ body {
 
 .card {
   flex: 1 1 400px;
-  width: 100%;
   max-width: 420px;
-  min-height: 380px; /* ⬆ increased height for PC */
+  height: 500px; /* ⬆️ Increased from 420px */
   background: rgba(0, 0, 0, 0.65);
   border-radius: 20px;
   border: 1px solid cyan;
   box-shadow: 0 0 25px rgba(0,255,255,0.3);
-  padding: 35px 35px;
+  padding: 35px;
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
@@ -152,9 +151,8 @@ body {
 
 .rule-card {
   flex: 1 1 400px;
-  width: 100%;
   max-width: 420px;
-  min-height: 380px; /* ⬆ same height as .card */
+  height: 500px; /* ⬆️ Increased from 420px */
   background: rgba(0, 0, 0, 0.65);
   border: 1px solid cyan;
   border-radius: 20px;
@@ -211,7 +209,6 @@ body {
 
 /* 🌐 RESPONSIVE DESIGN (MOBILE) */
 @media (max-width: 900px) {
-  /* HERO SECTION */
   .accommodation-hero {
     flex-direction: column;
     text-align: center;
@@ -243,7 +240,7 @@ body {
     margin-top: 15px;
   }
 
-  /* Buttons — stack vertically */
+  /* Buttons vertically stacked */
   .hero-buttons {
     flex-direction: column;
     align-items: center;
@@ -256,18 +253,20 @@ body {
     font-size: 0.9rem;
   }
 
-  /* ACCOMMODATION CARDS — uniform size */
-  .accommodation-cards {
+  /* Cards stacked vertically — uniform size */
+  .accommodation-cards,
+  .rules-container {
     flex-direction: column;
     align-items: center;
     gap: 25px;
     padding: 30px 5%;
   }
 
-  .card {
+  .card,
+  .rule-card {
     width: 95%;
     max-width: 600px;
-    min-height: 450px; /* ⬆ taller for mobile */
+    height: 560px; /* ⬆️ Increased from 480px */
     padding: 30px 22px;
     font-size: 0.95rem;
     text-align: justify;
@@ -275,52 +274,13 @@ body {
     overflow-wrap: break-word;
   }
 
-  .card h2 {
+  .card h2,
+  .rule-card h3 {
     font-size: 1.4rem;
     margin-bottom: 10px;
   }
 
-  .card p {
-    font-size: 0.95rem;
-    line-height: 1.5;
-    margin: 8px 0;
-  }
-
-  /* GUIDELINES — same layout */
-  .accommodation-guidelines {
-    padding: 50px 5%;
-  }
-
-  .accommodation-guidelines h2 {
-    font-size: 1.6rem;
-    margin-bottom: 25px;
-  }
-
-  .rules-container {
-    flex-direction: column;
-    align-items: center;
-    gap: 25px;
-  }
-
-  .rule-card {
-    width: 95%;
-    max-width: 600px;
-    min-height: 450px; /* ⬆ same as .card */
-    padding: 30px 22px;
-    font-size: 0.95rem;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    text-align: justify;
-  }
-
-  .rule-card h3 {
-    font-size: 1.3rem;
-  }
-
-  .rule-card ul {
-    padding-left: 5px;
-  }
-
+  .card p,
   .rule-card li {
     font-size: 0.95rem;
     line-height: 1.5;
