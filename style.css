@@ -852,67 +852,154 @@ footer {
   }
 }
 
-/* 📱 MOBILE MENU FIX */
-.menu-toggle {
-  display: none;
-  color: cyan;
-  font-size: 1.8rem;
-  cursor: pointer;
-}
-
-/* For Mobile Screens */
+/* 📱 MOBILE OPTIMIZATION */
 @media (max-width: 900px) {
+
+  /* NAVBAR */
+  nav {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px 25px;
+  }
+
+  .logo {
+    font-size: 1.4rem;
+  }
+
   .menu-toggle {
     display: block;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: cyan;
   }
 
   #menu {
     display: none;
+    position: absolute;
+    top: 70px;
+    left: 0;
+    width: 100%;
     flex-direction: column;
     align-items: center;
-    width: 100%;
-    background: rgba(0,0,0,0.85);
+    gap: 15px;
+    background: rgba(0, 0, 0, 0.92);
+    padding: 20px 0;
     border-top: 1px solid cyan;
-    padding: 15px 0;
-    gap: 20px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+    z-index: 999;
   }
 
   #menu.active {
     display: flex;
   }
 
-  /* Calendar responsive */
+  #menu li a {
+    font-size: 1rem;
+    padding: 10px;
+  }
+
+  /* CALENDAR + FEED */
   .container {
     flex-direction: column;
     width: 95%;
     height: auto;
+    margin: 0 auto;
+    border-radius: 20px;
+    overflow: hidden;
   }
 
   .calendar-container,
   .feed-container {
     width: 100%;
+    border: none;
+    padding: 20px;
   }
 
-  .calendar-grid .day {
+  .calendar-grid {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+  }
+
+  .day {
     width: 100%;
-    max-width: 45px;
     height: 45px;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
   }
 
   .days-of-week {
     font-size: 0.85rem;
   }
 
-  .feed-title {
-    font-size: 1.2rem;
-  }
-
   .calendar-title {
     font-size: 1.8rem;
+    margin-top: 4rem;
   }
 
+  /* HIGHLIGHTS */
   .highlights {
     margin-top: 3rem;
+    padding: 0 10px;
+  }
+
+  .slide {
+    width: 85%;
+    height: 180px;
+    margin: 0 auto;
+  }
+
+  /* AFTERMOVIE */
+  .aftermovie-section h2 {
+    font-size: 2rem;
+  }
+
+  .aftermovie {
+    width: 95%;
+    height: 55vh;
+  }
+
+  .video-switch {
+    gap: 20px;
+  }
+
+  /* SOCIAL SECTION */
+  .social-section {
+    width: 95%;
+    margin-top: 4rem;
+  }
+
+  .social-cards {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .social-card {
+    width: 100%;
+    height: 180px;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 2rem 1rem;
+  }
+
+  .footer-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .footer-links {
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .footer-social {
+    gap: 1.5rem;
+  }
+
+  .footer-bottom p {
+    font-size: 0.8rem;
   }
 }
