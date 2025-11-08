@@ -1,6 +1,25 @@
 /* accommodation.css */
-/* 🏨 PRAVAAH — Accommodation Page Specific Styling */
+/* 🏨 PRAVAAH — Accommodation Page Styling */
 
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+
+body {
+  font-family: 'Orbitron', sans-serif;
+  background: linear-gradient(120deg, #2c1a55, #3e5d75, #022c43, #5b2a86);
+  background-size: 400% 400%;
+  animation: gradientMove 15s ease infinite;
+  color: white;
+  margin: 0;
+  padding-top: 80px;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 🏠 HERO SECTION */
 .accommodation-hero {
   display: flex;
   justify-content: center;
@@ -8,6 +27,7 @@
   padding: 80px 10%;
   flex-wrap: wrap;
   gap: 3rem;
+  text-align: left;
 }
 
 .accommodation-content {
@@ -16,7 +36,6 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 3rem;
-  text-align: left;
 }
 
 .accommodation-content h1 {
@@ -62,7 +81,7 @@
   box-shadow: 0 0 25px rgba(0,255,255,0.4);
 }
 
-/* 🧾 ACCOMMODATION CARDS */
+/* 🧾 ACCOMMODATION CARDS — UNIFORM SIZE */
 .accommodation-cards {
   display: flex;
   justify-content: center;
@@ -74,18 +93,20 @@
 
 .card {
   flex: 1 1 400px;
+  width: 100%;
   max-width: 420px;
-  min-height: 300px;
+  min-height: 380px; /* ⬆ increased height for PC */
   background: rgba(0, 0, 0, 0.65);
   border-radius: 20px;
   border: 1px solid cyan;
   box-shadow: 0 0 25px rgba(0,255,255,0.3);
-  padding: 30px 35px;
+  padding: 35px 35px;
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   text-align: justify;
+  box-sizing: border-box;
 }
 
 .card:hover {
@@ -131,8 +152,9 @@
 
 .rule-card {
   flex: 1 1 400px;
+  width: 100%;
   max-width: 420px;
-  min-height: 300px;
+  min-height: 380px; /* ⬆ same height as .card */
   background: rgba(0, 0, 0, 0.65);
   border: 1px solid cyan;
   border-radius: 20px;
@@ -143,6 +165,7 @@
   flex-direction: column;
   justify-content: flex-start;
   text-align: justify;
+  box-sizing: border-box;
 }
 
 .rule-card:hover {
@@ -186,9 +209,9 @@
   left: 0;
 }
 
-/* 🌐 RESPONSIVE DESIGN */
+/* 🌐 RESPONSIVE DESIGN (MOBILE) */
 @media (max-width: 900px) {
-  /* HERO SECTION — Stack neatly */
+  /* HERO SECTION */
   .accommodation-hero {
     flex-direction: column;
     text-align: center;
@@ -220,7 +243,7 @@
     margin-top: 15px;
   }
 
-  /* Buttons — stack centered */
+  /* Buttons — stack vertically */
   .hero-buttons {
     flex-direction: column;
     align-items: center;
@@ -233,7 +256,7 @@
     font-size: 0.9rem;
   }
 
-  /* ACCOMMODATION CARDS */
+  /* ACCOMMODATION CARDS — uniform size */
   .accommodation-cards {
     flex-direction: column;
     align-items: center;
@@ -244,11 +267,12 @@
   .card {
     width: 95%;
     max-width: 600px;
-    padding: 25px 20px;
-    font-size: 0.9rem;
+    min-height: 450px; /* ⬆ taller for mobile */
+    padding: 30px 22px;
+    font-size: 0.95rem;
+    text-align: justify;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    text-align: justify;
   }
 
   .card h2 {
@@ -260,10 +284,9 @@
     font-size: 0.95rem;
     line-height: 1.5;
     margin: 8px 0;
-    word-wrap: break-word;
   }
 
-  /* GUIDELINES SECTION */
+  /* GUIDELINES — same layout */
   .accommodation-guidelines {
     padding: 50px 5%;
   }
@@ -282,8 +305,9 @@
   .rule-card {
     width: 95%;
     max-width: 600px;
-    padding: 25px 20px;
-    font-size: 0.9rem;
+    min-height: 450px; /* ⬆ same as .card */
+    padding: 30px 22px;
+    font-size: 0.95rem;
     word-wrap: break-word;
     overflow-wrap: break-word;
     text-align: justify;
@@ -302,69 +326,3 @@
     line-height: 1.5;
   }
 }
-/* 🌐 MOBILE BOX ALIGNMENT FIX — Equal Height for Pricing / Guidelines / Do's & Don'ts */
-@media (max-width: 900px) {
-  /* Make all cards and rule cards the same height */
-  .card,
-  .rule-card {
-    width: 92%;
-    max-width: 600px;
-    min-height: 420px; /* 🔹 Increased height for better readability */
-    padding: 28px 25px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    text-align: justify;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    box-sizing: border-box;
-  }
-
-  /* Headings */
-  .card h2,
-  .rule-card h3 {
-    font-size: 1.4rem;
-    margin-bottom: 15px;
-    text-align: center;
-    height: 40px; /* 🔹 Keeps all heading levels uniform */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* Text inside cards */
-  .card p,
-  .rule-card li {
-    font-size: 1rem;
-    line-height: 1.6;
-    margin: 6px 0;
-  }
-
-  /* Lists in rule-card */
-  .rule-card ul {
-    padding-left: 10px;
-    list-style: none;
-  }
-
-  .rule-card li::before {
-    content: "•";
-    color: cyan;
-    position: absolute;
-    left: 0;
-  }
-
-  /* Keep spacing even between sections */
-  .accommodation-cards,
-  .rules-container {
-    flex-direction: column;
-    align-items: center;
-    gap: 30px;
-    padding: 45px 5%;
-  }
-
-  /* Add gentle margin below each section for separation */
-  .accommodation-guidelines {
-    margin-bottom: 60px;
-  }
-}
-
