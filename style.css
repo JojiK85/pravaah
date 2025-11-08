@@ -176,12 +176,41 @@ nav {
   padding: 15px 0;
 }
 
+/* 🔹 Continuous, seamless highlight scroll */
 .slider-track {
   display: flex;
+  flex-wrap: nowrap;
   gap: 30px;
-  width: max-content;
-  animation: scrollLoop 50s linear infinite;
+  animation: scrollSeamless 40s linear infinite;
 }
+
+/* 🔁 Seamless infinite scroll (no abrupt jump) */
+@keyframes scrollSeamless {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Pause animation on hover for desktop */
+.highlights-carousel:hover .slider-track {
+  animation-play-state: paused;
+}
+
+/* Ensure slides don't shrink or stretch */
+.slide {
+  flex-shrink: 0;
+}
+
+/* Mobile: Faster scroll speed */
+@media (max-width: 900px) {
+  .slider-track {
+    animation: scrollSeamless 15s linear infinite; /* 💨 Faster for phones */
+  }
+}
+
 
 /* 🔹 Highlight Card (Edge Glow Only) */
 .slide {
@@ -239,11 +268,7 @@ nav {
   transform: translateY(0);
 }
 
-/* Infinite loop animation */
-@keyframes scrollLoop {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
+
 
 .highlights-carousel:hover .slider-track {
   animation-play-state: paused;
