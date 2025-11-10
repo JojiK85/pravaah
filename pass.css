@@ -16,12 +16,23 @@ body {
   100% { background-position: 0% 50%; }
 }
 
+/* 🔹 Page Layout */
 .passes-section {
   padding: 8rem 5% 5rem;
   text-align: center;
 }
 
-.passes-container h1 {
+.passes-box {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1.5px solid cyan;
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+  padding: 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.passes-box h1 {
   color: cyan;
   text-shadow: 0 0 15px cyan;
   margin-bottom: 10px;
@@ -31,15 +42,15 @@ body {
 .instructions {
   color: #ccc;
   font-size: 1rem;
-  margin-bottom: 40px;
+  margin-bottom: 35px;
 }
 
-/* 🔹 Pass Cards (Side by Side) */
+/* 🔹 Pass Cards (Inside glowing box) */
 .passes-grid {
   display: flex;
   justify-content: center;
   align-items: stretch;
-  gap: 25px;
+  gap: 30px;
   flex-wrap: wrap;
   margin-bottom: 40px;
 }
@@ -50,7 +61,7 @@ body {
   border-radius: 15px;
   padding: 25px;
   width: 280px;
-  transition: 0.3s ease;
+  transition: 0.3s;
 }
 
 .pass-card:hover {
@@ -65,14 +76,14 @@ body {
 
 .pass-card .price {
   font-size: 1.2rem;
-  color: #00ffff;
   font-weight: 700;
+  color: #00ffff;
 }
 
 .pass-card .desc {
   color: #ccc;
   font-size: 0.9rem;
-  margin: 15px 0 20px;
+  margin: 10px 0 20px;
 }
 
 .select-btn {
@@ -82,39 +93,34 @@ body {
   border-radius: 10px;
   font-weight: 700;
   cursor: pointer;
-  transition: 0.3s ease;
+  transition: 0.3s;
 }
 
 .select-btn:hover {
   background: #00ffff;
-  box-shadow: 0 0 15px cyan;
+  box-shadow: 0 0 20px cyan;
 }
 
-/* 🔹 Participant Area */
+/* 🔹 Dynamic Section */
 #selectionArea {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid cyan;
   border-radius: 12px;
   padding: 25px;
-  max-width: 700px;
-  margin: 0 auto;
+  margin-top: 30px;
 }
 
-.participant-section {
-  margin: 20px 0;
+.hidden {
+  display: none;
 }
 
 .participant-section input {
   padding: 10px;
   border-radius: 8px;
   border: none;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255,255,255,0.1);
   color: white;
   text-align: center;
-}
-
-.participants-form {
-  margin-top: 20px;
 }
 
 .participant-card {
@@ -127,16 +133,16 @@ body {
 
 .participant-card input {
   width: 90%;
-  margin: 5px 0;
   padding: 8px;
-  border-radius: 6px;
+  margin: 5px 0;
   border: none;
+  border-radius: 6px;
   background: rgba(255,255,255,0.1);
   color: white;
   text-align: center;
 }
 
-/* Buttons */
+/* 🔹 Buttons */
 .main-btn {
   background: cyan;
   border: none;
@@ -153,25 +159,15 @@ body {
   box-shadow: 0 0 20px cyan;
 }
 
-.total-section {
-  margin-top: 25px;
-}
-
 /* 🔹 Responsive */
 @media (max-width: 900px) {
   .passes-grid {
     flex-direction: column;
     align-items: center;
   }
-
-  .passes-container h1 {
-    font-size: 2rem;
+  .passes-box {
+    padding: 25px;
   }
-
-  #selectionArea {
-    padding: 20px;
-  }
-
   .main-btn {
     width: 100%;
   }
