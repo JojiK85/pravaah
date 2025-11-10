@@ -62,7 +62,7 @@ payBtn.addEventListener("click", (e) => {
 
   try {
     const options = {
-      key: "rzp_test_yourKeyHere", // Replace with your Razorpay key
+      key: "rzp_test_Re1mOkmIGroT2c", // Replace with your Razorpay key
       amount: total * 100,
       currency: "INR",
       name: "PRAVAAH 2026",
@@ -115,3 +115,4 @@ payBtn.addEventListener("click", (e) => {
     window.location.href = "payment_failure.html?reason=RazorpayError";
   }
 });
+
