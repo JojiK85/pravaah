@@ -5,42 +5,171 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PRAVAAH — Passes & Registration</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet" />
+  <!-- 🔹 Styles -->
+  <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="pass.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- 🔹 Razorpay SDK -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 
 <body>
-  <div class="passes-container">
-    <div class="passes-box">
-      <h1>🎟️ PRAVAAH PASSES</h1>
-      <p>Select your pass and register your team below.</p>
+  <!-- 🔒 FIREBASE AUTH CHECK + LOGOUT -->
+  <script type="module">
+    import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-      <!-- PASS SELECTION -->
-      <div class="pass-options">
-        <label><input type="radio" name="pass" value="Tech" data-price="299" required /> Tech Pass — ₹299</label>
-        <label><input type="radio" name="pass" value="Workshop" data-price="499" /> Workshop Pass — ₹499</label>
-        <label><input type="radio" name="pass" value="Cultural" data-price="199" /> Cultural Pass — ₹199</label>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCbXKleOw4F46gFDXz2Wynl3YzPuHsVwh8",
+      authDomain: "pravaah-55b1d.firebaseapp.com",
+      projectId: "pravaah-55b1d",
+      storageBucket: "pravaah-55b1d.appspot.com",
+      messagingSenderId: "287687647267",
+      appId: "1:287687647267:web:7aecd603ee202779b89196"
+    };
+
+    const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "index.html";
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const logoutDesktop = document.getElementById("logoutDesktop");
+      const logoutMobile = document.getElementById("logoutMobile");
+
+      async function handleLogout() {
+        try {
+          await signOut(auth);
+          window.location.href = "index.html";
+        } catch (error) {
+          alert("Error logging out: " + error.message);
+        }
+      }
+
+      if (logoutDesktop) logoutDesktop.addEventListener("click", handleLogout);
+      if (logoutMobile) logoutMobile.addEventListener("click", handleLogout);
+    });
+  </script>
+
+  <!-- 🔹 NAVBAR -->
+  <nav>
+    <div class="logo">PRAVAAH</div>
+    <div class="menu-toggle" id="menuToggle">&#9776;</div>
+    <ul id="menu">
+      <li><a href="home.html">Home</a></li>
+      <li><a href="events.html">Events</a></li>
+      <li><a href="accommodation.html">Accommodation</a></li>
+      <li><a href="photogallery.html">Gallery</a></li>
+      <li><a href="registrationPravaah.html" class="active">Register</a></li>
+      <li><a href="contact_us.html">Contact Us</a></li>
+      <li><a href="workshop.html">Workshop</a></li>
+      <!-- 🔹 Logout link for mobile -->
+      <li class="mobile-only"><a href="#" id="logoutMobile">Logout</a></li>
+    </ul>
+    <!-- 🔹 Logout button for desktop -->
+    <button id="logoutDesktop" class="logout-btn">Logout</button>
+  </nav>
+
+  <!-- 🎟️ PASSES SECTION -->
+  <section class="passes-section">
+    <div class="passes-container">
+      <h1>🎟️ PRAVAAH PASSES</h1>
+      <p class="instructions">
+        Choose your desired pass below. After selecting, enter the number of participants and fill in their details to proceed with payment.
+      </p>
+
+      <div class="passes-grid">
+        <div class="pass-card" data-name="Tech Pass" data-price="299">
+          <h2>Tech Pass</h2>
+          <p class="price">₹299</p>
+          <p class="desc">Access all technical competitions, exhibitions, and hackathons during PRAVAAH '26.</p>
+          <button class="select-btn">Select Tech Pass</button>
+        </div>
+
+        <div class="pass-card" data-name="Workshop Pass" data-price="499">
+          <h2>Workshop Pass</h2>
+          <p class="price">₹499</p>
+          <p class="desc">Participate in hands-on workshops with top mentors and experts.</p>
+          <button class="select-btn">Select Workshop Pass</button>
+        </div>
+
+        <div class="pass-card" data-name="Cultural Pass" data-price="199">
+          <h2>Cultural Pass</h2>
+          <p class="price">₹199</p>
+          <p class="desc">Enjoy all the cultural events, stage shows, and music nights at PRAVAAH.</p>
+          <button class="select-btn">Select Cultural Pass</button>
+        </div>
       </div>
 
-      <!-- PARTICIPANT COUNT -->
-      <div class="participant-section">
+      <!-- Dynamic Registration Area -->
+      <div id="selectionArea" class="hidden">
+        <h3 id="selectedPass"></h3>
+
         <label for="numParticipants">Number of Participants:</label>
         <input type="number" id="numParticipants" min="1" max="10" placeholder="Enter number" />
         <button id="generateForm" class="main-btn">Add Participants</button>
-      </div>
 
-      <!-- PARTICIPANT DETAILS -->
-      <form id="participantForm" class="participants-form"></form>
+        <form id="participantForm" class="participants-form"></form>
 
-      <!-- TOTAL + PAY -->
-      <div class="total-section">
-        <h3 id="totalAmount">Total: ₹0</h3>
-        <button id="payBtn" class="main-btn" style="display:none;">Proceed to Pay</button>
+        <div class="total-section">
+          <h3 id="totalAmount">Total: ₹0</h3>
+          <button id="payBtn" class="main-btn" style="display:none;">Proceed to Pay</button>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 
+  <!-- ⚫ FOOTER -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-left">
+        <img src="pravah-logo.png" alt="PRAVAAH Logo" class="footer-logo">
+        <a href="registrationPravaah.html" class="register-btn">Register Now</a>
+      </div>
+      <div class="footer-links">
+        <div class="footer-column">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="#">Events Portal</a></li>
+            <li><a href="#">CA Portal</a></li>
+            <li><a href="#">Join the Community</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Explore More</h3>
+          <ul>
+            <li><a href="#">Star Attractions</a></li>
+            <li><a href="#">Hall of Fame</a></li>
+            <li><a href="#">Brochure</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Reach Out to Us</h3>
+          <ul>
+            <li><a href="contact_us.html">Contact Us</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-social">
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-linkedin-in"></i></a>
+      <a href="#"><i class="fab fa-youtube"></i></a>
+    </div>
+
+    <hr class="footer-line">
+    <div class="footer-bottom">
+      <p>@PRAVAAH'26 IIT BHUBANESWAR | MADE WITH 💜 BY WEB TEAM | All Rights Reserved</p>
+    </div>
+  </footer>
+
+  <!-- 🔹 JS -->
   <script src="razorpay.js"></script>
 </body>
 </html>
