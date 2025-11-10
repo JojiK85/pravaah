@@ -8,6 +8,7 @@ const totalAmount = document.getElementById("totalAmount");
 const participantForm = document.getElementById("participantForm");
 const payBtn = document.getElementById("payBtn");
 
+// Select buttons
 document.querySelectorAll(".select-btn").forEach(btn => {
   btn.addEventListener("click", (e) => {
     const card = e.target.closest(".pass-card");
@@ -22,9 +23,25 @@ document.querySelectorAll(".select-btn").forEach(btn => {
   });
 });
 
+// Increase/Decrease buttons
+const numInput = document.getElementById("numParticipants");
+document.getElementById("increaseBtn").addEventListener("click", () => {
+  let value = parseInt(numInput.value);
+  if (value < parseInt(numInput.max)) {
+    numInput.value = value + 1;
+  }
+});
+document.getElementById("decreaseBtn").addEventListener("click", () => {
+  let value = parseInt(numInput.value);
+  if (value > parseInt(numInput.min)) {
+    numInput.value = value - 1;
+  }
+});
+
+// Generate participant form
 document.getElementById("generateForm").addEventListener("click", (e) => {
   e.preventDefault();
-  const num = parseInt(document.getElementById("numParticipants").value);
+  const num = parseInt(numInput.value);
   if (!num || num <= 0) return alert("Enter valid number of participants.");
 
   participantForm.innerHTML = "";
@@ -46,6 +63,7 @@ document.getElementById("generateForm").addEventListener("click", (e) => {
   payBtn.style.display = "inline-block";
 });
 
+// Payment logic
 payBtn.addEventListener("click", (e) => {
   e.preventDefault();
   if (total === 0) return alert("Please add participants.");
@@ -62,15 +80,13 @@ payBtn.addEventListener("click", (e) => {
 
   try {
     const options = {
-      key: "rzp_test_Re1mOkmIGroT2c", // Replace with your Razorpay key
+      key: "rzp_test_Re1mOkmIGroT2c",
       amount: total * 100,
       currency: "INR",
       name: "PRAVAAH 2026",
       description: `${selectedPass} Registration`,
       image: "pravah-logo.png",
       handler: function (response) {
-        alert("✅ Payment Successful! ID: " + response.razorpay_payment_id);
-
         fetch("https://script.google.com/macros/s/AKfycbzdSM1ItsgBpgHA1HIs8Xj1AViZItclYUkCT9gFOrXBwW6GbFy1HD3gBxMhdCfAK_WN/exec", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -86,14 +102,8 @@ payBtn.addEventListener("click", (e) => {
             })),
           }),
         })
-        .then(res => res.text())
-        .then(() => {
-          window.location.href = "payment_success.html";
-        })
-        .catch(err => {
-          console.error(err);
-          window.location.href = "payment_failure.html?reason=DataNotSaved";
-        });
+          .then(() => window.location.href = "payment_success.html")
+          .catch(() => window.location.href = "payment_failure.html?reason=DataNotSaved");
       },
       modal: {
         ondismiss: function() {
@@ -104,15 +114,13 @@ payBtn.addEventListener("click", (e) => {
     };
 
     const rzp = new Razorpay(options);
-
     rzp.on("payment.failed", function (response) {
       window.location.href = `payment_failure.html?reason=${encodeURIComponent(response.error.description || "PaymentFailed")}`;
     });
-
     rzp.open();
+
   } catch (error) {
     console.error("Razorpay Error:", error);
     window.location.href = "payment_failure.html?reason=RazorpayError";
   }
 });
-
