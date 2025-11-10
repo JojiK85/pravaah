@@ -5,17 +5,57 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PRAVAAH — Events</title>
 
-  <!-- Main global style -->
+  <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
-  <!-- Event page-specific style -->
   <link rel="stylesheet" href="events.css" />
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
-  <script src="events.js" defer></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
+
 <body>
+  <!-- 🔒 FIREBASE AUTH + LOGOUT HANDLER -->
+  <script type="module">
+    import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCbXKleOw4F46gFDXz2Wynl3YzPuHsVwh8",
+      authDomain: "pravaah-55b1d.firebaseapp.com",
+      projectId: "pravaah-55b1d",
+      storageBucket: "pravaah-55b1d.appspot.com",
+      messagingSenderId: "287687647267",
+      appId: "1:287687647267:web:7aecd603ee202779b89196"
+    };
+
+    const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+    const auth = getAuth(app);
+
+    // 🔒 Redirect to login if user not authenticated
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "index.html";
+      }
+    });
+
+    // 🚪 Logout handler
+    document.addEventListener("DOMContentLoaded", () => {
+      const logoutDesktop = document.getElementById("logoutDesktop");
+      const logoutMobile = document.getElementById("logoutMobile");
+
+      const logout = async () => {
+        try {
+          await signOut(auth);
+          console.log("✅ Logged out successfully");
+          window.location.href = "index.html";
+        } catch (err) {
+          alert("Logout failed: " + err.message);
+        }
+      };
+
+      if (logoutDesktop) logoutDesktop.addEventListener("click", logout);
+      if (logoutMobile) logoutMobile.addEventListener("click", logout);
+    });
+  </script>
+
   <!-- 🔹 NAVBAR -->
   <nav>
     <div class="logo">PRAVAAH</div>
@@ -28,10 +68,9 @@
       <li><a href="registrationPravaah.html">Register</a></li>
       <li><a href="contact_us.html">Contact Us</a></li>
       <li><a href="workshop.html">Workshop</a></li>
-    <!-- 🔹 Logout link for mobile -->
+      <!-- 🔹 Logout link for mobile -->
       <li class="mobile-only"><a href="#" id="logoutMobile">Logout</a></li>
     </ul>
-
     <!-- 🔹 Logout button for desktop -->
     <button id="logoutDesktop" class="logout-btn">Logout</button>
   </nav>
@@ -165,15 +204,20 @@
         </div>
       </div>
     </div>
+
     <div class="footer-social">
       <a href="#"><i class="fab fa-instagram"></i></a>
       <a href="#"><i class="fab fa-linkedin-in"></i></a>
       <a href="#"><i class="fab fa-youtube"></i></a>
     </div>
+
     <hr class="footer-line">
     <div class="footer-bottom">
       <p>@PRAVAAH'26 IIT BHUBANESWAR | MADE WITH 💜 BY WEB TEAM | All Rights Reserved</p>
     </div>
   </footer>
+
+  <!-- JS -->
+  <script src="events.js" defer></script>
 </body>
 </html>
