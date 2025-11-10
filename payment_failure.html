@@ -13,7 +13,7 @@
       font-family: 'Orbitron', sans-serif;
       background: linear-gradient(120deg, #2c1a55, #3e2e54, #420b23, #5b2a86);
       background-size: 400% 400%;
-      animation: gradient 12s ease infinite;
+      animation: gradient 14s ease infinite;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -31,60 +31,60 @@
     }
 
     .fail-box {
-      background: rgba(255, 0, 0, 0.08);
-      border: 2px solid #ff5e5e;
-      border-radius: 20px;
+      background: rgba(255, 0, 0, 0.05);
+      border: 1.5px solid #ff6b6b;
+      border-radius: 18px;
       padding: 40px;
       max-width: 600px;
       width: 90%;
-      box-shadow: 0 0 30px rgba(255, 0, 0, 0.4);
-      backdrop-filter: blur(8px);
+      box-shadow: 0 0 18px rgba(255, 80, 80, 0.3);
+      backdrop-filter: blur(6px);
       transition: all 0.3s ease;
     }
 
     h1 {
-      color: #ff5e5e;
-      text-shadow: 0 0 15px #ff5e5e;
-      font-size: 2rem;
-      margin-bottom: 15px;
+      color: #ff6b6b;
+      text-shadow: 0 0 8px #ff6b6b;
+      font-size: 1.9rem;
+      margin-bottom: 12px;
     }
 
     p {
       color: #ffdede;
-      margin-bottom: 25px;
+      margin-bottom: 22px;
       font-size: 1rem;
-      line-height: 1.6;
+      line-height: 1.5;
     }
 
     .cross {
-      font-size: 80px;
-      color: #ff5e5e;
-      text-shadow: 0 0 25px #ff5e5e;
-      margin-bottom: 20px;
-      animation: crossPulse 1.5s infinite alternate;
+      font-size: 70px;
+      color: #ff6b6b;
+      text-shadow: 0 0 15px #ff6b6b;
+      margin-bottom: 15px;
+      animation: crossPulse 2s infinite alternate;
     }
 
     @keyframes crossPulse {
       from { transform: scale(1); opacity: 0.9; }
-      to { transform: scale(1.1); opacity: 1; }
+      to { transform: scale(1.05); opacity: 1; }
     }
 
     .btn {
       display: inline-block;
-      background: #ff5e5e;
+      background: #ff6b6b;
       color: white;
       font-weight: 700;
       text-decoration: none;
-      padding: 12px 30px;
-      border-radius: 12px;
-      transition: 0.3s;
-      font-size: 1rem;
+      padding: 12px 28px;
+      border-radius: 10px;
+      transition: 0.3s ease;
+      font-size: 0.95rem;
     }
 
     .btn:hover {
-      background: #ff7878;
-      box-shadow: 0 0 25px #ff5e5e;
-      transform: scale(1.05);
+      background: #ff7a7a;
+      box-shadow: 0 0 15px #ff6b6b;
+      transform: scale(1.04);
     }
 
     .reason {
@@ -101,7 +101,7 @@
       }
 
       .cross {
-        font-size: 60px;
+        font-size: 55px;
       }
 
       h1 {
@@ -114,7 +114,7 @@
 
       .btn {
         padding: 10px 25px;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
       }
     }
 
@@ -126,15 +126,16 @@
       .fail-box {
         width: 100%;
         padding: 25px 18px;
-        border-radius: 15px;
+        border-radius: 12px;
+        box-shadow: 0 0 12px rgba(255, 80, 80, 0.25);
       }
 
       .cross {
-        font-size: 50px;
+        font-size: 45px;
       }
 
       h1 {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
       }
 
       p {
@@ -144,8 +145,8 @@
 
       .btn {
         padding: 10px 20px;
-        font-size: 0.9rem;
-        border-radius: 10px;
+        font-size: 0.85rem;
+        border-radius: 8px;
       }
     }
   </style>
