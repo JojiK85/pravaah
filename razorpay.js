@@ -18,6 +18,7 @@ document.querySelectorAll(".select-btn").forEach(btn => {
     totalAmount.innerText = `Total: ₹${selectedPrice}`;
     payBtn.style.display = "none";
     participantForm.innerHTML = "";
+    total = 0;
   });
 });
 
@@ -32,10 +33,10 @@ document.getElementById("generateForm").addEventListener("click", (e) => {
     div.classList.add("participant-card");
     div.innerHTML = `
       <h4>Participant ${i}</h4>
-      <input type="text" placeholder="Name" required />
-      <input type="email" placeholder="Email" required />
-      <input type="tel" placeholder="Phone" required />
-      <input type="text" placeholder="College" required />
+      <input type="text" placeholder="Full Name" class="pname" required />
+      <input type="email" placeholder="Email" class="pemail" required />
+      <input type="tel" placeholder="Phone Number" class="pphone" required />
+      <input type="text" placeholder="College Name" class="pcollege" required />
     `;
     participantForm.appendChild(div);
   }
@@ -49,25 +50,63 @@ payBtn.addEventListener("click", (e) => {
   e.preventDefault();
   if (total === 0) return alert("Please add participants.");
 
+  // Collect participant data
+  const names = [...document.querySelectorAll(".pname")].map(i => i.value.trim());
+  const emails = [...document.querySelectorAll(".pemail")].map(i => i.value.trim());
+  const phones = [...document.querySelectorAll(".pphone")].map(i => i.value.trim());
+  const colleges = [...document.querySelectorAll(".pcollege")].map(i => i.value.trim());
+
+  if (names.includes("") || emails.includes("") || phones.includes("") || colleges.includes("")) {
+    alert("Please fill all participant details before proceeding.");
+    return;
+  }
+
   const options = {
     key: "rzp_test_yourKeyHere", // Replace with your Razorpay key
-    amount: total * 100,
+    amount: total * 100, // in paise
     currency: "INR",
     name: "PRAVAAH 2026",
     description: `${selectedPass} Registration`,
     image: "pravah-logo.png",
     handler: function (response) {
-      alert("Payment Successful! ID: " + response.razorpay_payment_id);
-      window.location.href = "success.html";
+      alert("✅ Payment Successful! ID: " + response.razorpay_payment_id);
+
+      // Send data to Google Sheets
+      fetch("https://script.google.com/macros/s/AKfycbzdSM1ItsgBpgHA1HIs8Xj1AViZItclYUkCT9gFOrXBwW6GbFy1HD3gBxMhdCfAK_WN/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          paymentId: response.razorpay_payment_id,
+          passType: selectedPass,
+          totalAmount: total,
+          participants: names.map((name, i) => ({
+            name,
+            email: emails[i],
+            phone: phones[i],
+            college: colleges[i],
+          })),
+        }),
+      })
+      .then(res => res.text())
+      .then(() => {
+        window.location.href = "success.html";
+      })
+      .catch(err => {
+        alert("⚠️ Payment done, but registration data might not have been saved. Please contact support.");
+        console.error(err);
+      });
     },
     theme: { color: "#00ffff" },
-    method: { upi: true, netbanking: true, wallet: false, card: false }
+    modal: {
+      ondismiss: function() {
+        alert("❌ Payment cancelled or failed. Please try again.");
+      }
+    },
   };
 
   const rzp = new Razorpay(options);
   rzp.on("payment.failed", function (response) {
-    alert("Payment Failed: " + response.error.description);
+    alert("❌ Payment Failed!\nReason: " + response.error.description);
   });
-
   rzp.open();
 });
