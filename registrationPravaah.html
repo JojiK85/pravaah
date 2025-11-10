@@ -11,7 +11,7 @@
 
   <!-- CSS Files -->
   <link rel="stylesheet" href="style.css" /> <!-- Navbar + Footer -->
-  <link rel="stylesheet" href="pass.css" /> <!-- Passes Page -->
+  <link rel="stylesheet" href="pass.css" /> <!-- Pass Page -->
 
   <!-- Razorpay SDK -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -37,14 +37,14 @@
   </nav>
 
   <!-- 🎟️ PASSES SECTION -->
-  <div class="passes-container">
-    <div class="passes-box">
+  <section class="passes-section">
+    <div class="passes-container">
       <h1>🎟️ PRAVAAH PASSES</h1>
       <p class="instructions">
         Choose your desired pass below. After selecting, enter the number of participants and fill their details to proceed with payment.
       </p>
 
-      <!-- 🔹 Pass Cards -->
+      <!-- 🔹 Pass Cards (side by side) -->
       <div class="passes-grid">
         <div class="pass-card" data-name="Tech Pass" data-price="299">
           <h2>Tech Pass</h2>
@@ -68,13 +68,14 @@
         </div>
       </div>
 
-      <!-- 🔹 After Selecting a Pass -->
+      <!-- 🔹 Participant Area -->
       <div id="selectionArea" class="hidden">
         <h3 id="selectedPass"></h3>
-
-        <label for="numParticipants">Number of Participants:</label>
-        <input type="number" id="numParticipants" min="1" max="10" placeholder="Enter number" />
-        <button id="generateForm" class="main-btn">Add Participants</button>
+        <div class="participant-section">
+          <label for="numParticipants">Number of Participants:</label><br />
+          <input type="number" id="numParticipants" min="1" max="10" placeholder="Enter number" />
+          <button id="generateForm" class="main-btn">Add Participants</button>
+        </div>
 
         <!-- Dynamic Form -->
         <form id="participantForm" class="participants-form"></form>
@@ -86,7 +87,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- ⚫ FOOTER -->
   <footer>
@@ -134,7 +135,7 @@
     </div>
   </footer>
 
-  <!-- 🔹 INTERACTIVE JS -->
+  <!-- 🧠 SCRIPT -->
   <script>
     const passCards = document.querySelectorAll('.pass-card');
     const selectionArea = document.getElementById('selectionArea');
@@ -202,5 +203,6 @@
       rzp.open();
     });
   </script>
+
 </body>
 </html>
