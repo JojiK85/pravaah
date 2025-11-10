@@ -1,29 +1,32 @@
-const generateBtn = document.getElementById("generateForm");
-const participantForm = document.getElementById("participantForm");
-const totalAmount = document.getElementById("totalAmount");
-const payBtn = document.getElementById("payBtn");
-
+let selectedPass = null;
 let selectedPrice = 0;
 let total = 0;
 
-document.querySelectorAll("input[name='pass']").forEach(pass => {
-  pass.addEventListener("change", () => {
-    selectedPrice = parseInt(pass.dataset.price);
+const selectionArea = document.getElementById("selectionArea");
+const selectedPassText = document.getElementById("selectedPass");
+const totalAmount = document.getElementById("totalAmount");
+const participantForm = document.getElementById("participantForm");
+const payBtn = document.getElementById("payBtn");
+
+document.querySelectorAll(".select-btn").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    const card = e.target.closest(".pass-card");
+    selectedPass = card.dataset.name;
+    selectedPrice = parseInt(card.dataset.price);
+    selectionArea.classList.remove("hidden");
+    selectedPassText.innerText = `Selected: ${selectedPass} — ₹${selectedPrice}`;
     totalAmount.innerText = `Total: ₹${selectedPrice}`;
     payBtn.style.display = "none";
+    participantForm.innerHTML = "";
   });
 });
 
-generateBtn.addEventListener("click", (e) => {
+document.getElementById("generateForm").addEventListener("click", (e) => {
   e.preventDefault();
   const num = parseInt(document.getElementById("numParticipants").value);
-  if (!num || num <= 0) {
-    alert("Please enter a valid number of participants.");
-    return;
-  }
+  if (!num || num <= 0) return alert("Enter valid number of participants.");
 
   participantForm.innerHTML = "";
-
   for (let i = 1; i <= num; i++) {
     const div = document.createElement("div");
     div.classList.add("participant-card");
@@ -44,37 +47,27 @@ generateBtn.addEventListener("click", (e) => {
 
 payBtn.addEventListener("click", (e) => {
   e.preventDefault();
-  if (total === 0) {
-    alert("Please select a pass and enter participants.");
-    return;
-  }
+  if (total === 0) return alert("Please add participants.");
 
   const options = {
-    key: "rzp_test_yourKeyHere", // Replace with your Razorpay Key
-    amount: total * 100, // In paise
+    key: "rzp_test_yourKeyHere", // Replace with your Razorpay key
+    amount: total * 100,
     currency: "INR",
     name: "PRAVAAH 2026",
-    description: "Pass Registration Payment",
+    description: `${selectedPass} Registration`,
     image: "pravah-logo.png",
     handler: function (response) {
       alert("Payment Successful! ID: " + response.razorpay_payment_id);
       window.location.href = "success.html";
     },
-    theme: {
-      color: "#00ffff"
-    },
-    method: {
-      upi: true,
-      netbanking: true,
-      wallet: false,
-      card: false
-    }
+    theme: { color: "#00ffff" },
+    method: { upi: true, netbanking: true, wallet: false, card: false }
   };
 
   const rzp = new Razorpay(options);
-  rzp.on('payment.failed', function (response) {
-    alert("Payment failed: " + response.error.description);
-    window.location.href = "failed.html";
+  rzp.on("payment.failed", function (response) {
+    alert("Payment Failed: " + response.error.description);
   });
+
   rzp.open();
 });
