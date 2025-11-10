@@ -7,6 +7,7 @@ const selectedPassText = document.getElementById("selectedPass");
 const totalAmount = document.getElementById("totalAmount");
 const participantForm = document.getElementById("participantForm");
 const payBtn = document.getElementById("payBtn");
+const timerDisplay = document.getElementById("payment-timer");
 
 // Pass selection
 document.querySelectorAll(".select-btn").forEach(btn => {
@@ -20,6 +21,7 @@ document.querySelectorAll(".select-btn").forEach(btn => {
     payBtn.style.display = "none";
     participantForm.innerHTML = "";
     total = 0;
+    timerDisplay.style.display = "none";
   });
 });
 
@@ -38,7 +40,7 @@ document.getElementById("decreaseBtn").addEventListener("click", () => {
 document.getElementById("generateForm").addEventListener("click", (e) => {
   e.preventDefault();
   const num = parseInt(numInput.value);
-  if (!num || num <= 0) return alert("Enter a valid number of participants.");
+  if (!num || num <= 0) return alert("Enter valid number of participants.");
 
   participantForm.innerHTML = "";
   for (let i = 1; i <= num; i++) {
@@ -59,7 +61,7 @@ document.getElementById("generateForm").addEventListener("click", (e) => {
   payBtn.style.display = "inline-block";
 });
 
-// ✅ Payment Logic with Validation + Timer
+// ✅ Payment logic with Validation + Visible Timer
 payBtn.addEventListener("click", (e) => {
   e.preventDefault();
   if (total === 0) return alert("Please add participants first.");
@@ -80,21 +82,24 @@ payBtn.addEventListener("click", (e) => {
       return;
     }
     if (!/^\d{10}$/.test(phones[i])) {
-      alert(`⚠️ Invalid phone number for Participant ${i + 1}. It must be exactly 10 digits.`);
+      alert(`⚠️ Invalid phone number for Participant ${i + 1}. Must be exactly 10 digits.`);
       return;
     }
   }
 
   try {
     const options = {
-      key: "rzp_test_Re1mOkmIGroT2c", // Your Razorpay test key
+      key: "rzp_test_Re1mOkmIGroT2c", // 🔹 Replace with your Razorpay test key
       amount: total * 100, // in paise
       currency: "INR",
       name: "PRAVAAH 2026",
       description: `${selectedPass} Registration`,
       image: "pravah-logo.png",
       handler: function (response) {
-        clearInterval(timerInterval); // Stop timer
+        clearInterval(timerInterval);
+        timerDisplay.style.display = "none";
+
+        // Send data to Google Sheet
         fetch("https://script.google.com/macros/s/AKfycbzdSM1ItsgBpgHA1HIs8Xj1AViZItclYUkCT9gFOrXBwW6GbFy1HD3gBxMhdCfAK_WN/exec", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -116,6 +121,7 @@ payBtn.addEventListener("click", (e) => {
       modal: {
         ondismiss: function () {
           clearInterval(timerInterval);
+          timerDisplay.style.display = "none";
           window.location.href = "payment_failure.html?reason=UserCancelled";
         }
       },
@@ -124,14 +130,20 @@ payBtn.addEventListener("click", (e) => {
 
     const rzp = new Razorpay(options);
 
-    // ⏱ Add 5-minute payment timer
-    let timeLeft = 300; // seconds
+    // ⏱ Start 5-minute countdown timer (visible)
+    let timeLeft = 300;
+    timerDisplay.style.display = "block";
     const timerInterval = setInterval(() => {
       timeLeft--;
-      console.log(`⏳ Payment time left: ${timeLeft}s`);
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = (timeLeft % 60).toString().padStart(2, "0");
+      timerDisplay.textContent = `⏳ Payment window: ${minutes}:${seconds}`;
+      timerDisplay.style.textShadow = `0 0 ${Math.random() * 15 + 5}px cyan`;
+
       if (timeLeft <= 0) {
         clearInterval(timerInterval);
         rzp.close();
+        timerDisplay.textContent = "❌ Payment window expired.";
         alert("⚠️ Payment window expired. Please try again.");
         window.location.href = "payment_failure.html?reason=TimeExpired";
       }
@@ -139,6 +151,7 @@ payBtn.addEventListener("click", (e) => {
 
     rzp.on("payment.failed", function (response) {
       clearInterval(timerInterval);
+      timerDisplay.style.display = "none";
       window.location.href = `payment_failure.html?reason=${encodeURIComponent(response.error.description || "PaymentFailed")}`;
     });
 
