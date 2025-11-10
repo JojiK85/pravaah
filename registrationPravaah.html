@@ -72,9 +72,14 @@
         <!-- 🔹 After Selecting -->
         <div id="selectionArea" class="hidden">
           <h3 id="selectedPass"></h3>
+
           <div class="participant-section">
-            <label for="numParticipants">Number of Participants:</label><br />
-            <input type="number" id="numParticipants" min="1" max="10" placeholder="Enter number" />
+            <label for="numParticipants">Number of Participants:</label>
+            <div class="custom-number-box">
+              <button type="button" class="num-btn" id="decreaseBtn">−</button>
+              <input type="number" id="numParticipants" min="1" max="10" value="1" />
+              <button type="button" class="num-btn" id="increaseBtn">+</button>
+            </div>
             <button id="generateForm" class="main-btn">Add Participants</button>
           </div>
 
@@ -144,6 +149,8 @@
     const totalAmountEl = document.getElementById('totalAmount');
     const payBtn = document.getElementById('payBtn');
     const generateBtn = document.getElementById('generateForm');
+    const increaseBtn = document.getElementById('increaseBtn');
+    const decreaseBtn = document.getElementById('decreaseBtn');
 
     let selectedPass = null;
     let passPrice = 0;
@@ -159,6 +166,16 @@
         payBtn.style.display = 'none';
         window.scrollTo({ top: selectionArea.offsetTop, behavior: 'smooth' });
       });
+    });
+
+    increaseBtn.addEventListener('click', () => {
+      if (parseInt(numInput.value) < parseInt(numInput.max))
+        numInput.value = parseInt(numInput.value) + 1;
+    });
+
+    decreaseBtn.addEventListener('click', () => {
+      if (parseInt(numInput.value) > parseInt(numInput.min))
+        numInput.value = parseInt(numInput.value) - 1;
     });
 
     generateBtn.addEventListener('click', (e) => {
