@@ -5,12 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PRAVAAH — Passes & Registration</title>
 
-  <!-- Styles -->
+  <!-- 🔹 Styles -->
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="pass.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-  <!-- Razorpay SDK -->
+  <!-- 🔹 Razorpay SDK -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 
@@ -73,45 +74,31 @@
     <button id="logoutDesktop" class="logout-btn">Logout</button>
   </nav>
 
-  <!-- 🎟️ PASSES SECTION -->
+  <!-- 🎟️ PASSES BOX -->
   <section class="passes-section">
     <div class="passes-container">
-      <h1>🎟️ PRAVAAH PASSES</h1>
-      <p class="instructions">
-        Choose your desired pass below. After selecting, enter the number of participants and fill in their details to proceed with payment.
-      </p>
+      <div class="passes-box">
+        <h1>🎟 PRAVAAH PASSES</h1>
+        <p>Select your pass and register your team below.</p>
 
-      <div class="passes-grid">
-        <div class="pass-card" data-name="Tech Pass" data-price="299">
-          <h2>Tech Pass</h2>
-          <p class="price">₹299</p>
-          <p class="desc">Access all technical competitions, exhibitions, and hackathons during PRAVAAH '26.</p>
-          <button class="select-btn">Select Tech Pass</button>
+        <!-- PASS SELECTION -->
+        <div class="pass-options">
+          <label><input type="radio" name="pass" value="Tech" data-price="299" required /> Tech Pass — ₹299</label>
+          <label><input type="radio" name="pass" value="Workshop" data-price="499" /> Workshop Pass — ₹499</label>
+          <label><input type="radio" name="pass" value="Cultural" data-price="199" /> Cultural Pass — ₹199</label>
         </div>
 
-        <div class="pass-card" data-name="Workshop Pass" data-price="499">
-          <h2>Workshop Pass</h2>
-          <p class="price">₹499</p>
-          <p class="desc">Participate in hands-on workshops with top mentors and experts.</p>
-          <button class="select-btn">Select Workshop Pass</button>
+        <!-- PARTICIPANT COUNT -->
+        <div class="participant-section">
+          <label for="numParticipants">Number of Participants:</label>
+          <input type="number" id="numParticipants" min="1" max="10" placeholder="Enter number" />
+          <button id="generateForm" class="main-btn">Add Participants</button>
         </div>
 
-        <div class="pass-card" data-name="Cultural Pass" data-price="199">
-          <h2>Cultural Pass</h2>
-          <p class="price">₹199</p>
-          <p class="desc">Enjoy all the cultural events, stage shows, and music nights at PRAVAAH.</p>
-          <button class="select-btn">Select Cultural Pass</button>
-        </div>
-      </div>
-
-      <div id="selectionArea" class="hidden">
-        <h3 id="selectedPass"></h3>
-        <label for="numParticipants">Number of Participants:</label>
-        <input type="number" id="numParticipants" min="1" max="10" placeholder="Enter number" />
-        <button id="generateForm" class="main-btn">Add Participants</button>
-
+        <!-- PARTICIPANT DETAILS -->
         <form id="participantForm" class="participants-form"></form>
 
+        <!-- TOTAL + PAY -->
         <div class="total-section">
           <h3 id="totalAmount">Total: ₹0</h3>
           <button id="payBtn" class="main-btn" style="display:none;">Proceed to Pay</button>
@@ -152,6 +139,7 @@
         </div>
       </div>
     </div>
+
     <div class="footer-social">
       <a href="#"><i class="fab fa-instagram"></i></a>
       <a href="#"><i class="fab fa-linkedin-in"></i></a>
@@ -163,24 +151,22 @@
     </div>
   </footer>
 
+  <!-- JS -->
+  <script src="razorpay.js"></script>
+
   <!-- Navbar toggle -->
   <script>
     const menuToggle = document.getElementById('menuToggle');
     const menu = document.getElementById('menu');
-
     menuToggle.addEventListener('click', e => {
       e.stopPropagation();
       menu.classList.toggle('active');
     });
-
     document.addEventListener('click', e => {
       if (!menu.contains(e.target) && !menuToggle.contains(e.target)) {
         menu.classList.remove('active');
       }
     });
   </script>
-
-  <!-- Razorpay logic -->
-  <script src="razorpay.js"></script>
 </body>
 </html>
