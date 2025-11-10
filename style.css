@@ -165,6 +165,42 @@ nav {
   }
 }
 
+
+/* 🔹 Logout Button (Desktop View) */
+.logout-btn {
+  background: linear-gradient(90deg, cyan, #00ffff);
+  border: none;
+  color: black;
+  padding: 8px 18px;
+  font-family: 'Orbitron', sans-serif;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: 600;
+}
+
+.logout-btn:hover {
+  box-shadow: 0 0 15px cyan;
+  transform: scale(1.05);
+}
+
+/* Hide logout button on mobile */
+@media (max-width: 900px) {
+  .logout-btn {
+    display: none;
+  }
+  .mobile-only {
+    display: block;
+  }
+}
+
+/* Hide mobile logout on desktop */
+@media (min-width: 901px) {
+  .mobile-only {
+    display: none;
+  }
+}
+
 /* ---------- HIGHLIGHTS SECTION ---------- */
 .highlights {
   width: 100%;
@@ -223,7 +259,7 @@ nav {
 /* Mobile: faster scroll, same animation name */
 @media (max-width: 900px) {
   .slider-track {
-    animation: scrollSeamless 15s linear infinite;
+    animation: scrollSeamless 1s linear infinite;
   }
 }
 
