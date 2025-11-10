@@ -1,20 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
 
 /* 🌌 BACKGROUND */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: 'Orbitron', sans-serif;
   background: linear-gradient(120deg, #2c1a55, #3e5d75, #022c43, #5b2a86);
   background-size: 400% 400%;
   animation: gradientMove 15s ease infinite;
   color: white;
-  margin: 0;
-  min-height: 100vh; /* ✅ allows scrolling when keyboard opens */
   display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow-x: hidden;
-  overflow-y: auto; /* ✅ lets box stay visible with keyboard open */
-  padding: 40px 0;
+  flex-direction: column;
+  justify-content: center;  /* ✅ Centers vertically */
+  align-items: center;      /* ✅ Centers horizontally */
+  min-height: 100vh;
+  overflow-y: auto;         /* ✅ Enables pull-to-refresh on mobile */
+  -webkit-overflow-scrolling: touch; /* ✅ smooth scroll */
+  box-sizing: border-box;
+  padding: 5vh 0;           /* small top-bottom space for scroll */
 }
 
 @keyframes gradientMove {
@@ -23,12 +31,12 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-/* 🔹 LOGIN CONTAINER */
+/* 🔹 LOGIN BOX CONTAINER */
 .login-container {
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
   padding: 0 20px;
 }
 
@@ -85,7 +93,7 @@ input:focus {
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* 🔹 MAIN LOGIN / SIGNUP BUTTON */
+/* 🔹 MAIN LOGIN BUTTON */
 .main-btn {
   width: 100%;
   padding: 12px;
@@ -168,9 +176,7 @@ input:focus {
 /* 📱 Mobiles */
 @media (max-width: 600px) {
   body {
-    align-items: flex-start;
-    padding-top: 10vh;
-    padding-bottom: 5vh;
+    padding: 8vh 0; /* ✅ adds breathing space */
   }
 
   .login-box {
@@ -194,5 +200,19 @@ input:focus {
   }
 }
 
+/* 📱 Small Phones */
+@media (max-width: 400px) {
+  .login-box {
+    padding: 25px 16px;
+    width: 90%;
+  }
 
+  h1 {
+    font-size: 1.2rem;
+  }
 
+  .main-btn, .google-btn {
+    font-size: 0.85rem;
+    padding: 9px;
+  }
+}
