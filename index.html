@@ -5,32 +5,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PRAVAAH — Chronicles of Time</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="script.js" defer></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script type="module" src="script.js" defer></script>
 </head>
 
 <body>
-  <!-- 🔹 NAVBAR -->
-  <!-- 🔹 NAVBAR -->
-<nav>
-  <div class="logo">PRAVAAH</div>
+  <!-- 🔒 FIREBASE AUTH CHECK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-  <!-- Hamburger Menu Button -->
-  <div class="menu-toggle" id="menuToggle">
-    <i class="fas fa-bars"></i>
-  </div>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_BUCKET",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
 
-  <!-- Navigation Links -->
-  <ul id="menu">
-    <li><a href="index.html" class="active">Home</a></li>
-    <li><a href="events.html">Events</a></li>
-    <li><a href="accommodation.html">Accommodation</a></li>
-    <li><a href="photogallery.html">Gallery</a></li>
-    <li><a href="registrationPravaah.html">Register</a></li>
-    <li><a href="contact_us.html">Contact Us</a></li>
-    <li><a href="workshop.html">Workshop</a></li>
-  </ul>
-</nav>
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      }
+    });
+  </script>
+
+  <!-- 🔹 NAVBAR -->
+  <nav>
+    <div class="logo">PRAVAAH</div>
+
+    <!-- Hamburger Menu Button -->
+    <div class="menu-toggle" id="menuToggle">
+      <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Navigation Links -->
+    <ul id="menu">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="events.html">Events</a></li>
+      <li><a href="accommodation.html">Accommodation</a></li>
+      <li><a href="photogallery.html">Gallery</a></li>
+      <li><a href="registrationPravaah.html">Register</a></li>
+      <li><a href="contact_us.html">Contact Us</a></li>
+      <li><a href="workshop.html">Workshop</a></li>
+
+      <!-- 🔹 Logout link for mobile -->
+      <li class="mobile-only"><a href="#" id="logoutMobile">Logout</a></li>
+    </ul>
+
+    <!-- 🔹 Logout button for desktop -->
+    <button id="logoutDesktop" class="logout-btn">Logout</button>
+  </nav>
 
   <!-- 📅 CALENDAR + FEED -->
   <h2 class="calendar-title">📅 PRAVAAH'26 CALENDAR</h2>
@@ -62,16 +91,11 @@
     <h2 class="section-title">✨ HIGHLIGHTS OF 2K25 ✨</h2>
     <div class="highlights-carousel">
       <div class="slider-track">
-        <div class="slide" data-title="Opening Ceremony"><img src="DSC09133.JPG" alt="Highlight 1"></div>
-        <div class="slide" data-title="Cultural Night"><img src="DSC09133.JPG" alt="Highlight 2"></div>
-        <div class="slide" data-title="Tech Expo"><img src="DSC09133.JPG" alt="Highlight 3"></div>
-        <div class="slide" data-title="Sports Gala"><img src="DSC09133.JPG" alt="Highlight 4"></div>
-        <div class="slide" data-title="Prize Distribution"><img src="DSC09133.JPG" alt="Highlight 5"></div>
-        <div class="slide" data-title="Opening Ceremony"><img src="DSC09133.JPG" alt="Highlight 1"></div>
-        <div class="slide" data-title="Cultural Night"><img src="DSC09133.JPG" alt="Highlight 2"></div>
-        <div class="slide" data-title="Tech Expo"><img src="DSC09133.JPG" alt="Highlight 3"></div>
-        <div class="slide" data-title="Sports Gala"><img src="DSC09133.JPG" alt="Highlight 4"></div>
-        <div class="slide" data-title="Prize Distribution"><img src="DSC09133.JPG" alt="Highlight 5"></div>
+        <div class="slide" data-title="Opening Ceremony"><img src="DSC09133.JPG" alt=""></div>
+        <div class="slide" data-title="Cultural Night"><img src="DSC09133.JPG" alt=""></div>
+        <div class="slide" data-title="Tech Expo"><img src="DSC09133.JPG" alt=""></div>
+        <div class="slide" data-title="Sports Gala"><img src="DSC09133.JPG" alt=""></div>
+        <div class="slide" data-title="Prize Distribution"><img src="DSC09133.JPG" alt=""></div>
       </div>
     </div>
   </section>
@@ -147,7 +171,6 @@
     </div>
 
     <hr class="footer-line">
-
     <div class="footer-bottom">
       <p><span>@PRAVAAH'26 IIT BHUBANESWAR</span> | MADE WITH 💜 BY WEB TEAM | All Rights Reserved</p>
     </div>
