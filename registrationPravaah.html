@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PRAVAAH — Passes & Registration</title>
 
-  <!-- 🔹 Styles -->
+  <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="pass.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-  <!-- 🔹 Razorpay SDK -->
+  <!-- Razorpay SDK -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 
@@ -68,10 +68,8 @@
       <li><a href="registrationPravaah.html" class="active">Register</a></li>
       <li><a href="contact_us.html">Contact Us</a></li>
       <li><a href="workshop.html">Workshop</a></li>
-      <!-- 🔹 Logout link for mobile -->
       <li class="mobile-only"><a href="#" id="logoutMobile">Logout</a></li>
     </ul>
-    <!-- 🔹 Logout button for desktop -->
     <button id="logoutDesktop" class="logout-btn">Logout</button>
   </nav>
 
@@ -106,10 +104,8 @@
         </div>
       </div>
 
-      <!-- Dynamic Registration Area -->
       <div id="selectionArea" class="hidden">
         <h3 id="selectedPass"></h3>
-
         <label for="numParticipants">Number of Participants:</label>
         <input type="number" id="numParticipants" min="1" max="10" placeholder="Enter number" />
         <button id="generateForm" class="main-btn">Add Participants</button>
@@ -156,20 +152,35 @@
         </div>
       </div>
     </div>
-
     <div class="footer-social">
       <a href="#"><i class="fab fa-instagram"></i></a>
       <a href="#"><i class="fab fa-linkedin-in"></i></a>
       <a href="#"><i class="fab fa-youtube"></i></a>
     </div>
-
     <hr class="footer-line">
     <div class="footer-bottom">
       <p>@PRAVAAH'26 IIT BHUBANESWAR | MADE WITH 💜 BY WEB TEAM | All Rights Reserved</p>
     </div>
   </footer>
 
-  <!-- 🔹 JS -->
+  <!-- Navbar toggle -->
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const menu = document.getElementById('menu');
+
+    menuToggle.addEventListener('click', e => {
+      e.stopPropagation();
+      menu.classList.toggle('active');
+    });
+
+    document.addEventListener('click', e => {
+      if (!menu.contains(e.target) && !menuToggle.contains(e.target)) {
+        menu.classList.remove('active');
+      }
+    });
+  </script>
+
+  <!-- Razorpay logic -->
   <script src="razorpay.js"></script>
 </body>
 </html>
