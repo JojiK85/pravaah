@@ -8,7 +8,7 @@ const totalAmount = document.getElementById("totalAmount");
 const participantForm = document.getElementById("participantForm");
 const payBtn = document.getElementById("payBtn");
 
-// Select buttons
+// Pass selection
 document.querySelectorAll(".select-btn").forEach(btn => {
   btn.addEventListener("click", (e) => {
     const card = e.target.closest(".pass-card");
@@ -23,7 +23,7 @@ document.querySelectorAll(".select-btn").forEach(btn => {
   });
 });
 
-// Increase/Decrease buttons
+// Increase/Decrease participant count
 const numInput = document.getElementById("numParticipants");
 document.getElementById("increaseBtn").addEventListener("click", () => {
   let value = parseInt(numInput.value);
@@ -38,7 +38,7 @@ document.getElementById("decreaseBtn").addEventListener("click", () => {
 document.getElementById("generateForm").addEventListener("click", (e) => {
   e.preventDefault();
   const num = parseInt(numInput.value);
-  if (!num || num <= 0) return alert("Enter valid number of participants.");
+  if (!num || num <= 0) return alert("Enter a valid number of participants.");
 
   participantForm.innerHTML = "";
   for (let i = 1; i <= num; i++) {
@@ -59,41 +59,42 @@ document.getElementById("generateForm").addEventListener("click", (e) => {
   payBtn.style.display = "inline-block";
 });
 
-// ✅ Payment logic with extra validation
+// ✅ Payment Logic with Validation + Timer
 payBtn.addEventListener("click", (e) => {
   e.preventDefault();
-  if (total === 0) return alert("Please add participants.");
+  if (total === 0) return alert("Please add participants first.");
 
   const names = [...document.querySelectorAll(".pname")].map(i => i.value.trim());
   const emails = [...document.querySelectorAll(".pemail")].map(i => i.value.trim());
   const phones = [...document.querySelectorAll(".pphone")].map(i => i.value.trim());
   const colleges = [...document.querySelectorAll(".pcollege")].map(i => i.value.trim());
 
-  // ✅ Validation check
+  // Validation
   for (let i = 0; i < names.length; i++) {
     if (!names[i] || !emails[i] || !phones[i] || !colleges[i]) {
       alert(`⚠️ Please fill all fields for Participant ${i + 1}.`);
       return;
     }
-    if (!emails[i].includes("@") || !emails[i].includes(".")) {
-      alert(`⚠️ Invalid email format for Participant ${i + 1}. Please enter a valid email.`);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emails[i])) {
+      alert(`⚠️ Invalid email format for Participant ${i + 1}.`);
       return;
     }
-    if (!/^\d{10,}$/.test(phones[i])) {
-      alert(`⚠️ Invalid phone number for Participant ${i + 1}. Must be at least 10 digits.`);
+    if (!/^\d{10}$/.test(phones[i])) {
+      alert(`⚠️ Invalid phone number for Participant ${i + 1}. It must be exactly 10 digits.`);
       return;
     }
   }
 
   try {
     const options = {
-      key: "rzp_test_Re1mOkmIGroT2c",
-      amount: total * 100,
+      key: "rzp_test_Re1mOkmIGroT2c", // Your Razorpay test key
+      amount: total * 100, // in paise
       currency: "INR",
       name: "PRAVAAH 2026",
       description: `${selectedPass} Registration`,
       image: "pravah-logo.png",
       handler: function (response) {
+        clearInterval(timerInterval); // Stop timer
         fetch("https://script.google.com/macros/s/AKfycbzdSM1ItsgBpgHA1HIs8Xj1AViZItclYUkCT9gFOrXBwW6GbFy1HD3gBxMhdCfAK_WN/exec", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -113,7 +114,8 @@ payBtn.addEventListener("click", (e) => {
         .catch(() => window.location.href = "payment_failure.html?reason=DataNotSaved");
       },
       modal: {
-        ondismiss: function() {
+        ondismiss: function () {
+          clearInterval(timerInterval);
           window.location.href = "payment_failure.html?reason=UserCancelled";
         }
       },
@@ -121,9 +123,25 @@ payBtn.addEventListener("click", (e) => {
     };
 
     const rzp = new Razorpay(options);
+
+    // ⏱ Add 5-minute payment timer
+    let timeLeft = 300; // seconds
+    const timerInterval = setInterval(() => {
+      timeLeft--;
+      console.log(`⏳ Payment time left: ${timeLeft}s`);
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        rzp.close();
+        alert("⚠️ Payment window expired. Please try again.");
+        window.location.href = "payment_failure.html?reason=TimeExpired";
+      }
+    }, 1000);
+
     rzp.on("payment.failed", function (response) {
+      clearInterval(timerInterval);
       window.location.href = `payment_failure.html?reason=${encodeURIComponent(response.error.description || "PaymentFailed")}`;
     });
+
     rzp.open();
 
   } catch (error) {
