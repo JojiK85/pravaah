@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
 
+/* 🌌 BACKGROUND */
 body {
   font-family: 'Orbitron', sans-serif;
   background: linear-gradient(120deg, #2c1a55, #3e5d75, #022c43, #5b2a86);
@@ -11,21 +12,26 @@ body {
   justify-content: center;
   align-items: center;
   color: white;
+  overflow: hidden;
 }
 
+/* ✨ Background animation */
 @keyframes gradientMove {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
+/* 🔹 LOGIN CONTAINER */
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
+  padding: 0 20px;
 }
 
+/* 🔹 LOGIN BOX */
 .login-box {
   background: rgba(0, 0, 0, 0.7);
   border: 1.5px solid cyan;
@@ -33,8 +39,9 @@ body {
   border-radius: 18px;
   padding: 40px;
   width: 340px;
+  max-width: 90%;
   text-align: center;
-  transition: transform 0.4s ease;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
 .login-box:hover {
@@ -42,6 +49,7 @@ body {
   box-shadow: 0 0 35px cyan;
 }
 
+/* 🔸 TITLE */
 h1 {
   color: cyan;
   text-shadow: 0 0 15px cyan;
@@ -50,6 +58,7 @@ h1 {
   letter-spacing: 1px;
 }
 
+/* 🔸 INPUTS */
 input {
   width: 90%;
   padding: 12px;
@@ -69,6 +78,7 @@ input:focus {
   background: rgba(255, 255, 255, 0.2);
 }
 
+/* 🔹 MAIN LOGIN / SIGNUP BUTTON */
 .main-btn {
   width: 100%;
   padding: 12px;
@@ -87,6 +97,7 @@ input:focus {
   box-shadow: 0 0 20px cyan;
 }
 
+/* 🔹 GOOGLE BUTTON */
 .google-btn {
   width: 100%;
   background: white;
@@ -109,6 +120,7 @@ input:focus {
   box-shadow: 0 0 20px cyan;
 }
 
+/* 🔹 DIVIDER + TOGGLE TEXT */
 .divider {
   margin: 18px 0;
   color: #bbb;
@@ -132,19 +144,58 @@ input:focus {
   text-shadow: 0 0 10px cyan;
 }
 
-/* 📱 Mobile-friendly */
-@media (max-width: 480px) {
+/* 🔹 RESPONSIVE (Phones / Small Screens) */
+@media (max-width: 600px) {
+  body {
+    align-items: flex-start;
+    padding-top: 10vh;
+  }
+
   .login-box {
-    width: 90%;
-    padding: 25px;
+    width: 100%;
+    max-width: 90%;
+    padding: 30px 20px;
+    border-radius: 14px;
   }
 
   h1 {
     font-size: 1.4rem;
+    margin-bottom: 20px;
   }
 
-  .google-btn, .main-btn {
+  input {
+    width: 100%;
     padding: 10px;
     font-size: 0.9rem;
+  }
+
+  .main-btn, .google-btn {
+    padding: 10px;
+    font-size: 0.9rem;
+    margin-top: 12px;
+  }
+
+  .divider {
+    font-size: 0.8rem;
+  }
+
+  .toggle-text {
+    font-size: 0.8rem;
+  }
+}
+
+/* 📱 Very Small Devices (below 400px width) */
+@media (max-width: 400px) {
+  h1 {
+    font-size: 1.2rem;
+  }
+
+  .login-box {
+    padding: 25px 15px;
+  }
+
+  .main-btn, .google-btn {
+    font-size: 0.85rem;
+    padding: 9px;
   }
 }
