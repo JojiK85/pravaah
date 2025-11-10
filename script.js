@@ -1,39 +1,38 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-
   /* 🔹 FIREBASE CONFIG */
   const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_BUCKET",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyCbXKleOw4F46gFDXz2Wynl3YzPuHsVwh8",
+    authDomain: "pravaah-55b1d.firebaseapp.com",
+    projectId: "pravaah-55b1d",
+    storageBucket: "pravaah-55b1d.appspot.com",
+    messagingSenderId: "287687647267",
+    appId: "1:287687647267:web:7aecd603ee202779b89196"
   };
 
-  const app = initializeApp(firebaseConfig);
+  // ✅ Prevent duplicate app initialization
+  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
   const auth = getAuth(app);
 
   /* 🧩 LOGOUT HANDLER */
   const logoutDesktop = document.getElementById("logoutDesktop");
   const logoutMobile = document.getElementById("logoutMobile");
 
-  function handleLogout() {
-    signOut(auth)
-      .then(() => {
-        window.location.href = "login.html";
-      })
-      .catch((error) => {
-        alert("Error logging out: " + error.message);
-      });
-  }
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      window.location.href = "index.html";
+    } catch (error) {
+      alert("Error logging out: " + error.message);
+    }
+  };
 
   if (logoutDesktop) logoutDesktop.addEventListener("click", handleLogout);
   if (logoutMobile) logoutMobile.addEventListener("click", handleLogout);
 
-  /* 📅 CALENDAR + FEED LOGIC (same as before) */
+  /* 📅 CALENDAR + FEED LOGIC */
   const monthYear = document.getElementById("monthYear");
   const calendar = document.getElementById("calendar");
   const prevMonth = document.getElementById("prevMonth");
