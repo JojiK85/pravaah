@@ -5,12 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PRAVAAH — Passes & Registration</title>
 
+  <!-- Orbitron Font & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="pass.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- CSS Files -->
+  <link rel="stylesheet" href="style.css" /> <!-- Navbar + Footer -->
+  <link rel="stylesheet" href="pass.css" /> <!-- Passes Page -->
+
+  <!-- Razorpay SDK -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 
 <body>
+
+  <!-- 🔹 NAVBAR -->
+  <nav>
+    <div class="logo">PRAVAAH</div>
+    <div class="menu-toggle" id="menuToggle">&#9776;</div>
+    <ul id="menu">
+      <li><a href="home.html">Home</a></li>
+      <li><a href="events.html">Events</a></li>
+      <li><a href="accommodation.html">Accommodation</a></li>
+      <li><a href="photogallery.html">Gallery</a></li>
+      <li><a href="registrationPravaah.html" class="active">Register</a></li>
+      <li><a href="contact_us.html">Contact Us</a></li>
+      <li><a href="workshop.html">Workshop</a></li>
+      <li class="mobile-only"><a href="#" id="logoutMobile">Logout</a></li>
+    </ul>
+    <button id="logoutDesktop" class="logout-btn">Logout</button>
+  </nav>
+
+  <!-- 🎟️ PASSES SECTION -->
   <div class="passes-container">
     <div class="passes-box">
       <h1>🎟️ PRAVAAH PASSES</h1>
@@ -62,6 +88,119 @@
     </div>
   </div>
 
-  <script src="razorpay.js"></script>
+  <!-- ⚫ FOOTER -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-left">
+        <img src="pravah-logo.png" alt="PRAVAAH Logo" class="footer-logo">
+        <a href="registrationPravaah.html" class="register-btn">Register Now</a>
+      </div>
+
+      <div class="footer-links">
+        <div class="footer-column">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="#">Events Portal</a></li>
+            <li><a href="#">CA Portal</a></li>
+            <li><a href="#">Join the Community</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Explore More</h3>
+          <ul>
+            <li><a href="#">Star Attractions</a></li>
+            <li><a href="#">Hall of Fame</a></li>
+            <li><a href="#">Brochure</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Reach Out to Us</h3>
+          <ul>
+            <li><a href="contact_us.html">Contact Us</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-social">
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-linkedin-in"></i></a>
+      <a href="#"><i class="fab fa-youtube"></i></a>
+    </div>
+
+    <hr class="footer-line">
+    <div class="footer-bottom">
+      <p>@PRAVAAH'26 IIT BHUBANESWAR | MADE WITH 💜 BY WEB TEAM | All Rights Reserved</p>
+    </div>
+  </footer>
+
+  <!-- 🔹 INTERACTIVE JS -->
+  <script>
+    const passCards = document.querySelectorAll('.pass-card');
+    const selectionArea = document.getElementById('selectionArea');
+    const selectedPassText = document.getElementById('selectedPass');
+    const numInput = document.getElementById('numParticipants');
+    const formContainer = document.getElementById('participantForm');
+    const totalAmountEl = document.getElementById('totalAmount');
+    const payBtn = document.getElementById('payBtn');
+    const generateBtn = document.getElementById('generateForm');
+
+    let selectedPass = null;
+    let passPrice = 0;
+
+    passCards.forEach(card => {
+      card.querySelector('.select-btn').addEventListener('click', () => {
+        selectedPass = card.dataset.name;
+        passPrice = parseInt(card.dataset.price);
+        selectionArea.classList.remove('hidden');
+        selectedPassText.textContent = `Selected: ${selectedPass} — ₹${passPrice}`;
+        totalAmountEl.textContent = 'Total: ₹0';
+        formContainer.innerHTML = '';
+        payBtn.style.display = 'none';
+        window.scrollTo({ top: selectionArea.offsetTop, behavior: 'smooth' });
+      });
+    });
+
+    generateBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const count = parseInt(numInput.value);
+      if (!count || count < 1) return alert('Enter number of participants.');
+
+      formContainer.innerHTML = '';
+      for (let i = 1; i <= count; i++) {
+        formContainer.innerHTML += `
+          <div class="participant-card">
+            <h4>Participant ${i}</h4>
+            <input type="text" placeholder="Full Name" required><br>
+            <input type="email" placeholder="Email" required><br>
+            <input type="tel" placeholder="Phone Number" required><br>
+            <input type="text" placeholder="College Name" required>
+          </div>
+        `;
+      }
+
+      const total = count * passPrice;
+      totalAmountEl.textContent = `Total: ₹${total}`;
+      payBtn.style.display = 'inline-block';
+    });
+
+    payBtn.addEventListener('click', () => {
+      const total = parseInt(totalAmountEl.textContent.replace(/\D/g, ''));
+      const options = {
+        key: "rzp_test_1234567890abcd", // Replace with your real Razorpay Key
+        amount: total * 100,
+        currency: "INR",
+        name: "PRAVAAH '26",
+        description: `${selectedPass} Registration`,
+        handler: function (response) {
+          alert("✅ Payment Successful! ID: " + response.razorpay_payment_id);
+          window.location.href = "payment_success.html";
+        },
+        theme: { color: "#00ffff" },
+      };
+      const rzp = new Razorpay(options);
+      rzp.open();
+    });
+  </script>
 </body>
 </html>
