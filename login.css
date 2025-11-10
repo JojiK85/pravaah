@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
 
-/* 🌌 Background */
+/* 🌌 BACKGROUND */
 body {
   font-family: 'Orbitron', sans-serif;
   background: linear-gradient(120deg, #2c1a55, #3e5d75, #022c43, #5b2a86);
@@ -8,11 +8,13 @@ body {
   animation: gradientMove 15s ease infinite;
   color: white;
   margin: 0;
+  min-height: 100vh; /* ✅ allows scrolling when keyboard opens */
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto; /* ✅ lets box stay visible with keyboard open */
+  padding: 40px 0;
 }
 
 @keyframes gradientMove {
@@ -27,7 +29,7 @@ body {
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 40px 5%;
+  padding: 0 20px;
 }
 
 /* 🔹 LOGIN BOX */
@@ -36,11 +38,12 @@ body {
   border: 1.5px solid cyan;
   box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
   border-radius: 18px;
-  padding: 45px 35px;
-  width: 380px;
+  padding: 40px;
+  width: 340px;
+  max-width: 90%;
   text-align: center;
   transition: transform 0.4s ease, box-shadow 0.4s ease;
-  animation: fadeIn 0.8s ease forwards;
+  animation: fadeIn 0.6s ease forwards;
 }
 
 @keyframes fadeIn {
@@ -49,28 +52,28 @@ body {
 }
 
 .login-box:hover {
-  transform: scale(1.03);
-  box-shadow: 0 0 40px cyan;
+  transform: scale(1.02);
+  box-shadow: 0 0 35px cyan;
 }
 
-/* 🔸 Heading */
+/* 🔸 TITLE */
 h1 {
   color: cyan;
   text-shadow: 0 0 15px cyan;
   margin-bottom: 25px;
-  font-size: 2rem;
+  font-size: 1.7rem;
   letter-spacing: 1px;
 }
 
 /* 🔸 INPUTS */
 input {
   width: 90%;
-  padding: 14px;
-  margin: 12px 0;
+  padding: 12px;
+  margin: 10px 0;
   border: none;
   border-radius: 10px;
   outline: none;
-  font-size: 1rem;
+  font-size: 0.95rem;
   text-align: center;
   background: rgba(255, 255, 255, 0.1);
   color: white;
@@ -82,16 +85,15 @@ input:focus {
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* 🔹 Buttons */
+/* 🔹 MAIN LOGIN / SIGNUP BUTTON */
 .main-btn {
   width: 100%;
-  padding: 14px;
+  padding: 12px;
   border: none;
   border-radius: 10px;
   background: cyan;
   color: black;
   font-weight: 700;
-  font-size: 1rem;
   cursor: pointer;
   transition: 0.3s ease;
   margin-top: 10px;
@@ -99,17 +101,17 @@ input:focus {
 
 .main-btn:hover {
   background: #00ffff;
-  box-shadow: 0 0 25px cyan;
+  box-shadow: 0 0 20px cyan;
 }
 
-/* 🔹 Google Button */
+/* 🔹 GOOGLE BUTTON */
 .google-btn {
   width: 100%;
   background: white;
   color: black;
   border-radius: 10px;
   border: none;
-  padding: 14px;
+  padding: 12px;
   margin-top: 15px;
   display: flex;
   align-items: center;
@@ -122,20 +124,20 @@ input:focus {
 
 .google-btn:hover {
   background: #eaeaea;
-  box-shadow: 0 0 25px cyan;
+  box-shadow: 0 0 20px cyan;
 }
 
-/* 🔹 Divider & Toggle */
+/* 🔹 DIVIDER + TOGGLE TEXT */
 .divider {
-  margin: 20px 0;
+  margin: 18px 0;
   color: #bbb;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   letter-spacing: 1px;
 }
 
 .toggle-text {
   margin-top: 15px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #ccc;
 }
 
@@ -151,7 +153,7 @@ input:focus {
 
 /* 🧩 RESPONSIVE DESIGN */
 
-/* 📱 Tablets (below 900px) */
+/* Tablets */
 @media (max-width: 900px) {
   .login-box {
     width: 320px;
@@ -159,86 +161,51 @@ input:focus {
   }
 
   h1 {
-    font-size: 1.8rem;
-  }
-
-  input {
-    font-size: 0.95rem;
-    padding: 12px;
-  }
-
-  .main-btn,
-  .google-btn {
-    padding: 12px;
-    font-size: 0.95rem;
+    font-size: 1.6rem;
   }
 }
 
-/* 📱 Mobile Devices (below 600px) */
+/* 📱 Mobiles */
 @media (max-width: 600px) {
   body {
     align-items: flex-start;
     padding-top: 10vh;
-  }
-
-  .login-container {
-    padding: 20px 5%;
+    padding-bottom: 5vh;
   }
 
   .login-box {
     width: 100%;
     max-width: 320px;
-    padding: 28px 22px;
+    padding: 30px 20px;
     border-radius: 14px;
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
   }
 
   h1 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
 
-  input {
-    padding: 10px;
+  input, .main-btn, .google-btn {
     font-size: 0.9rem;
-  }
-
-  .main-btn,
-  .google-btn {
     padding: 10px;
-    font-size: 0.9rem;
   }
 
-  .divider {
-    font-size: 0.85rem;
-  }
-
-  .toggle-text {
+  .divider, .toggle-text {
     font-size: 0.8rem;
   }
 }
 
-/* 📱 Small Phones (below 400px) */
+/* 📱 Small Phones */
 @media (max-width: 400px) {
-  body {
-    padding-top: 8vh;
-  }
-
   .login-box {
-    padding: 24px 16px;
+    padding: 25px 16px;
     width: 90%;
   }
 
   h1 {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
   }
 
-  input {
-    font-size: 0.85rem;
-    padding: 9px;
-  }
-
-  .main-btn,
-  .google-btn {
+  .main-btn, .google-btn {
     font-size: 0.85rem;
     padding: 9px;
   }
