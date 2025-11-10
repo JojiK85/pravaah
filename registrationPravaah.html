@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PRAVAAH — Passes & Registration</title>
 
-  <!-- Orbitron Font & Icons -->
+  <!-- Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-  <!-- CSS Files -->
+  <!-- CSS -->
   <link rel="stylesheet" href="style.css" /> <!-- Navbar + Footer -->
-  <link rel="stylesheet" href="pass.css" /> <!-- Pass Page -->
+  <link rel="stylesheet" href="pass.css" /> <!-- Passes Page -->
 
   <!-- Razorpay SDK -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -39,51 +39,51 @@
   <!-- 🎟️ PASSES SECTION -->
   <section class="passes-section">
     <div class="passes-container">
-      <h1>🎟️ PRAVAAH PASSES</h1>
-      <p class="instructions">
-        Choose your desired pass below. After selecting, enter the number of participants and fill their details to proceed with payment.
-      </p>
+      <div class="passes-box">
+        <h1>🎟️ PRAVAAH PASSES</h1>
+        <p class="instructions">
+          Choose your desired pass below. After selecting, enter the number of participants and fill their details to proceed with payment.
+        </p>
 
-      <!-- 🔹 Pass Cards (side by side) -->
-      <div class="passes-grid">
-        <div class="pass-card" data-name="Tech Pass" data-price="299">
-          <h2>Tech Pass</h2>
-          <p class="price">₹299</p>
-          <p class="desc">Access all technical competitions, exhibitions, and hackathons during PRAVAAH '26.</p>
-          <button class="select-btn">Select Tech Pass</button>
+        <!-- 🔹 PASS GRID -->
+        <div class="passes-grid">
+          <div class="pass-card" data-name="Tech Pass" data-price="299">
+            <h2>Tech Pass</h2>
+            <p class="price">₹299</p>
+            <p class="desc">Access all technical competitions, exhibitions, and hackathons during PRAVAAH '26.</p>
+            <button class="select-btn">Select Tech Pass</button>
+          </div>
+
+          <div class="pass-card" data-name="Workshop Pass" data-price="499">
+            <h2>Workshop Pass</h2>
+            <p class="price">₹499</p>
+            <p class="desc">Gain entry to expert-led workshops and technical training sessions.</p>
+            <button class="select-btn">Select Workshop Pass</button>
+          </div>
+
+          <div class="pass-card" data-name="Cultural Pass" data-price="199">
+            <h2>Cultural Pass</h2>
+            <p class="price">₹199</p>
+            <p class="desc">Enjoy all cultural events, stage performances, and fun nights at PRAVAAH.</p>
+            <button class="select-btn">Select Cultural Pass</button>
+          </div>
         </div>
 
-        <div class="pass-card" data-name="Workshop Pass" data-price="499">
-          <h2>Workshop Pass</h2>
-          <p class="price">₹499</p>
-          <p class="desc">Gain entry to expert-led workshops and technical training sessions.</p>
-          <button class="select-btn">Select Workshop Pass</button>
-        </div>
+        <!-- 🔹 After Selecting -->
+        <div id="selectionArea" class="hidden">
+          <h3 id="selectedPass"></h3>
+          <div class="participant-section">
+            <label for="numParticipants">Number of Participants:</label><br />
+            <input type="number" id="numParticipants" min="1" max="10" placeholder="Enter number" />
+            <button id="generateForm" class="main-btn">Add Participants</button>
+          </div>
 
-        <div class="pass-card" data-name="Cultural Pass" data-price="199">
-          <h2>Cultural Pass</h2>
-          <p class="price">₹199</p>
-          <p class="desc">Enjoy all cultural events, stage performances, and fun nights at PRAVAAH.</p>
-          <button class="select-btn">Select Cultural Pass</button>
-        </div>
-      </div>
+          <form id="participantForm" class="participants-form"></form>
 
-      <!-- 🔹 Participant Area -->
-      <div id="selectionArea" class="hidden">
-        <h3 id="selectedPass"></h3>
-        <div class="participant-section">
-          <label for="numParticipants">Number of Participants:</label><br />
-          <input type="number" id="numParticipants" min="1" max="10" placeholder="Enter number" />
-          <button id="generateForm" class="main-btn">Add Participants</button>
-        </div>
-
-        <!-- Dynamic Form -->
-        <form id="participantForm" class="participants-form"></form>
-
-        <!-- Total + Pay -->
-        <div class="total-section">
-          <h3 id="totalAmount">Total: ₹0</h3>
-          <button id="payBtn" class="main-btn" style="display:none;">Proceed to Pay</button>
+          <div class="total-section">
+            <h3 id="totalAmount">Total: ₹0</h3>
+            <button id="payBtn" class="main-btn" style="display:none;">Proceed to Pay</button>
+          </div>
         </div>
       </div>
     </div>
@@ -135,7 +135,6 @@
     </div>
   </footer>
 
-  <!-- 🧠 SCRIPT -->
   <script>
     const passCards = document.querySelectorAll('.pass-card');
     const selectionArea = document.getElementById('selectionArea');
@@ -188,7 +187,7 @@
     payBtn.addEventListener('click', () => {
       const total = parseInt(totalAmountEl.textContent.replace(/\D/g, ''));
       const options = {
-        key: "rzp_test_1234567890abcd", // Replace with your real Razorpay Key
+        key: "rzp_test_1234567890abcd",
         amount: total * 100,
         currency: "INR",
         name: "PRAVAAH '26",
