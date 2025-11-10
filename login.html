@@ -9,7 +9,13 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 
-<body>
+<body style="display:none;"> <!-- hide page until Firebase finishes checking -->
+
+  <!-- 🔄 Loading Screen -->
+  <div id="loading-screen">
+    <div class="loader"></div>
+  </div>
+
   <div class="login-container">
     <div class="login-box">
       <h1 id="formTitle">LOGIN TO PRAVAAH</h1>
@@ -38,22 +44,38 @@
       createUserWithEmailAndPassword,
       signInWithPopup, 
       GoogleAuthProvider,
+      setPersistence,
+      browserLocalPersistence,
       onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-    // 🔹 Replace with your Firebase Config
     const firebaseConfig = {
-    apiKey: "AIzaSyCbXKleOw4F46gFDXz2Wynl3YzPuHsVwh8",
-    authDomain: "pravaah-55b1d.firebaseapp.com",
-    projectId: "pravaah-55b1d",
-    storageBucket: "pravaah-55b1d.firebasestorage.app",
-    messagingSenderId: "287687647267",
-    appId: "1:287687647267:web:7aecd603ee202779b89196"
+      apiKey: "AIzaSyCbXKleOw4F46gFDXz2Wynl3YzPuHsVwh8",
+      authDomain: "pravaah-55b1d.firebaseapp.com",
+      projectId: "pravaah-55b1d",
+      storageBucket: "pravaah-55b1d.firebasestorage.app",
+      messagingSenderId: "287687647267",
+      appId: "1:287687647267:web:7aecd603ee202779b89196"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
+
+    // Show page after Firebase check
+    onAuthStateChanged(auth, (user) => {
+      document.getElementById("loading-screen").style.opacity = "0";
+      setTimeout(() => document.getElementById("loading-screen").style.display = "none", 400);
+
+      if (user) {
+        window.location.href = "index.html";
+      } else {
+        document.body.style.display = "block";
+      }
+    });
+
+    // Keep user logged in across refreshes
+    setPersistence(auth, browserLocalPersistence);
 
     const emailInput = document.getElementById('email');
     const passInput = document.getElementById('password');
@@ -64,7 +86,6 @@
 
     let isLogin = true;
 
-    // Toggle Login ↔ Signup
     toggleForm.addEventListener('click', () => {
       isLogin = !isLogin;
       formTitle.textContent = isLogin ? 'LOGIN TO PRAVAAH' : 'CREATE YOUR PRAVAAH ACCOUNT';
@@ -74,7 +95,6 @@
         : 'Already have an account? <span>Login</span>';
     });
 
-    // Email/Password Login or Signup
     submitBtn.addEventListener('click', async () => {
       const email = emailInput.value;
       const password = passInput.value;
@@ -90,20 +110,12 @@
       }
     });
 
-    // Google Sign-In
     googleBtn.addEventListener('click', async () => {
       try {
         await signInWithPopup(auth, provider);
         window.location.href = "index.html";
       } catch (err) {
         alert(err.message);
-      }
-    });
-
-    // Keep user logged in
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        window.location.href = "index.html";
       }
     });
   </script>
