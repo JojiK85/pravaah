@@ -5,8 +5,9 @@ body {
   background: linear-gradient(120deg, #2c1a55, #3e5d75, #022c43, #5b2a86);
   background-size: 400% 400%;
   animation: gradientMove 15s ease infinite;
-  margin: 0;
   color: white;
+  margin: 0;
+  padding-top: 90px;
 }
 
 @keyframes gradientMove {
@@ -15,160 +16,120 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-/* Page Layout */
-.passes-section {
-  padding: 8rem 6% 5rem;
+/* Main container */
+.passes-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 4rem 2rem;
+}
+
+.passes-box {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1.5px solid cyan;
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 800px;
+  width: 100%;
   text-align: center;
 }
 
-.passes-container h1 {
+h1 {
   color: cyan;
   text-shadow: 0 0 15px cyan;
   margin-bottom: 10px;
-  font-size: 2.5rem;
 }
 
-.instructions {
+p {
   color: #ccc;
-  font-size: 1rem;
-  margin-bottom: 30px;
-}
-
-/* Pass Cards */
-.passes-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 25px;
   margin-bottom: 25px;
 }
 
-.pass-card {
+/* Pass Options */
+.pass-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.pass-options label {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid cyan;
-  border-radius: 15px;
-  padding: 20px;
+  border-radius: 12px;
+  padding: 15px;
+  cursor: pointer;
   transition: 0.3s;
 }
 
-.pass-card:hover {
-  box-shadow: 0 0 25px cyan;
-  transform: translateY(-5px);
+.pass-options input {
+  margin-right: 10px;
 }
 
-.pass-card h2 {
-  color: cyan;
+.pass-options label:hover {
+  background: rgba(0, 255, 255, 0.15);
+  box-shadow: 0 0 10px cyan;
 }
 
-.price {
-  color: #00ffff;
-  font-weight: 700;
+/* Participant section */
+.participant-section {
+  margin-bottom: 30px;
 }
 
-.desc {
-  color: #ccc;
-  font-size: 0.9rem;
-  margin: 10px 0 20px;
-}
-
-.select-btn {
-  background: cyan;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.select-btn:hover {
-  background: #00ffff;
-  box-shadow: 0 0 20px cyan;
-}
-
-/* Dynamic Section */
-#selectionArea {
-  margin-top: 40px;
-  padding: 25px;
-  border: 1px solid cyan;
-  border-radius: 15px;
-  background: rgba(0,0,0,0.5);
-  text-align: center;
-}
-
-.participant-card {
-  margin: 10px auto;
-  background: rgba(0,0,0,0.4);
-  padding: 15px;
-  border: 1px solid cyan;
-  border-radius: 10px;
-  width: 95%;
-}
-
-.participant-card input {
-  width: 90%;
+.participant-section input {
+  width: 60%;
   padding: 10px;
-  margin: 5px 0;
+  border-radius: 10px;
   border: none;
-  border-radius: 8px;
   background: rgba(255,255,255,0.1);
   color: white;
+  margin: 10px 0;
   text-align: center;
 }
 
 .main-btn {
   background: cyan;
   border: none;
-  padding: 12px 30px;
-  border-radius: 10px;
+  padding: 10px 25px;
   color: black;
   font-weight: 700;
+  border-radius: 10px;
   cursor: pointer;
   transition: 0.3s;
 }
 
 .main-btn:hover {
-  box-shadow: 0 0 20px cyan;
   background: #00ffff;
+  box-shadow: 0 0 15px cyan;
+}
+
+/* Total Section */
+.total-section {
+  margin-top: 25px;
+}
+
+.total-section h3 {
+  color: cyan;
 }
 
 /* Responsive */
-@media (max-width: 900px) {
-  .passes-section {
-    padding: 6rem 4% 3rem;
+@media (max-width: 600px) {
+  .passes-box {
+    padding: 25px 20px;
   }
 
-  .passes-container h1 {
-    font-size: 2rem;
-  }
-
-  .passes-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  #selectionArea {
-    padding: 15px;
+  .participant-section input {
+    width: 100%;
   }
 
   .main-btn {
     width: 100%;
-    font-size: 0.95rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .passes-container h1 {
-    font-size: 1.6rem;
-  }
-
-  .instructions {
     font-size: 0.9rem;
   }
 
-  .pass-card {
-    padding: 15px;
-  }
-
-  .participant-card input {
-    width: 100%;
+  .pass-options label {
+    font-size: 0.9rem;
+    padding: 12px;
   }
 }
