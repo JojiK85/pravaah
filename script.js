@@ -1,100 +1,97 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
 document.addEventListener("DOMContentLoaded", () => {
+
+  /* 🔹 FIREBASE CONFIG */
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_BUCKET",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  /* 🧩 LOGOUT HANDLER */
+  const logoutDesktop = document.getElementById("logoutDesktop");
+  const logoutMobile = document.getElementById("logoutMobile");
+
+  function handleLogout() {
+    signOut(auth)
+      .then(() => {
+        window.location.href = "login.html";
+      })
+      .catch((error) => {
+        alert("Error logging out: " + error.message);
+      });
+  }
+
+  if (logoutDesktop) logoutDesktop.addEventListener("click", handleLogout);
+  if (logoutMobile) logoutMobile.addEventListener("click", handleLogout);
+
+  /* 📅 CALENDAR + FEED LOGIC (same as before) */
   const monthYear = document.getElementById("monthYear");
   const calendar = document.getElementById("calendar");
   const prevMonth = document.getElementById("prevMonth");
   const nextMonth = document.getElementById("nextMonth");
   const feedList = document.getElementById("feedList");
-
   let currentDate = new Date();
 
-  /* 📜 Chronicle Feeds by Date */
   const feedsByDate = {
-    "2025-11-07": [
-      { img: "DSC09133.JPG", name: "Pravaah", text: "2nd Edition", time: "11:59" }
-    ],
-    "2025-11-08": [
-      { img: "DSC09133.JPG", name: "Pravaah", text: "2nd Edition", time: "11:59" }
-    ],
-    "2025-11-09": [
-      { img: "DSC09133.JPG", name: "Pravaah", text: "2nd Edition", time: "11:59" }
-    ],
-    "2025-11-10": [
-      { img: "DSC09133.JPG", name: "Pravaah", text: "2nd Edition", time: "11:59" }
-    ]
+    "2025-11-07": [{ img: "DSC09133.JPG", name: "Pravaah", text: "2nd Edition", time: "11:59" }]
   };
 
-  const defaultFeed = [
-    { img: "DSC09133.JPG", name: "Pravaah", text: "2nd Edition", time: "11:59" }
-  ];
+  const defaultFeed = [{ img: "DSC09133.JPG", name: "Pravaah", text: "2nd Edition", time: "11:59" }];
 
-  // 📰 Render Feed with Smooth Fade
   function renderFeed(dateKey) {
     feedList.classList.add("fade-out");
     setTimeout(() => {
       feedList.innerHTML = "";
       const data = feedsByDate[dateKey] || defaultFeed;
-
       data.forEach(feed => {
         const item = document.createElement("div");
         item.classList.add("feed-item");
         item.innerHTML = `
           <img src="${feed.img}" alt="${feed.name}">
-          <div class="feed-details">
-            <h4>${feed.name}</h4>
-            <p>${feed.text}</p>
-          </div>
+          <div class="feed-details"><h4>${feed.name}</h4><p>${feed.text}</p></div>
           <div class="feed-time">${feed.time}</div>
         `;
         feedList.appendChild(item);
       });
-
       feedList.classList.remove("fade-out");
       feedList.classList.add("fade-in");
       setTimeout(() => feedList.classList.remove("fade-in"), 600);
     }, 300);
   }
 
-  // 📅 Render Calendar
   function renderCalendar(date, transition = false) {
     const year = date.getFullYear();
     const month = date.getMonth();
-
     if (transition) calendar.classList.add("fade-out");
-
     setTimeout(() => {
       monthYear.innerText = `${date.toLocaleString("default", { month: "long" })} ${year}`;
       const firstDay = new Date(year, month, 1).getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
-
       calendar.innerHTML = "";
-
-      // Empty placeholders for days before 1st
-      for (let i = 0; i < firstDay; i++) {
-        const empty = document.createElement("div");
-        calendar.appendChild(empty);
-      }
-
-      // Create days
+      for (let i = 0; i < firstDay; i++) calendar.appendChild(document.createElement("div"));
       for (let i = 1; i <= daysInMonth; i++) {
         const day = document.createElement("div");
         day.classList.add("day");
         day.innerText = i;
-
         const today = new Date();
-        if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+        if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear())
           day.classList.add("today");
-        }
-
         day.addEventListener("click", (e) => {
           document.querySelectorAll(".day").forEach(d => d.classList.remove("selected"));
           e.target.classList.add("selected");
-          const key = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
-          renderFeed(key);
+          renderFeed(`${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`);
         });
-
         calendar.appendChild(day);
       }
-
       if (transition) {
         calendar.classList.remove("fade-out");
         calendar.classList.add("fade-in");
@@ -103,24 +100,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }, transition ? 300 : 0);
   }
 
-  // ⏪⏩ Month Navigation
-  if (prevMonth && nextMonth) {
-    prevMonth.onclick = () => {
-      currentDate.setMonth(currentDate.getMonth() - 1);
-      renderCalendar(currentDate, true);
-    };
-
-    nextMonth.onclick = () => {
-      currentDate.setMonth(currentDate.getMonth() + 1);
-      renderCalendar(currentDate, true);
-    };
-  }
-
-  // Initialize
+  prevMonth.onclick = () => {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    renderCalendar(currentDate, true);
+  };
+  nextMonth.onclick = () => {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    renderCalendar(currentDate, true);
+  };
   renderCalendar(currentDate);
-  renderFeed(`${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`);
+  renderFeed(`${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`);
 
-  // 🎥 Video Switch
+  /* 🎥 VIDEO SWITCH */
   const mainVideo = document.getElementById("mainVideo");
   const aftermovieBtn = document.getElementById("aftermovieBtn");
   const themeBtn = document.getElementById("themeBtn");
@@ -130,18 +121,16 @@ document.addEventListener("DOMContentLoaded", () => {
       mainVideo.src = "aftermovie.mp4";
       aftermovieBtn.classList.add("active");
       themeBtn.classList.remove("active");
-      mainVideo.play();
     });
 
     themeBtn.addEventListener("click", () => {
       mainVideo.src = "themevideo.mp4";
       themeBtn.classList.add("active");
       aftermovieBtn.classList.remove("active");
-      mainVideo.play();
     });
   }
 
-  // 📱 Navbar Toggle (fixed)
+  /* 📱 NAVBAR TOGGLE */
   const menuToggle = document.getElementById("menuToggle");
   const menu = document.getElementById("menu");
 
@@ -158,9 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.querySelectorAll("#menu a").forEach(link => {
-      link.addEventListener("click", () => {
-        menu.classList.remove("active");
-      });
+      link.addEventListener("click", () => menu.classList.remove("active"));
     });
   }
 });
