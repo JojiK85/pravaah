@@ -27,15 +27,11 @@ document.querySelectorAll(".select-btn").forEach(btn => {
 const numInput = document.getElementById("numParticipants");
 document.getElementById("increaseBtn").addEventListener("click", () => {
   let value = parseInt(numInput.value);
-  if (value < parseInt(numInput.max)) {
-    numInput.value = value + 1;
-  }
+  if (value < parseInt(numInput.max)) numInput.value = value + 1;
 });
 document.getElementById("decreaseBtn").addEventListener("click", () => {
   let value = parseInt(numInput.value);
-  if (value > parseInt(numInput.min)) {
-    numInput.value = value - 1;
-  }
+  if (value > parseInt(numInput.min)) numInput.value = value - 1;
 });
 
 // Generate participant form
@@ -63,7 +59,7 @@ document.getElementById("generateForm").addEventListener("click", (e) => {
   payBtn.style.display = "inline-block";
 });
 
-// Payment logic
+// ✅ Payment logic with extra validation
 payBtn.addEventListener("click", (e) => {
   e.preventDefault();
   if (total === 0) return alert("Please add participants.");
@@ -73,9 +69,20 @@ payBtn.addEventListener("click", (e) => {
   const phones = [...document.querySelectorAll(".pphone")].map(i => i.value.trim());
   const colleges = [...document.querySelectorAll(".pcollege")].map(i => i.value.trim());
 
-  if (names.includes("") || emails.includes("") || phones.includes("") || colleges.includes("")) {
-    alert("Please fill all participant details before proceeding.");
-    return;
+  // ✅ Validation check
+  for (let i = 0; i < names.length; i++) {
+    if (!names[i] || !emails[i] || !phones[i] || !colleges[i]) {
+      alert(`⚠️ Please fill all fields for Participant ${i + 1}.`);
+      return;
+    }
+    if (!emails[i].includes("@") || !emails[i].includes(".")) {
+      alert(`⚠️ Invalid email format for Participant ${i + 1}. Please enter a valid email.`);
+      return;
+    }
+    if (!/^\d{10,}$/.test(phones[i])) {
+      alert(`⚠️ Invalid phone number for Participant ${i + 1}. Must be at least 10 digits.`);
+      return;
+    }
   }
 
   try {
@@ -102,8 +109,8 @@ payBtn.addEventListener("click", (e) => {
             })),
           }),
         })
-          .then(() => window.location.href = "payment_success.html")
-          .catch(() => window.location.href = "payment_failure.html?reason=DataNotSaved");
+        .then(() => window.location.href = "payment_success.html")
+        .catch(() => window.location.href = "payment_failure.html?reason=DataNotSaved");
       },
       modal: {
         ondismiss: function() {
