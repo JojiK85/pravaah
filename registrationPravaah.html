@@ -14,29 +14,50 @@
   <div class="passes-container">
     <div class="passes-box">
       <h1>🎟️ PRAVAAH PASSES</h1>
-      <p>Select your pass and register your team below.</p>
+      <p class="instructions">
+        Choose your desired pass below. After selecting, enter the number of participants and fill their details to proceed with payment.
+      </p>
 
-      <!-- PASS SELECTION -->
-      <div class="pass-options">
-        <label><input type="radio" name="pass" value="Tech" data-price="299" required /> Tech Pass — ₹299</label>
-        <label><input type="radio" name="pass" value="Workshop" data-price="499" /> Workshop Pass — ₹499</label>
-        <label><input type="radio" name="pass" value="Cultural" data-price="199" /> Cultural Pass — ₹199</label>
+      <!-- 🔹 Pass Cards -->
+      <div class="passes-grid">
+        <div class="pass-card" data-name="Tech Pass" data-price="299">
+          <h2>Tech Pass</h2>
+          <p class="price">₹299</p>
+          <p class="desc">Access all technical competitions, exhibitions, and hackathons during PRAVAAH '26.</p>
+          <button class="select-btn">Select Tech Pass</button>
+        </div>
+
+        <div class="pass-card" data-name="Workshop Pass" data-price="499">
+          <h2>Workshop Pass</h2>
+          <p class="price">₹499</p>
+          <p class="desc">Gain entry to expert-led workshops and technical training sessions.</p>
+          <button class="select-btn">Select Workshop Pass</button>
+        </div>
+
+        <div class="pass-card" data-name="Cultural Pass" data-price="199">
+          <h2>Cultural Pass</h2>
+          <p class="price">₹199</p>
+          <p class="desc">Enjoy all cultural events, stage performances, and fun nights at PRAVAAH.</p>
+          <button class="select-btn">Select Cultural Pass</button>
+        </div>
       </div>
 
-      <!-- PARTICIPANT COUNT -->
-      <div class="participant-section">
+      <!-- 🔹 After Selecting a Pass -->
+      <div id="selectionArea" class="hidden">
+        <h3 id="selectedPass"></h3>
+
         <label for="numParticipants">Number of Participants:</label>
         <input type="number" id="numParticipants" min="1" max="10" placeholder="Enter number" />
         <button id="generateForm" class="main-btn">Add Participants</button>
-      </div>
 
-      <!-- PARTICIPANT DETAILS -->
-      <form id="participantForm" class="participants-form"></form>
+        <!-- Dynamic Form -->
+        <form id="participantForm" class="participants-form"></form>
 
-      <!-- TOTAL + PAY -->
-      <div class="total-section">
-        <h3 id="totalAmount">Total: ₹0</h3>
-        <button id="payBtn" class="main-btn" style="display:none;">Proceed to Pay</button>
+        <!-- Total + Pay -->
+        <div class="total-section">
+          <h3 id="totalAmount">Total: ₹0</h3>
+          <button id="payBtn" class="main-btn" style="display:none;">Proceed to Pay</button>
+        </div>
       </div>
     </div>
   </div>
