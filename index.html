@@ -4,102 +4,46 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PRAVAAH — Chronicles of Time</title>
-
-  <!-- 🔹 CSS -->
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script type="module" src="script.js" defer></script>
+</head>
 
-  <!-- 🔹 Firebase & Auth Logic -->
+<body>
+  <!-- 🔒 FIREBASE AUTH CHECK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyCbXKleOw4F46gFDXz2Wynl3YzPuHsVwh8",
-      authDomain: "pravaah-55b1d.firebaseapp.com",
-      projectId: "pravaah-55b1d",
-      storageBucket: "pravaah-55b1d.firebasestorage.app",
-      messagingSenderId: "287687647267",
-      appId: "1:287687647267:web:7aecd603ee202779b89196"
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_BUCKET",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // 🔹 Hide page until auth is checked
-    document.addEventListener("DOMContentLoaded", () => {
-      document.body.style.display = "none";
-      const loader = document.createElement("div");
-      loader.id = "loading-screen";
-      loader.innerHTML = `<div class="loader"></div>`;
-      document.body.appendChild(loader);
-    });
-
-    // 🔹 Firebase Auth State
     onAuthStateChanged(auth, (user) => {
-      const loader = document.getElementById("loading-screen");
-      if (loader) loader.style.opacity = "0";
-      setTimeout(() => loader?.remove(), 400);
-
       if (!user) {
         window.location.href = "login.html";
-      } else {
-        document.body.style.display = "block";
       }
-    });
-
-    // 🔹 Logout Function
-    document.addEventListener("DOMContentLoaded", () => {
-      const logoutDesktop = document.getElementById("logoutDesktop");
-      const logoutMobile = document.getElementById("logoutMobile");
-
-      const logoutUser = async () => {
-        await signOut(auth);
-        window.location.href = "login.html";
-      };
-
-      if (logoutDesktop) logoutDesktop.addEventListener("click", logoutUser);
-      if (logoutMobile) logoutMobile.addEventListener("click", logoutUser);
     });
   </script>
 
-  <!-- 🔹 Loader Style -->
-  <style>
-    #loading-screen {
-      position: fixed;
-      inset: 0;
-      background: black;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      transition: opacity 0.4s ease;
-    }
-
-    .loader {
-      border: 4px solid rgba(255,255,255,0.2);
-      border-top: 4px solid cyan;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-  </style>
-</head>
-
-<body>
   <!-- 🔹 NAVBAR -->
   <nav>
     <div class="logo">PRAVAAH</div>
 
+    <!-- Hamburger Menu Button -->
     <div class="menu-toggle" id="menuToggle">
       <i class="fas fa-bars"></i>
     </div>
 
+    <!-- Navigation Links -->
     <ul id="menu">
       <li><a href="index.html" class="active">Home</a></li>
       <li><a href="events.html">Events</a></li>
@@ -108,13 +52,16 @@
       <li><a href="registrationPravaah.html">Register</a></li>
       <li><a href="contact_us.html">Contact Us</a></li>
       <li><a href="workshop.html">Workshop</a></li>
+
+      <!-- 🔹 Logout link for mobile -->
       <li class="mobile-only"><a href="#" id="logoutMobile">Logout</a></li>
     </ul>
 
+    <!-- 🔹 Logout button for desktop -->
     <button id="logoutDesktop" class="logout-btn">Logout</button>
   </nav>
 
-  <!-- 📅 CALENDAR -->
+  <!-- 📅 CALENDAR + FEED -->
   <h2 class="calendar-title">📅 PRAVAAH'26 CALENDAR</h2>
 
   <div class="container" id="feed">
@@ -135,9 +82,7 @@
 
     <div class="feed-container">
       <h2 class="feed-title">Chronicle Feed 🧾</h2>
-      <div class="feed-list" id="feedList">
-        <div class="feed-placeholder">Select a date to see event details</div>
-      </div>
+      <div class="feed-list" id="feedList"></div>
     </div>
   </div>
 
@@ -146,16 +91,16 @@
     <h2 class="section-title">✨ HIGHLIGHTS OF 2K25 ✨</h2>
     <div class="highlights-carousel">
       <div class="slider-track">
-        <div class="slide" data-title="Opening Ceremony"><img src="DSC09133.JPG" alt="Highlight 1"></div>
-        <div class="slide" data-title="Cultural Night"><img src="DSC09133.JPG" alt="Highlight 2"></div>
-        <div class="slide" data-title="Tech Expo"><img src="DSC09133.JPG" alt="Highlight 3"></div>
-        <div class="slide" data-title="Sports Gala"><img src="DSC09133.JPG" alt="Highlight 4"></div>
-        <div class="slide" data-title="Prize Distribution"><img src="DSC09133.JPG" alt="Highlight 5"></div>
+        <div class="slide" data-title="Opening Ceremony"><img src="DSC09133.JPG" alt=""></div>
+        <div class="slide" data-title="Cultural Night"><img src="DSC09133.JPG" alt=""></div>
+        <div class="slide" data-title="Tech Expo"><img src="DSC09133.JPG" alt=""></div>
+        <div class="slide" data-title="Sports Gala"><img src="DSC09133.JPG" alt=""></div>
+        <div class="slide" data-title="Prize Distribution"><img src="DSC09133.JPG" alt=""></div>
       </div>
     </div>
   </section>
 
-  <!-- 🎬 AFTERMOVIE -->
+  <!-- 🎬 AFTERMOVIE SECTION -->
   <section class="aftermovie-section" id="aftermovie">
     <h2 class="section-title">🎥 VIDEOS — 2K25</h2>
 
@@ -174,7 +119,7 @@
     </div>
   </section>
 
-  <!-- 🌐 SOCIAL SECTION -->
+  <!-- 🌐 SOCIAL STATS -->
   <section class="social-section" id="social">
     <h2>Join Our Ever-Growing Global Community</h2>
     <div class="social-cards">
@@ -230,8 +175,5 @@
       <p><span>@PRAVAAH'26 IIT BHUBANESWAR</span> | MADE WITH 💜 BY WEB TEAM | All Rights Reserved</p>
     </div>
   </footer>
-
-  <!-- Optional: add your existing script.js if you have custom interactivity -->
-  <script src="script.js" defer></script>
 </body>
 </html>
