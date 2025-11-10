@@ -1,22 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
 
-/* 🌌 BACKGROUND */
+/* 🌌 Background */
 body {
   font-family: 'Orbitron', sans-serif;
   background: linear-gradient(120deg, #2c1a55, #3e5d75, #022c43, #5b2a86);
   background-size: 400% 400%;
   animation: gradientMove 15s ease infinite;
-  height: 100vh;
+  color: white;
   margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
+  height: 100vh;
   overflow: hidden;
-  padding: 0;
 }
 
-/* ✨ Background animation */
 @keyframes gradientMove {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -29,8 +27,7 @@ body {
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0 20px;
-  min-height: 100vh;
+  padding: 40px 5%;
 }
 
 /* 🔹 LOGIN BOX */
@@ -39,43 +36,41 @@ body {
   border: 1.5px solid cyan;
   box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
   border-radius: 18px;
-  padding: 40px;
-  width: 340px;
-  max-width: 90%;
+  padding: 45px 35px;
+  width: 380px;
   text-align: center;
   transition: transform 0.4s ease, box-shadow 0.4s ease;
-  animation: fadeInUp 0.8s ease forwards;
+  animation: fadeIn 0.8s ease forwards;
 }
 
-/* ✨ Slide up animation */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(30px); }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .login-box:hover {
-  transform: scale(1.02);
-  box-shadow: 0 0 35px cyan;
+  transform: scale(1.03);
+  box-shadow: 0 0 40px cyan;
 }
 
-/* 🔸 TITLE */
+/* 🔸 Heading */
 h1 {
   color: cyan;
   text-shadow: 0 0 15px cyan;
   margin-bottom: 25px;
-  font-size: 1.7rem;
+  font-size: 2rem;
   letter-spacing: 1px;
 }
 
 /* 🔸 INPUTS */
 input {
   width: 90%;
-  padding: 12px;
-  margin: 10px 0;
+  padding: 14px;
+  margin: 12px 0;
   border: none;
   border-radius: 10px;
   outline: none;
-  font-size: 0.95rem;
+  font-size: 1rem;
   text-align: center;
   background: rgba(255, 255, 255, 0.1);
   color: white;
@@ -87,15 +82,16 @@ input:focus {
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* 🔹 MAIN LOGIN / SIGNUP BUTTON */
+/* 🔹 Buttons */
 .main-btn {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   border: none;
   border-radius: 10px;
   background: cyan;
   color: black;
   font-weight: 700;
+  font-size: 1rem;
   cursor: pointer;
   transition: 0.3s ease;
   margin-top: 10px;
@@ -103,17 +99,17 @@ input:focus {
 
 .main-btn:hover {
   background: #00ffff;
-  box-shadow: 0 0 20px cyan;
+  box-shadow: 0 0 25px cyan;
 }
 
-/* 🔹 GOOGLE BUTTON */
+/* 🔹 Google Button */
 .google-btn {
   width: 100%;
   background: white;
   color: black;
   border-radius: 10px;
   border: none;
-  padding: 12px;
+  padding: 14px;
   margin-top: 15px;
   display: flex;
   align-items: center;
@@ -126,20 +122,20 @@ input:focus {
 
 .google-btn:hover {
   background: #eaeaea;
-  box-shadow: 0 0 20px cyan;
+  box-shadow: 0 0 25px cyan;
 }
 
-/* 🔹 DIVIDER + TOGGLE TEXT */
+/* 🔹 Divider & Toggle */
 .divider {
-  margin: 18px 0;
+  margin: 20px 0;
   color: #bbb;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   letter-spacing: 1px;
 }
 
 .toggle-text {
   margin-top: 15px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: #ccc;
 }
 
@@ -153,49 +149,67 @@ input:focus {
   text-shadow: 0 0 10px cyan;
 }
 
-/* 🔹 RESPONSIVE (Phones / Small Screens) */
+/* 🧩 RESPONSIVE DESIGN */
+
+/* 📱 Tablets (below 900px) */
+@media (max-width: 900px) {
+  .login-box {
+    width: 320px;
+    padding: 35px 25px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  input {
+    font-size: 0.95rem;
+    padding: 12px;
+  }
+
+  .main-btn,
+  .google-btn {
+    padding: 12px;
+    font-size: 0.95rem;
+  }
+}
+
+/* 📱 Mobile Devices (below 600px) */
 @media (max-width: 600px) {
-  html, body {
-    height: 100%;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  body {
+    align-items: flex-start;
+    padding-top: 10vh;
   }
 
   .login-container {
-    align-items: center;
-    justify-content: center;
-    padding: 0 10px;
+    padding: 20px 5%;
   }
 
   .login-box {
     width: 100%;
-    padding: 28px 20px;
+    max-width: 320px;
+    padding: 28px 22px;
     border-radius: 14px;
     box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
   }
 
   h1 {
-    font-size: 1.4rem;
-    margin-bottom: 18px;
+    font-size: 1.5rem;
   }
 
   input {
-    width: 100%;
     padding: 10px;
     font-size: 0.9rem;
   }
 
-  .main-btn, .google-btn {
+  .main-btn,
+  .google-btn {
     padding: 10px;
     font-size: 0.9rem;
-    margin-top: 10px;
   }
 
   .divider {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
   }
 
   .toggle-text {
@@ -203,17 +217,28 @@ input:focus {
   }
 }
 
-/* 📱 Very Small Devices (below 400px width) */
+/* 📱 Small Phones (below 400px) */
 @media (max-width: 400px) {
+  body {
+    padding-top: 8vh;
+  }
+
   .login-box {
-    padding: 22px 15px;
+    padding: 24px 16px;
+    width: 90%;
   }
 
   h1 {
     font-size: 1.25rem;
   }
 
-  .main-btn, .google-btn {
+  input {
+    font-size: 0.85rem;
+    padding: 9px;
+  }
+
+  .main-btn,
+  .google-btn {
     font-size: 0.85rem;
     padding: 9px;
   }
