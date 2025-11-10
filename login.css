@@ -194,19 +194,5 @@ input:focus {
   }
 }
 
-/* 📱 Small Phones */
-@media (max-width: 400px) {
-  .login-box {
-    padding: 25px 16px;
-    width: 90%;
-  }
 
-  h1 {
-    font-size: 1.2rem;
-  }
 
-  .main-btn, .google-btn {
-    font-size: 0.85rem;
-    padding: 9px;
-  }
-}
