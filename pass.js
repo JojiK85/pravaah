@@ -12,7 +12,10 @@ const numInput = document.getElementById("numParticipants");
 const increaseBtn = document.getElementById("increaseBtn");
 const decreaseBtn = document.getElementById("decreaseBtn");
 
-// 🔹 Pass selection
+// 🔗 Your Apps Script URL (ends with /exec)
+const scriptURL = "https://script.google.com/macros/s/AKfycbwHR5zp3-09nakNxpryLvtmcSUebhkfaohrYWvhlnh32mt0wFfljkqO5JoOJtFsuudJfw/exec";
+
+// Pass selection
 document.querySelectorAll(".select-btn").forEach(btn => {
   btn.addEventListener("click", (e) => {
     const card = e.target.closest(".pass-card");
@@ -29,7 +32,6 @@ document.querySelectorAll(".select-btn").forEach(btn => {
   });
 });
 
-// 🔹 Dynamic participant form
 function updateParticipantForm(count) {
   participantForm.innerHTML = "";
   if (!count || count === 0) {
@@ -54,7 +56,7 @@ function updateParticipantForm(count) {
   payBtn.style.display = "inline-block";
 }
 
-// 🔹 + / - buttons
+// +/- buttons
 increaseBtn.addEventListener("click", () => {
   let value = parseInt(numInput.value || "0", 10);
   const max = parseInt(numInput.max || "100", 10);
@@ -73,11 +75,11 @@ decreaseBtn.addEventListener("click", () => {
   }
 });
 
-// ✅ Razorpay + Google Sheet
+// Razorpay + background Google Sheet write
 payBtn.addEventListener("click", async (e) => {
   e.preventDefault();
-  if (!selectedPass) return alert("Please select a pass first.");
-  if (total === 0) return alert("Please add participants first.");
+  if (!selectedPass) return;
+  if (total === 0) return;
 
   const names = [...document.querySelectorAll(".pname")].map(i => i.value.trim());
   const emails = [...document.querySelectorAll(".pemail")].map(i => i.value.trim());
@@ -85,74 +87,69 @@ payBtn.addEventListener("click", async (e) => {
   const colleges = [...document.querySelectorAll(".pcollege")].map(i => i.value.trim());
 
   for (let i = 0; i < names.length; i++) {
-    if (!names[i] || !emails[i] || !phones[i] || !colleges[i]) {
-      alert(`⚠️ Fill all fields for Participant ${i + 1}`);
-      return;
-    }
+    if (!names[i] || !emails[i] || !phones[i] || !colleges[i]) return;
   }
 
   try {
-    // Make timerInterval visible to the handler (avoid undefined if handler fires fast)
-    let timerInterval;
+    let timerInterval; // visible to handler
 
     const options = {
       key: "rzp_test_Re1mOkmIGroT2c",
-      amount: total * 100, // paise
+      amount: total * 100,
       currency: "INR",
       name: "PRAVAAH 2026",
       description: `${selectedPass} Registration`,
       image: "pravah-logo.png",
 
-      handler: async function (response) {
+      // INSTANT redirect; data sent in background
+      handler: function (response) {
         if (timerInterval) clearInterval(timerInterval);
         timerDisplay.style.display = "none";
 
-        const scriptURL = "https://script.google.com/macros/s/AKfycbwHR5zp3-09nakNxpryLvtmcSUebhkfaohrYWvhlnh32mt0wFfljkqO5JoOJtFsuudJfw/exec";
+        const payload = JSON.stringify({
+          paymentId: response.razorpay_payment_id,
+          passType: selectedPass,
+          totalAmount: total,
+          participants: names.map((name, i) => ({
+            name,
+            email: emails[i],
+            phone: phones[i],
+            college: colleges[i],
+          })),
+        });
+
+        // Try sendBeacon first (non-blocking, survives navigation)
+        let queued = false;
         try {
-          const res = await fetch(scriptURL, {
-            method: "POST",
-            // ✅ Use text/plain to avoid CORS preflight
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({
-              paymentId: response.razorpay_payment_id,
-              passType: selectedPass,
-              totalAmount: total,
-              participants: names.map((name, i) => ({
-                name,
-                email: emails[i],
-                phone: phones[i],
-                college: colleges[i],
-              })),
-            }),
-          });
-
-          const raw = await res.text();
-          let data;
-          try { data = JSON.parse(raw); } catch { data = { status: "error", message: "Non-JSON", raw }; }
-          console.log("🟢 Script Response:", data);
-
-          if (res.ok && data.status === "success") {
-            alert("✅ Payment successful & data recorded!");
-            window.location.href = "payment_success.html";
-          } else {
-            alert("⚠️ Payment done but data not recorded.\n" + (data.message || raw));
-            window.location.href = "payment_success.html";
+          if (navigator.sendBeacon) {
+            const blob = new Blob([payload], { type: "text/plain" });
+            queued = navigator.sendBeacon(scriptURL, blob);
           }
-        } catch (err) {
-          console.error("❌ Network error:", err);
-          alert("⚠️ Payment done but data not recorded (network error).");
-          window.location.href = "payment_success.html";
+        } catch (_) { /* noop */ }
+
+        // Fallback to keepalive fetch (also survives navigation)
+        if (!queued) {
+          try {
+            fetch(scriptURL, {
+              method: "POST",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: payload,
+              keepalive: true
+            }).catch(() => {});
+          } catch (_) {}
         }
+
+        // Redirect immediately (no alerts)
+        window.location.href = "payment_success.html";
       },
+
       theme: { color: "#00ffff" },
     };
 
-    // Ensure Razorpay script is loaded on the page:
-    // <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
+    // Ensure you have: <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     const rzp = new Razorpay(options);
 
-    // Start timer AFTER options are set so handler can clear it
+    // Payment timer (no alerts on expiry)
     let timeLeft = 300;
     timerDisplay.style.display = "block";
     timerInterval = setInterval(() => {
@@ -163,14 +160,16 @@ payBtn.addEventListener("click", async (e) => {
       if (timeLeft <= 0) {
         clearInterval(timerInterval);
         rzp.close();
-        alert("⚠️ Payment window expired. Try again.");
+        // No alert; optionally show inline text:
+        // timerDisplay.textContent = "Payment window expired.";
+        timerDisplay.style.display = "none";
       }
     }, 1000);
 
     rzp.open();
 
   } catch (error) {
-    console.error("❌ Razorpay Error:", error);
+    // Silent fail -> optional navigate to failure page
     window.location.href = "payment_failure.html";
   }
 });
