@@ -1,7 +1,32 @@
 // =====================
-// PRAVAAH 2026 Registration + Payment (Hybrid Optimized)
+// PRAVAAH 2026 Registration + Payment (Hybrid + Google Sheets Integration)
 // =====================
 
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+// 🔥 Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyCbXKleOw4F46gFDXz2Wynl3YzPuHsVwh8",
+  authDomain: "pravaah-55b1d.firebaseapp.com",
+  projectId: "pravaah-55b1d",
+  storageBucket: "pravaah-55b1d.appspot.com",
+  messagingSenderId: "287687647267",
+  appId: "1:287687647267:web:7aecd603ee202779b89196"
+};
+
+// ⚙️ Initialize Firebase
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+const auth = getAuth(app);
+
+// =====================
+// 🔗 GOOGLE APPS SCRIPT ENDPOINT
+// =====================
+const scriptURL = "https://script.google.com/macros/s/AKfycbyC2AZkrZA1aIkIU0fGFUBswnn9usKOpV1VU2nYoh-tAnBYftx1jOV3GWV-8La-Q--I/exec";
+
+// =====================
+// 🎟 PASS SELECTION LOGIC
+// =====================
 let selectedPass = null;
 let selectedPrice = 0;
 let total = 0;
@@ -16,12 +41,6 @@ const numInput = document.getElementById("numParticipants");
 const increaseBtn = document.getElementById("increaseBtn");
 const decreaseBtn = document.getElementById("decreaseBtn");
 
-// 🔗 Google Apps Script endpoint
-const scriptURL = "https://script.google.com/macros/s/AKfycbwHR5zp3-09nakNxpryLvtmcSUebhkfaohrYWvhlnh32mt0wFfljkqO5JoOJtFsuudJfw/exec";
-
-// =====================
-// 🎟 PASS CARD SELECTION
-// =====================
 const passCards = document.querySelectorAll(".pass-card");
 
 passCards.forEach(card => {
@@ -89,10 +108,11 @@ decreaseBtn.addEventListener("click", () => {
 });
 
 // =====================
-// 💳 PAYMENT HANDLER
+// 💳 PAYMENT + GOOGLE SHEETS SYNC
 // =====================
 payBtn.addEventListener("click", async (e) => {
   e.preventDefault();
+
   if (!selectedPass || total === 0) return;
 
   const names = [...document.querySelectorAll(".pname")].map(i => i.value.trim());
@@ -101,8 +121,14 @@ payBtn.addEventListener("click", async (e) => {
   const colleges = [...document.querySelectorAll(".pcollege")].map(i => i.value.trim());
 
   for (let i = 0; i < names.length; i++) {
-    if (!names[i] || !emails[i] || !phones[i] || !colleges[i]) return;
+    if (!names[i] || !emails[i] || !phones[i] || !colleges[i]) {
+      alert("⚠️ Please fill all participant details.");
+      return;
+    }
   }
+
+  const user = auth.currentUser;
+  const currentUserEmail = user?.email || "Guest";
 
   try {
     let timerInterval;
@@ -119,7 +145,8 @@ payBtn.addEventListener("click", async (e) => {
         if (timerInterval) clearInterval(timerInterval);
         timerDisplay.style.display = "none";
 
-        const payload = JSON.stringify({
+        const payload = {
+          registeredEmail: currentUserEmail,
           paymentId: response.razorpay_payment_id,
           passType: selectedPass,
           totalAmount: total,
@@ -129,28 +156,22 @@ payBtn.addEventListener("click", async (e) => {
             phone: phones[i],
             college: colleges[i],
           })),
+        };
+
+        // Send data to Google Sheets
+        fetch(scriptURL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        })
+        .then(() => {
+          console.log("✅ Data saved to Google Sheet");
+          window.location.href = "payment_success.html";
+        })
+        .catch((err) => {
+          console.error("❌ Failed to save data:", err);
+          window.location.href = "payment_failure.html";
         });
-
-        let queued = false;
-        try {
-          if (navigator.sendBeacon) {
-            const blob = new Blob([payload], { type: "text/plain" });
-            queued = navigator.sendBeacon(scriptURL, blob);
-          }
-        } catch (_) {}
-
-        if (!queued) {
-          try {
-            fetch(scriptURL, {
-              method: "POST",
-              headers: { "Content-Type": "text/plain;charset=utf-8" },
-              body: payload,
-              keepalive: true
-            }).catch(() => {});
-          } catch (_) {}
-        }
-
-        window.location.href = "payment_success.html";
       },
 
       theme: { color: "#00ffff" },
@@ -158,7 +179,7 @@ payBtn.addEventListener("click", async (e) => {
 
     const rzp = new Razorpay(options);
 
-    // 5-min payment window timer
+    // 5-min Payment Timer
     let timeLeft = 300;
     timerDisplay.style.display = "block";
     timerInterval = setInterval(() => {
@@ -176,6 +197,7 @@ payBtn.addEventListener("click", async (e) => {
     rzp.open();
 
   } catch (error) {
+    console.error("Payment error:", error);
     window.location.href = "payment_failure.html";
   }
 });
