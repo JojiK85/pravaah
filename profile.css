@@ -22,7 +22,9 @@ body {
 .profile-section {
   display: flex;
   justify-content: center;
+  align-items: center;
   padding: 2rem;
+  width: 100%;
 }
 
 .profile-container {
@@ -30,10 +32,10 @@ body {
   border: 1.8px solid cyan;
   border-radius: 24px;
   box-shadow: 0 0 30px rgba(0, 255, 255, 0.35);
-  width: 1150px;              /* ✅ Fixed width for consistency */
-  max-width: 1150px;          /* ✅ Prevent stretching */
-  min-width: 1150px;          /* ✅ Same width across all users */
-  margin: 0 auto;             /* Center horizontally */
+  width: 1150px;
+  max-width: 1150px;
+  min-width: 1150px;
+  margin: 0 auto;
   padding: 50px;
   color: #e3f8ff;
   transition: 0.3s ease;
@@ -48,12 +50,10 @@ body {
   justify-content: flex-start;
   gap: 80px;
   margin-bottom: 50px;
-  flex-wrap: nowrap;
-  overflow: hidden;            /* Prevent content overflow */
   width: 100%;
+  overflow: hidden;
 }
 
-/* ---------- PROFILE PHOTO ---------- */
 .profile-photo {
   text-align: center;
   flex: 0 0 200px;
@@ -104,7 +104,6 @@ body {
 .photo-wrapper:hover .photo-overlay {
   opacity: 1;
   background: rgba(0, 255, 255, 0.35);
-  cursor: pointer;
 }
 
 /* ---------- UPLOAD OPTIONS ---------- */
@@ -241,42 +240,69 @@ body {
 }
 
 /* ---------- RESPONSIVE ---------- */
+
+/* 🖥 Tablets / Small Laptops */
 @media (max-width: 1200px) {
   .profile-container {
     width: 90%;
     max-width: 95%;
     min-width: unset;
+    padding: 40px;
   }
 }
 
+/* 📱 Mobile Screens */
 @media (max-width: 768px) {
+  .profile-container {
+    width: 94%;
+    padding: 25px 20px;
+    border-radius: 20px;
+  }
+
   .profile-header {
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     text-align: center;
-    gap: 25px;
+    gap: 20px;
+    margin-bottom: 30px;
   }
 
   .profile-photo img {
-    width: 130px;
-    height: 130px;
+    width: 140px;
+    height: 140px;
   }
 
   .profile-info {
     width: 100%;
     text-align: center;
+    padding: 0 10px;
+  }
+
+  .profile-info p {
+    font-size: 1rem;
+    margin: 6px 0;
+    line-height: 1.4rem;
+  }
+
+  .passes-list {
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
   }
 
   .pass-item {
-    width: 95%;
+    width: 90%;
+    padding: 22px;
   }
 
   .upload-btn {
-    width: 80%;
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 8px 12px;
   }
 
-  .profile-container {
-    width: 92%;
-    padding: 30px;
+  body {
+    padding-top: 5rem;
   }
 }
