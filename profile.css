@@ -35,16 +35,17 @@ body {
   padding: 40px;
   color: #e3f8ff;
   transition: 0.3s ease;
+  backdrop-filter: blur(8px);
 }
 
 /* ---------- HEADER (PHOTO + INFO) ---------- */
 .profile-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 60px;
   margin-bottom: 40px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 /* ---------- PROFILE PHOTO ---------- */
@@ -108,11 +109,13 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  transition: 0.3s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .upload-options.hidden {
   display: none;
+  opacity: 0;
+  transform: translateY(-5px);
 }
 
 /* ---------- UPLOAD BUTTONS ---------- */
@@ -186,12 +189,12 @@ body {
   border: 1.5px solid rgba(0, 255, 255, 0.6);
   border-radius: 18px;
   padding: 25px 30px;
-  width: 420px; /* ⬅️ Wider for desktop */
+  width: 440px;
   color: #dff;
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
   transition: 0.3s ease;
   text-align: left;
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px);
 }
 
 .pass-item:hover {
@@ -230,12 +233,24 @@ body {
 }
 
 /* ---------- RESPONSIVE ---------- */
-@media (max-width: 1000px) {
+
+/* 🖥 Desktop & Large Screens */
+@media (min-width: 769px) {
+  .profile-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+  }
+}
+
+/* 📱 Mobile Screens */
+@media (max-width: 768px) {
   .profile-header {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 30px;
+    gap: 25px;
   }
 
   .profile-photo img {
@@ -245,32 +260,18 @@ body {
 
   .profile-info {
     width: 100%;
+    text-align: center;
   }
 
   .pass-item {
-    width: 90%;
-  }
-}
-
-@media (max-width: 600px) {
-  .profile-container {
-    padding: 25px;
-  }
-
-  .profile-info p {
-    font-size: 1rem;
+    width: 95%;
   }
 
   .upload-btn {
     width: 80%;
   }
 
-  .passes-list {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .pass-item {
-    width: 95%;
+  .profile-container {
+    padding: 25px;
   }
 }
