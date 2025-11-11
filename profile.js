@@ -6,12 +6,6 @@ import {
   updateProfile
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc
-} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-import {
   getStorage,
   ref,
   uploadBytes,
@@ -31,10 +25,14 @@ const firebaseConfig = {
 // ⚙️ Initialize Firebase
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 const auth = getAuth(app);
-const db = getFirestore(app);
 const storage = getStorage(app);
 
+// 🔗 Google Apps Script Backend (the one you gave)
+const scriptURL = "https://script.google.com/macros/s/AKfycbyC2AZkrZA1aIkIU0fGFUBswnn9usKOpV1VU2nYoh-tAnBYftx1jOV3GWV-8La-Q--I/exec";
+
+// ===============================
 // 🔔 Toast Notification Utility
+// ===============================
 function showToast(message, type = "info") {
   const toast = document.createElement("div");
   toast.className = `toast ${type}`;
@@ -69,49 +67,52 @@ onAuthStateChanged(auth, async (user) => {
   // 🧠 Basic Info
   userEmailEl.textContent = user.email;
   userNameEl.textContent = user.displayName || "PRAVAAH User";
+  userPhoto.src = user.photoURL || "default-avatar.png";
 
-  const userRef = doc(db, "users", user.uid);
-  const snap = await getDoc(userRef);
+  // ==========================================
+  // 🎟 LOAD PASSES FROM GOOGLE SHEET
+  // ==========================================
+  try {
+    const res = await fetch(`${scriptURL}?email=${encodeURIComponent(user.email)}`);
+    const passes = await res.json();
 
-  // 🖼 Profile Photo Logic
-  if (user.photoURL) {
-    userPhoto.src = user.photoURL;
-  } else if (snap.exists() && snap.data().photoURL) {
-    userPhoto.src = snap.data().photoURL;
-  } else {
-    userPhoto.src = "default-avatar.png";
-  }
+    if (!passes || passes.length === 0) {
+      passesList.innerHTML = `<p class="no-passes">❌ No passes yet. Not registered.</p>`;
+      return;
+    }
 
-  // 🎟 Display Passes
-  if (snap.exists()) {
-    const data = snap.data();
-    userPhoneEl.textContent = data.phone || "Not provided";
-    userCollegeEl.textContent = data.college || "Not provided";
+    // Group passes by Payment ID
+    const grouped = {};
+    passes.forEach(p => {
+      if (!grouped[p.paymentId]) grouped[p.paymentId] = [];
+      grouped[p.paymentId].push(p);
+    });
 
-    const passes = data.passes || [];
-    passesList.innerHTML = passes.length
-      ? passes.map(p => `
+    passesList.innerHTML = Object.entries(grouped)
+      .map(([paymentId, items]) => `
         <div class="pass-item">
-          <h3>${p.passType}</h3>
-          <p><strong>Amount:</strong> ₹${p.totalAmount}</p>
-          <p><strong>Payment ID:</strong> ${p.paymentId}</p>
+          <h3>${items[0].passType}</h3>
+          <p><strong>Payment ID:</strong> ${paymentId}</p>
+          <p><strong>Total Amount:</strong> ₹${items[0].totalAmount}</p>
           <p><strong>Participants:</strong></p>
-          <ul>${p.participants.map(pt => `<li>${pt.name} (${pt.email})</li>`).join("")}</ul>
+          <ul>
+            ${items.map(p => `<li>${p.name} (${p.email}, ${p.phone}) — ${p.college}</li>`).join("")}
+          </ul>
         </div>
-      `).join("")
-      : `<p class="no-passes">❌ No passes yet. Not registered.</p>`;
-  } else {
-    passesList.innerHTML = `<p class="no-passes">❌ No passes yet. Not registered.</p>`;
+      `).join("");
+
+  } catch (err) {
+    console.error("❌ Error fetching passes:", err);
+    passesList.innerHTML = `<p class="no-passes">⚠️ Unable to load passes. Try again later.</p>`;
   }
 
-  // ===============================
+  // ==========================================
   // 📸 Upload from Device
-  // ===============================
+  // ==========================================
   document.getElementById("uploadPhoto").addEventListener("change", async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Instant preview
     const reader = new FileReader();
     reader.onload = (ev) => (userPhoto.src = ev.target.result);
     reader.readAsDataURL(file);
@@ -122,9 +123,7 @@ onAuthStateChanged(auth, async (user) => {
       await uploadBytes(storageRef, file);
       const photoURL = await getDownloadURL(storageRef);
 
-      await setDoc(userRef, { photoURL }, { merge: true });
       await updateProfile(user, { photoURL });
-
       userPhoto.src = photoURL;
       showToast("✅ Profile photo updated successfully!", "success");
     } catch (err) {
@@ -133,9 +132,9 @@ onAuthStateChanged(auth, async (user) => {
     }
   });
 
-  // ===============================
-  // ☁️ Upload from Google Drive Link
-  // ===============================
+  // ==========================================
+  // ☁️ Upload from Google Drive
+  // ==========================================
   const driveBtn = document.getElementById("driveUploadBtn");
   if (driveBtn) {
     driveBtn.addEventListener("click", async () => {
@@ -145,7 +144,7 @@ onAuthStateChanged(auth, async (user) => {
         return;
       }
 
-      const fileIdMatch = driveLink.match(/[-\w]{25,}/);
+      const fileIdMatch = driveLink.match(/[-\\w]{25,}/);
       if (!fileIdMatch) {
         showToast("⚠️ Invalid link format.", "error");
         return;
@@ -155,7 +154,6 @@ onAuthStateChanged(auth, async (user) => {
       const directLink = `https://drive.google.com/uc?export=view&id=${fileId}`;
 
       try {
-        await setDoc(userRef, { photoURL: directLink }, { merge: true });
         await updateProfile(user, { photoURL: directLink });
         userPhoto.src = directLink;
         showToast("✅ Profile photo updated from Google Drive!", "success");
@@ -189,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ===============================
-// 🔔 TOAST CSS
+// 🔔 TOAST STYLING
 // ===============================
 const style = document.createElement("style");
 style.innerHTML = `
