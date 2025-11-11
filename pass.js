@@ -1,6 +1,5 @@
 // =====================
-// PRAVAAH 2026 Registration + Payment
-// Hybrid Optimized Version
+// PRAVAAH 2026 Registration + Payment (Hybrid Optimized)
 // =====================
 
 let selectedPass = null;
@@ -17,7 +16,7 @@ const numInput = document.getElementById("numParticipants");
 const increaseBtn = document.getElementById("increaseBtn");
 const decreaseBtn = document.getElementById("decreaseBtn");
 
-// 🔗 Google Apps Script URL
+// 🔗 Google Apps Script endpoint
 const scriptURL = "https://script.google.com/macros/s/AKfycbwHR5zp3-09nakNxpryLvtmcSUebhkfaohrYWvhlnh32mt0wFfljkqO5JoOJtFsuudJfw/exec";
 
 // =====================
@@ -27,15 +26,12 @@ const passCards = document.querySelectorAll(".pass-card");
 
 passCards.forEach(card => {
   card.addEventListener("click", () => {
-    // Remove old highlights
     passCards.forEach(c => c.classList.remove("selected"));
     card.classList.add("selected");
 
-    // Store selection
     selectedPass = card.dataset.name;
     selectedPrice = parseInt(card.dataset.price, 10);
 
-    // Reset UI
     selectionArea.classList.remove("hidden");
     selectedPassText.innerText = `Selected: ${selectedPass} — ₹${selectedPrice}`;
     totalAmount.innerText = `Total: ₹0`;
@@ -76,13 +72,10 @@ function updateParticipantForm(count) {
   payBtn.style.display = "inline-block";
 }
 
-// + / - Buttons
 increaseBtn.addEventListener("click", () => {
   let value = parseInt(numInput.value || "0", 10);
-  const max = 10; // limit for safety
-  if (value < max) {
-    value++;
-    numInput.value = value;
+  if (value < 10) {
+    numInput.value = ++value;
     updateParticipantForm(value);
   }
 });
@@ -90,14 +83,13 @@ increaseBtn.addEventListener("click", () => {
 decreaseBtn.addEventListener("click", () => {
   let value = parseInt(numInput.value || "0", 10);
   if (value > 0) {
-    value--;
-    numInput.value = value;
+    numInput.value = --value;
     updateParticipantForm(value);
   }
 });
 
 // =====================
-// 💰 PAYMENT + SHEET WRITE
+// 💳 PAYMENT HANDLER
 // =====================
 payBtn.addEventListener("click", async (e) => {
   e.preventDefault();
@@ -108,7 +100,6 @@ payBtn.addEventListener("click", async (e) => {
   const phones = [...document.querySelectorAll(".pphone")].map(i => i.value.trim());
   const colleges = [...document.querySelectorAll(".pcollege")].map(i => i.value.trim());
 
-  // Validation
   for (let i = 0; i < names.length; i++) {
     if (!names[i] || !emails[i] || !phones[i] || !colleges[i]) return;
   }
@@ -128,7 +119,6 @@ payBtn.addEventListener("click", async (e) => {
         if (timerInterval) clearInterval(timerInterval);
         timerDisplay.style.display = "none";
 
-        // Build payload
         const payload = JSON.stringify({
           paymentId: response.razorpay_payment_id,
           passType: selectedPass,
@@ -141,7 +131,6 @@ payBtn.addEventListener("click", async (e) => {
           })),
         });
 
-        // Try sendBeacon first
         let queued = false;
         try {
           if (navigator.sendBeacon) {
@@ -150,7 +139,6 @@ payBtn.addEventListener("click", async (e) => {
           }
         } catch (_) {}
 
-        // Fallback using keepalive fetch (for reliability)
         if (!queued) {
           try {
             fetch(scriptURL, {
@@ -162,7 +150,6 @@ payBtn.addEventListener("click", async (e) => {
           } catch (_) {}
         }
 
-        // Redirect instantly
         window.location.href = "payment_success.html";
       },
 
@@ -171,7 +158,7 @@ payBtn.addEventListener("click", async (e) => {
 
     const rzp = new Razorpay(options);
 
-    // Start 5-min Timer
+    // 5-min payment window timer
     let timeLeft = 300;
     timerDisplay.style.display = "block";
     timerInterval = setInterval(() => {
@@ -186,7 +173,6 @@ payBtn.addEventListener("click", async (e) => {
       }
     }, 1000);
 
-    // Open Razorpay
     rzp.open();
 
   } catch (error) {
