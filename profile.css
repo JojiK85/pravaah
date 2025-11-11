@@ -44,6 +44,69 @@ body {
   letter-spacing: 1px;
 }
 
+/* ---------- PROFILE PICTURE ---------- */
+.profile-pic-container {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.profile-pic {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px solid cyan;
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.05);
+  transition: 0.3s ease;
+}
+
+.profile-pic:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 35px rgba(0, 255, 255, 0.8);
+}
+
+/* ---------- UPLOAD BUTTONS ---------- */
+.upload-options {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.upload-btn {
+  background: cyan;
+  color: black;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.upload-btn i {
+  margin-right: 6px;
+}
+
+.upload-btn:hover {
+  background: #00ffff;
+  box-shadow: 0 0 15px cyan;
+  transform: scale(1.05);
+}
+
+.drive-btn {
+  background: #34a853;
+  color: white;
+}
+
+.drive-btn:hover {
+  background: #2b8a44;
+  box-shadow: 0 0 20px #34a853;
+}
+
 /* ---------- USER INFO BOX ---------- */
 .profile-box {
   background: rgba(255, 255, 255, 0.07);
@@ -133,5 +196,14 @@ body {
   .pass-item {
     width: 100%;
     padding: 18px;
+  }
+
+  .upload-options {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .upload-btn {
+    width: 80%;
   }
 }
