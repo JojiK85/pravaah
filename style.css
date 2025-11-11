@@ -204,103 +204,65 @@ nav {
 /* ---------- HIGHLIGHTS SECTION ---------- */
 .highlights {
   width: 100%;
-  overflow: hidden;
   text-align: center;
-  margin: 7rem -1rem;
+  margin: 6rem 0;
 }
 
 .section-title {
   font-size: clamp(1.4rem, 3vw, 2rem);
   margin-bottom: 2rem;
   text-shadow: 0 0 15px cyan;
-  letter-spacing: 1.5px;
   font-weight: 700;
+  letter-spacing: 1.5px;
 }
 
-
+/* 🔹 Main carousel container */
 .highlights-carousel {
   position: relative;
   width: 100%;
   overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 15px 0;
+  cursor: grab;
+  user-select: none;
 }
 
-/* 🔹 Continuous, seamless highlight scroll */
-/* 🔹 Seamless Infinite Scroll (No Gaps) */
-/* 🔹 Perfect Continuous Highlights Scroll (Works Everywhere) */
+/* 🔹 Infinite scroll animation */
 .slider-track {
   display: flex;
   flex-wrap: nowrap;
   gap: 30px;
   width: max-content;
-  animation: scrollSeamless 30s linear infinite;
+  animation: scrollSeamless 12s linear infinite; /* ⚡ faster & smooth */
   will-change: transform;
   backface-visibility: hidden;
 }
 
-/* Smooth continuous animation */
 @keyframes scrollSeamless {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
-/* Hover pause for desktop */
+/* Pause animation on hover (for desktop) */
 .highlights-carousel:hover .slider-track {
   animation-play-state: paused;
 }
 
-/* Mobile: faster scroll, same animation name */
-@media (max-width: 900px) {
-  .slider-track {
-    animation: scrollSeamless 1s linear infinite;
-  }
-}
-
-.slider-track {
-  transform: translateZ(0);
-}
-.slide img {
-  will-change: transform;
-}
-
-
-/* Pause animation on hover for desktop */
-.highlights-carousel:hover .slider-track {
-  animation-play-state: paused;
-}
-
-/* Ensure slides don't shrink or stretch */
-.slide {
-  flex-shrink: 0;
-}
-
-/* Mobile: Faster scroll speed */
-@media (max-width: 900px) {
-  .slider-track {
-    animation: scrollSeamless 15s linear infinite; /* 💨 Faster for phones */
-  }
-}
-
-
-/* 🔹 Highlight Card (Edge Glow Only) */
+/* 🔹 Slides (Highlight cards) */
 .slide {
   width: 320px;
   height: 200px;
+  flex-shrink: 0;
+  border: 2px solid cyan;
   border-radius: 18px;
   overflow: hidden;
   position: relative;
-  flex-shrink: 0;
-  border: 2px solid cyan;
-  box-shadow: 0 0 12px rgba(0,255,255,0.4);
-  transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.4);
   animation: pulseGlow 3s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(0,255,255,0.3); }
+  50% { box-shadow: 0 0 20px rgba(0,255,255,0.8); }
 }
 
 /* Image inside highlight */
@@ -310,13 +272,14 @@ nav {
   object-fit: cover;
   border-radius: 16px;
   display: block;
+  will-change: transform;
 }
 
-/* Neon edge highlight */
+/* Hover zoom and glow */
 .slide:hover {
   transform: scale(1.05);
   border-color: #00ffff;
-  box-shadow: 0 0 20px #00ffff, 0 0 40px rgba(0,255,255,0.6);
+  box-shadow: 0 0 25px #00ffff, 0 0 40px rgba(0,255,255,0.6);
 }
 
 .slide:hover img {
@@ -331,13 +294,14 @@ nav {
   left: 0;
   width: 100%;
   padding: 10px 0;
-  font-size: 1.1rem;
+  font-size: 1rem;
   background: rgba(0, 0, 0, 0.6);
   color: cyan;
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(15px);
   transition: all 0.4s ease;
   border-radius: 0 0 18px 18px;
+  text-align: center;
 }
 
 .slide:hover::after {
@@ -345,17 +309,22 @@ nav {
   transform: translateY(0);
 }
 
+/* 🔹 Mobile — faster scroll speed & smaller cards */
+@media (max-width: 900px) {
+  .slider-track {
+    animation: scrollSeamless 8s linear infinite; /* ⚡ even faster on phones */
+  }
 
+  .slide {
+    width: 240px;
+    height: 160px;
+  }
 
-.highlights-carousel:hover .slider-track {
-  animation-play-state: paused;
+  .slide::after {
+    font-size: 0.9rem;
+  }
 }
 
-/* Subtle breathing border glow */
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 10px rgba(0,255,255,0.3); }
-  50% { box-shadow: 0 0 20px rgba(0,255,255,0.8); }
-}
 
 /* ---------- CALENDAR + FEED ---------- */
 /* ---------- PRAVAAH'26 CALENDAR TITLE ---------- */
