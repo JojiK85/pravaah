@@ -1,133 +1,129 @@
-// =====================
-// PRAVAAH 2026 Registration + Payment (Fully Fixed + Firebase Integration)
-// =====================
-
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+// ===============================
+// 🔥 Firebase Config
+// ===============================
+const firebaseConfig = {
+  apiKey: "AIzaSyCbXKleOw4F46gFDXz2Wynl3YzPuHsVwh8",
+  authDomain: "pravaah-55b1d.firebaseapp.com",
+  projectId: "pravaah-55b1d",
+  storageBucket: "pravaah-55b1d.appspot.com",
+  messagingSenderId: "287687647267",
+  appId: "1:287687647267:web:7aecd603ee202779b89196"
+};
 
-  // 🔥 Firebase Config
-  const firebaseConfig = {
-    apiKey: "AIzaSyCbXKleOw4F46gFDXz2Wynl3YzPuHsVwh8",
-    authDomain: "pravaah-55b1d.firebaseapp.com",
-    projectId: "pravaah-55b1d",
-    storageBucket: "pravaah-55b1d.appspot.com",
-    messagingSenderId: "287687647267",
-    appId: "1:287687647267:web:7aecd603ee202779b89196"
-  };
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+// ===============================
+// 🎟️ DOM ELEMENTS
+// ===============================
+let selectedPass = null;
+let selectedPrice = 0;
+let total = 0;
 
-  // HTML Elements
-  const passCards = document.querySelectorAll(".pass-card");
-  const selectionArea = document.getElementById("selectionArea");
-  const selectedPassText = document.getElementById("selectedPass");
-  const totalAmount = document.getElementById("totalAmount");
-  const participantForm = document.getElementById("participantForm");
-  const payBtn = document.getElementById("payBtn");
-  const timerDisplay = document.getElementById("payment-timer");
-  const numInput = document.getElementById("numParticipants");
-  const increaseBtn = document.getElementById("increaseBtn");
-  const decreaseBtn = document.getElementById("decreaseBtn");
+const selectionArea = document.getElementById("selectionArea");
+const selectedPassText = document.getElementById("selectedPass");
+const totalAmount = document.getElementById("totalAmount");
+const participantForm = document.getElementById("participantForm");
+const payBtn = document.getElementById("payBtn");
+const timerDisplay = document.getElementById("payment-timer");
+const numInput = document.getElementById("numParticipants");
+const increaseBtn = document.getElementById("increaseBtn");
+const decreaseBtn = document.getElementById("decreaseBtn");
 
-  let selectedPass = null;
-  let selectedPrice = 0;
-  let total = 0;
+const scriptURL = "https://script.google.com/macros/s/AKfycbwHR5zp3-09nakNxpryLvtmcSUebhkfaohrYWvhlnh32mt0wFfljkqO5JoOJtFsuudJfw/exec";
 
-  // Google Apps Script endpoint
-  const scriptURL = "https://script.google.com/macros/s/AKfycbwHR5zp3-09nakNxpryLvtmcSUebhkfaohrYWvhlnh32mt0wFfljkqO5JoOJtFsuudJfw/exec";
+// ===============================
+// 🎫 PASS SELECTION
+// ===============================
+document.querySelectorAll(".select-btn").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    const card = e.target.closest(".pass-card");
+    selectedPass = card.dataset.name;
+    selectedPrice = parseInt(card.dataset.price, 10);
 
-  // 🎟️ Pass Selection
-  passCards.forEach(card => {
-    card.addEventListener("click", () => {
-      passCards.forEach(c => c.classList.remove("selected"));
-      card.classList.add("selected");
-
-      selectedPass = card.dataset.name;
-      selectedPrice = parseInt(card.dataset.price, 10);
-
-      selectionArea.classList.remove("hidden");
-      selectedPassText.innerText = `Selected: ${selectedPass} — ₹${selectedPrice}`;
-      totalAmount.innerText = `Total: ₹0`;
-      payBtn.style.display = "none";
-      participantForm.innerHTML = "";
-      total = 0;
-      timerDisplay.style.display = "none";
-      numInput.value = 0;
-    });
-  });
-
-  // 👥 Update participant form dynamically
-  function updateParticipantForm(count) {
+    selectionArea.classList.remove("hidden");
+    selectedPassText.innerText = `Selected: ${selectedPass} — ₹${selectedPrice}`;
+    totalAmount.innerText = `Total: ₹0`;
+    payBtn.style.display = "none";
     participantForm.innerHTML = "";
-    if (!count || count === 0) {
-      totalAmount.innerText = `Total: ₹0`;
-      payBtn.style.display = "none";
-      return;
-    }
+    total = 0;
+    timerDisplay.style.display = "none";
+    numInput.value = 0;
+  });
+});
 
-    for (let i = 1; i <= count; i++) {
-      const div = document.createElement("div");
-      div.classList.add("participant-card");
-      div.innerHTML = `
-        <h4>Participant ${i}</h4>
-        <input type="text" placeholder="Full Name" class="pname" required />
-        <input type="email" placeholder="Email" class="pemail" required />
-        <input type="tel" placeholder="Phone Number" class="pphone" required />
-        <input type="text" placeholder="College Name" class="pcollege" required />
-      `;
-      participantForm.appendChild(div);
-    }
-
-    total = selectedPrice * count;
-    totalAmount.innerText = `Total: ₹${total}`;
-    payBtn.style.display = "inline-block";
+// ===============================
+// 👥 PARTICIPANT MANAGEMENT
+// ===============================
+function updateParticipantForm(count) {
+  participantForm.innerHTML = "";
+  if (!count || count === 0) {
+    totalAmount.innerText = `Total: ₹0`;
+    payBtn.style.display = "none";
+    return;
   }
 
-  increaseBtn.addEventListener("click", () => {
-    let value = parseInt(numInput.value || "0", 10);
-    if (value < 10) {
-      numInput.value = ++value;
-      updateParticipantForm(value);
-    }
-  });
+  for (let i = 1; i <= count; i++) {
+    const div = document.createElement("div");
+    div.classList.add("participant-card");
+    div.innerHTML = `
+      <h4>Participant ${i}</h4>
+      <input type="text" placeholder="Full Name" class="pname" required />
+      <input type="email" placeholder="Email" class="pemail" required />
+      <input type="tel" placeholder="Phone Number" class="pphone" required />
+      <input type="text" placeholder="College Name" class="pcollege" required />
+    `;
+    participantForm.appendChild(div);
+  }
 
-  decreaseBtn.addEventListener("click", () => {
-    let value = parseInt(numInput.value || "0", 10);
-    if (value > 0) {
-      numInput.value = --value;
-      updateParticipantForm(value);
-    }
-  });
+  total = selectedPrice * count;
+  totalAmount.innerText = `Total: ₹${total}`;
+  payBtn.style.display = "inline-block";
+}
 
-  // 💳 Payment & Firestore Update
-  payBtn.addEventListener("click", async (e) => {
-    e.preventDefault();
-    if (!selectedPass || total === 0) return;
+increaseBtn.addEventListener("click", () => {
+  let value = parseInt(numInput.value || "0", 10);
+  const max = parseInt(numInput.max || "100", 10);
+  if (value < max) {
+    value += 1;
+    numInput.value = value;
+    updateParticipantForm(value);
+  }
+});
 
-    const names = [...document.querySelectorAll(".pname")].map(i => i.value.trim());
-    const emails = [...document.querySelectorAll(".pemail")].map(i => i.value.trim());
-    const phones = [...document.querySelectorAll(".pphone")].map(i => i.value.trim());
-    const colleges = [...document.querySelectorAll(".pcollege")].map(i => i.value.trim());
+decreaseBtn.addEventListener("click", () => {
+  let value = parseInt(numInput.value || "0", 10);
+  if (value > 0) {
+    value -= 1;
+    numInput.value = value;
+    updateParticipantForm(value);
+  }
+});
 
-    for (let i = 0; i < names.length; i++) {
-      if (!names[i] || !emails[i] || !phones[i] || !colleges[i]) {
-        alert("⚠️ Please fill all participant details!");
-        return;
-      }
-    }
+// ===============================
+// 💳 PAYMENT + FIRESTORE + GOOGLE SHEET
+// ===============================
+payBtn.addEventListener("click", async (e) => {
+  e.preventDefault();
+  if (!selectedPass || total === 0) return;
 
-    const user = auth.currentUser;
-    if (!user) {
-      alert("Please log in first!");
-      return (window.location.href = "index.html");
-    }
+  const names = [...document.querySelectorAll(".pname")].map(i => i.value.trim());
+  const emails = [...document.querySelectorAll(".pemail")].map(i => i.value.trim());
+  const phones = [...document.querySelectorAll(".pphone")].map(i => i.value.trim());
+  const colleges = [...document.querySelectorAll(".pcollege")].map(i => i.value.trim());
 
-    // 🧾 Payment Logic
+  for (let i = 0; i < names.length; i++) {
+    if (!names[i] || !emails[i] || !phones[i] || !colleges[i]) return;
+  }
+
+  try {
+    let timerInterval;
+
     const options = {
       key: "rzp_test_Re1mOkmIGroT2c",
       amount: total * 100,
@@ -137,48 +133,61 @@ document.addEventListener("DOMContentLoaded", () => {
       image: "pravah-logo.png",
 
       handler: async function (response) {
+        if (timerInterval) clearInterval(timerInterval);
+        timerDisplay.style.display = "none";
+
+        const passData = {
+          paymentId: response.razorpay_payment_id,
+          passType: selectedPass,
+          totalAmount: total,
+          participants: names.map((n, i) => ({
+            name: n,
+            email: emails[i],
+            phone: phones[i],
+            college: colleges[i],
+          })),
+        };
+
+        // 🔹 Send to Google Sheet (background)
+        const payload = JSON.stringify(passData);
         try {
-          const passData = {
-            paymentId: response.razorpay_payment_id,
-            passType: selectedPass,
-            totalAmount: total,
-            participants: names.map((n, i) => ({
-              name: n,
-              email: emails[i],
-              phone: phones[i],
-              college: colleges[i],
-            })),
-          };
+          if (navigator.sendBeacon) {
+            const blob = new Blob([payload], { type: "text/plain" });
+            navigator.sendBeacon(scriptURL, blob);
+          } else {
+            fetch(scriptURL, {
+              method: "POST",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: payload,
+              keepalive: true
+            }).catch(() => {});
+          }
+        } catch (_) {}
 
-          // ✅ Save to Firestore
-          const userRef = doc(db, "users", user.uid);
-          const snap = await getDoc(userRef);
-          const existingPasses = snap.exists() ? snap.data().passes || [] : [];
-          existingPasses.push(passData);
-          await setDoc(userRef, { passes: existingPasses }, { merge: true });
-
-          // ✅ Send to Google Sheet
-          await fetch(scriptURL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(passData)
-          });
-
-          // ✅ Confirmation Toast
-          alert("🎉 Payment successful! Redirecting...");
-          window.location.href = "payment_success.html";
-        } catch (err) {
-          console.error("Save Error:", err);
-          window.location.href = "payment_failure.html";
+        // 🔹 Save to Firestore user profile
+        const user = auth.currentUser;
+        if (user) {
+          try {
+            const userRef = doc(db, "users", user.uid);
+            const snap = await getDoc(userRef);
+            const existingPasses = snap.exists() ? snap.data().passes || [] : [];
+            existingPasses.push(passData);
+            await setDoc(userRef, { passes: existingPasses }, { merge: true });
+          } catch (fireErr) {
+            console.error("❌ Firestore save failed:", fireErr);
+          }
         }
+
+        // ✅ Redirect instantly
+        window.location.href = "payment_success.html";
       },
 
       theme: { color: "#00ffff" },
-      modal: { ondismiss: () => alert("Payment cancelled.") }
     };
 
-    // ⏳ Timer before payment closes
-    let timerInterval;
+    const rzp = new Razorpay(options);
+
+    // Timer (5 minutes)
     let timeLeft = 300;
     timerDisplay.style.display = "block";
     timerInterval = setInterval(() => {
@@ -188,11 +197,15 @@ document.addEventListener("DOMContentLoaded", () => {
       timerDisplay.textContent = `⏳ Payment window: ${min}:${sec}`;
       if (timeLeft <= 0) {
         clearInterval(timerInterval);
+        rzp.close();
         timerDisplay.style.display = "none";
       }
     }, 1000);
 
-    const rzp = new Razorpay(options);
     rzp.open();
-  });
+
+  } catch (error) {
+    console.error("❌ Payment error:", error);
+    window.location.href = "payment_failure.html";
+  }
 });
