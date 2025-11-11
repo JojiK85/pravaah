@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const month = date.getMonth();
     if (transition) calendar.classList.add("fade-out");
     setTimeout(() => {
-      monthYear.innerText = ${date.toLocaleString("default", { month: "long" })} ${year};
+      monthYear.innerText = `${date.toLocaleString("default", { month: "long" })} ${year}`;
       const firstDay = new Date(year, month, 1).getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       calendar.innerHTML = "";
@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
         day.addEventListener("click", (e) => {
           document.querySelectorAll(".day").forEach(d => d.classList.remove("selected"));
           e.target.classList.add("selected");
-          renderFeed(${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")});
+          renderFeed(`${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`);
         });
         calendar.appendChild(day);
       }
@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCalendar(currentDate, true);
   };
   renderCalendar(currentDate);
-  renderFeed(${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")});
+  renderFeed(`${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`);
 
   /* 🎥 VIDEO SWITCH */
   const mainVideo = document.getElementById("mainVideo");
