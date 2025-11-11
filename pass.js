@@ -24,6 +24,9 @@ const db = getFirestore(app);
 // 🔗 Google Apps Script endpoint
 const scriptURL = "https://script.google.com/macros/s/AKfycbwHR5zp3-09nakNxpryLvtmcSUebhkfaohrYWvhlnh32mt0wFfljkqO5JoOJtFsuudJfw/exec";
 
+// =====================
+// VARIABLES
+// =====================
 let selectedPass = null;
 let selectedPrice = 0;
 let total = 0;
@@ -39,7 +42,7 @@ const increaseBtn = document.getElementById("increaseBtn");
 const decreaseBtn = document.getElementById("decreaseBtn");
 
 // =====================
-// 🎟️ PASS CARD SELECTION
+// 🎟 PASS CARD SELECTION
 // =====================
 const passCards = document.querySelectorAll(".pass-card");
 
@@ -125,7 +128,7 @@ payBtn.addEventListener("click", async (e) => {
 
   const user = auth.currentUser;
   if (!user) {
-    alert("Please log in to continue!");
+    alert("Please log in first!");
     return (window.location.href = "index.html");
   }
 
@@ -156,19 +159,19 @@ payBtn.addEventListener("click", async (e) => {
           })),
         };
 
-        // 🔹 Save to Firestore
+        // 🔹 Save in Firestore
         const userRef = doc(db, "users", user.uid);
         const snap = await getDoc(userRef);
         const existingPasses = snap.exists() ? snap.data().passes || [] : [];
         existingPasses.push(passData);
         await setDoc(userRef, { passes: existingPasses }, { merge: true });
 
-        // 🔹 Send to Google Sheet
+        // 🔹 Send to Google Sheets
         fetch(scriptURL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(passData),
-          keepalive: true,
+          keepalive: true
         }).catch(() => {});
 
         // ✅ Redirect
@@ -180,7 +183,7 @@ payBtn.addEventListener("click", async (e) => {
 
     const rzp = new Razorpay(options);
 
-    // 5-min Payment Window Timer
+    // 5-min Payment Timer
     let timeLeft = 300;
     timerDisplay.style.display = "block";
     timerInterval = setInterval(() => {
@@ -196,8 +199,9 @@ payBtn.addEventListener("click", async (e) => {
     }, 1000);
 
     rzp.open();
+
   } catch (error) {
-    console.error("Payment Error:", error);
+    console.error("❌ Payment Error:", error);
     window.location.href = "payment_failure.html";
   }
 });
