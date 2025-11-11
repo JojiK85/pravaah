@@ -12,15 +12,19 @@ const numInput = document.getElementById("numParticipants");
 const increaseBtn = document.getElementById("increaseBtn");
 const decreaseBtn = document.getElementById("decreaseBtn");
 
-// 🔗 Your Apps Script URL (ends with /exec)
+// 🔗 Google Script URL
 const scriptURL = "https://script.google.com/macros/s/AKfycbwHR5zp3-09nakNxpryLvtmcSUebhkfaohrYWvhlnh32mt0wFfljkqO5JoOJtFsuudJfw/exec";
 
-// Pass selection
-document.querySelectorAll(".select-btn").forEach(btn => {
-  btn.addEventListener("click", (e) => {
-    const card = e.target.closest(".pass-card");
+// ✅ Card Selection Logic
+const passCards = document.querySelectorAll(".pass-card");
+passCards.forEach(card => {
+  card.addEventListener("click", () => {
+    passCards.forEach(c => c.classList.remove("selected"));
+    card.classList.add("selected");
+
     selectedPass = card.dataset.name;
     selectedPrice = parseInt(card.dataset.price, 10);
+
     selectionArea.classList.remove("hidden");
     selectedPassText.innerText = `Selected: ${selectedPass} — ₹${selectedPrice}`;
     totalAmount.innerText = `Total: ₹0`;
@@ -32,6 +36,7 @@ document.querySelectorAll(".select-btn").forEach(btn => {
   });
 });
 
+// ✅ Participant Logic
 function updateParticipantForm(count) {
   participantForm.innerHTML = "";
   if (!count || count === 0) {
@@ -39,6 +44,7 @@ function updateParticipantForm(count) {
     payBtn.style.display = "none";
     return;
   }
+
   for (let i = 1; i <= count; i++) {
     const div = document.createElement("div");
     div.classList.add("participant-card");
@@ -51,17 +57,17 @@ function updateParticipantForm(count) {
     `;
     participantForm.appendChild(div);
   }
+
   total = selectedPrice * count;
   totalAmount.innerText = `Total: ₹${total}`;
   payBtn.style.display = "inline-block";
 }
 
-// +/- buttons
+// + / - Buttons
 increaseBtn.addEventListener("click", () => {
   let value = parseInt(numInput.value || "0", 10);
-  const max = parseInt(numInput.max || "100", 10);
-  if (value < max) {
-    value += 1;
+  if (value < 10) {
+    value++;
     numInput.value = value;
     updateParticipantForm(value);
   }
@@ -69,17 +75,16 @@ increaseBtn.addEventListener("click", () => {
 decreaseBtn.addEventListener("click", () => {
   let value = parseInt(numInput.value || "0", 10);
   if (value > 0) {
-    value -= 1;
+    value--;
     numInput.value = value;
     updateParticipantForm(value);
   }
 });
 
-// Razorpay + background Google Sheet write
+// ✅ Payment
 payBtn.addEventListener("click", async (e) => {
   e.preventDefault();
-  if (!selectedPass) return;
-  if (total === 0) return;
+  if (!selectedPass || total === 0) return;
 
   const names = [...document.querySelectorAll(".pname")].map(i => i.value.trim());
   const emails = [...document.querySelectorAll(".pemail")].map(i => i.value.trim());
@@ -91,8 +96,7 @@ payBtn.addEventListener("click", async (e) => {
   }
 
   try {
-    let timerInterval; // visible to handler
-
+    let timerInterval;
     const options = {
       key: "rzp_test_Re1mOkmIGroT2c",
       amount: total * 100,
@@ -100,8 +104,6 @@ payBtn.addEventListener("click", async (e) => {
       name: "PRAVAAH 2026",
       description: `${selectedPass} Registration`,
       image: "pravah-logo.png",
-
-      // INSTANT redirect; data sent in background
       handler: function (response) {
         if (timerInterval) clearInterval(timerInterval);
         timerDisplay.style.display = "none";
@@ -110,46 +112,20 @@ payBtn.addEventListener("click", async (e) => {
           paymentId: response.razorpay_payment_id,
           passType: selectedPass,
           totalAmount: total,
-          participants: names.map((name, i) => ({
-            name,
-            email: emails[i],
-            phone: phones[i],
-            college: colleges[i],
+          participants: names.map((n, i) => ({
+            name: n, email: emails[i], phone: phones[i], college: colleges[i],
           })),
         });
 
-        // Try sendBeacon first (non-blocking, survives navigation)
-        let queued = false;
-        try {
-          if (navigator.sendBeacon) {
-            const blob = new Blob([payload], { type: "text/plain" });
-            queued = navigator.sendBeacon(scriptURL, blob);
-          }
-        } catch (_) { /* noop */ }
-
-        // Fallback to keepalive fetch (also survives navigation)
-        if (!queued) {
-          try {
-            fetch(scriptURL, {
-              method: "POST",
-              headers: { "Content-Type": "text/plain;charset=utf-8" },
-              body: payload,
-              keepalive: true
-            }).catch(() => {});
-          } catch (_) {}
-        }
-
-        // Redirect immediately (no alerts)
+        navigator.sendBeacon(scriptURL, new Blob([payload], { type: "text/plain" }));
         window.location.href = "payment_success.html";
       },
-
       theme: { color: "#00ffff" },
     };
 
-    // Ensure you have: <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     const rzp = new Razorpay(options);
 
-    // Payment timer (no alerts on expiry)
+    // Timer
     let timeLeft = 300;
     timerDisplay.style.display = "block";
     timerInterval = setInterval(() => {
@@ -160,16 +136,12 @@ payBtn.addEventListener("click", async (e) => {
       if (timeLeft <= 0) {
         clearInterval(timerInterval);
         rzp.close();
-        // No alert; optionally show inline text:
-        // timerDisplay.textContent = "Payment window expired.";
         timerDisplay.style.display = "none";
       }
     }, 1000);
 
     rzp.open();
-
   } catch (error) {
-    // Silent fail -> optional navigate to failure page
     window.location.href = "payment_failure.html";
   }
 });
