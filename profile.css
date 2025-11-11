@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+
+body {
+  font-family: 'Orbitron', sans-serif;
+  background: linear-gradient(120deg, #2c1a55, #3e5d75, #022c43, #5b2a86);
+  background-size: 400% 400%;
+  animation: gradientMove 15s ease infinite;
+  color: white;
+  margin: 0;
+  padding-top: 6rem;
+  overflow-x: hidden;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ---------- PROFILE CONTAINER ---------- */
+.profile-section {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.profile-container {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1.5px solid cyan;
+  border-radius: 20px;
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+  width: 90%;
+  max-width: 900px;
+  padding: 40px;
+  text-align: left;
+}
+
+.profile-container h1 {
+  text-align: center;
+  font-size: 2.3rem;
+  color: cyan;
+  text-shadow: 0 0 10px cyan;
+  margin-bottom: 30px;
+  letter-spacing: 1px;
+}
+
+/* ---------- USER INFO BOX ---------- */
+.profile-box {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(0, 255, 255, 0.4);
+  border-radius: 15px;
+  padding: 25px 30px;
+  margin-bottom: 40px;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.15);
+}
+
+.profile-box p {
+  font-size: 1.1rem;
+  margin: 10px 0;
+  color: #e3f8ff;
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+}
+
+/* ---------- PASSES SECTION ---------- */
+.profile-container h2 {
+  color: cyan;
+  text-shadow: 0 0 10px cyan;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 1.8rem;
+}
+
+.passes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.pass-item {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(0, 255, 255, 0.5);
+  border-radius: 12px;
+  padding: 20px;
+  width: 95%;
+  color: #dff;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+  transition: 0.3s ease;
+}
+
+.pass-item:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+}
+
+.pass-item h3 {
+  color: cyan;
+  text-shadow: 0 0 8px cyan;
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+
+.pass-item p {
+  margin: 4px 0;
+  font-size: 1rem;
+}
+
+.pass-item ul {
+  list-style-type: disc;
+  margin-left: 20px;
+  font-size: 0.95rem;
+  color: #bff;
+}
+
+.no-passes {
+  color: #ccc;
+  font-size: 1.1rem;
+  text-align: center;
+  margin-top: 15px;
+  font-style: italic;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 25px;
+  }
+
+  .profile-box {
+    padding: 20px;
+  }
+
+  .pass-item {
+    width: 100%;
+    padding: 18px;
+  }
+}
