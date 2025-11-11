@@ -202,12 +202,11 @@ nav {
 }
 
 /* ---------- HIGHLIGHTS SECTION ---------- */
-/* ---------- HIGHLIGHTS SECTION (Fast + Scrollable + Seamless) ---------- */
 .highlights {
   width: 100%;
   overflow: hidden;
   text-align: center;
-  margin: 7rem 0;
+  margin: 7rem -1rem;
 }
 
 .section-title {
@@ -218,88 +217,114 @@ nav {
   font-weight: 700;
 }
 
-/* Outer carousel container */
+
 .highlights-carousel {
   position: relative;
   width: 100%;
-  display: grid;
-  place-items: center;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 15px 0;
 }
 
-/* Scrollable viewport for manual scrolling */
-.highlights-viewport {
-  width: min(1200px, 92%);
+/* 🔹 Continuous, seamless highlight scroll */
+/* 🔹 Seamless Infinite Scroll (No Gaps) */
+/* 🔹 Perfect Continuous Highlights Scroll (Works Everywhere) */
+/* 🔹 Faster, scrollable seamless highlights */
+.highlights-carousel {
+  position: relative;
+  width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  mask-image: linear-gradient(to right, transparent 0, black 5%, black 95%, transparent 100%);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
   scrollbar-width: none;
 }
-.highlights-viewport::-webkit-scrollbar { display: none; }
-
-/* Continuous loop track */
-.slider-track {
-  display: inline-flex;
-  gap: 30px;
-  width: max-content;
-  animation: scrollLoop 12s linear infinite; /* ⏩ faster */
-  will-change: transform;
+.highlights-carousel::-webkit-scrollbar {
+  display: none;
 }
 
-/* Pause on hover or manual scroll */
-.highlights-viewport:hover .slider-track {
+.slider-track {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 30px;
+  width: max-content;
+  animation: scrollSeamless 10s linear infinite; /* ⏩ faster */
+  will-change: transform;
+  backface-visibility: hidden;
+  pointer-events: none; /* allow manual scroll without glitch */
+}
+
+/* Pause on hover */
+.highlights-carousel:hover .slider-track {
   animation-play-state: paused;
 }
 
-/* Keyframes for smooth loop motion */
-@keyframes scrollLoop {
+/* Keyframes */
+@keyframes scrollSeamless {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
 
-/* Each slide card */
+
+
+/* Pause animation on hover for desktop */
+.highlights-carousel:hover .slider-track {
+  animation-play-state: paused;
+}
+
+/* Ensure slides don't shrink or stretch */
 .slide {
-  flex: 0 0 auto;
+  flex-shrink: 0;
+}
+
+/* Mobile: Faster scroll speed */
+@media (max-width: 900px) {
+  .slider-track {
+    animation: scrollSeamless 15s linear infinite; /* 💨 Faster for phones */
+  }
+}
+
+
+/* 🔹 Highlight Card (Edge Glow Only) */
+.slide {
   width: 320px;
   height: 200px;
   border-radius: 18px;
   overflow: hidden;
   position: relative;
+  flex-shrink: 0;
   border: 2px solid cyan;
   box-shadow: 0 0 12px rgba(0,255,255,0.4);
-  transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+  transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
   animation: pulseGlow 3s ease-in-out infinite;
 }
 
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 10px rgba(0,255,255,0.3); }
-  50% { box-shadow: 0 0 20px rgba(0,255,255,0.8); }
-}
-
-/* Images */
+/* Image inside highlight */
 .slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 16px;
   display: block;
-  user-select: none;
-  pointer-events: none;
 }
 
-/* Hover effects */
+/* Neon edge highlight */
 .slide:hover {
   transform: scale(1.05);
   border-color: #00ffff;
-  box-shadow: 0 0 25px #00ffff, 0 0 40px rgba(0,255,255,0.6);
+  box-shadow: 0 0 20px #00ffff, 0 0 40px rgba(0,255,255,0.6);
 }
+
 .slide:hover img {
   transform: scale(1.1);
 }
 
-/* Title overlay */
+/* Caption overlay */
 .slide::after {
   content: attr(data-title);
   position: absolute;
@@ -307,30 +332,31 @@ nav {
   left: 0;
   width: 100%;
   padding: 10px 0;
-  font-size: 1rem;
-  color: cyan;
+  font-size: 1.1rem;
   background: rgba(0, 0, 0, 0.6);
+  color: cyan;
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(20px);
   transition: all 0.4s ease;
+  border-radius: 0 0 18px 18px;
 }
+
 .slide:hover::after {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* Mobile: slightly faster + larger slides */
-@media (max-width: 900px) {
-  .slider-track {
-    animation: scrollLoop 8s linear infinite; /* 🚀 faster on phones */
-  }
-  .slide {
-    width: 260px;
-    height: 230px;
-  }
+
+
+.highlights-carousel:hover .slider-track {
+  animation-play-state: paused;
 }
 
-
+/* Subtle breathing border glow */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(0,255,255,0.3); }
+  50% { box-shadow: 0 0 20px rgba(0,255,255,0.8); }
+}
 
 /* ---------- CALENDAR + FEED ---------- */
 /* ---------- PRAVAAH'26 CALENDAR TITLE ---------- */
