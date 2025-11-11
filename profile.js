@@ -27,7 +27,7 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0
 const auth = getAuth(app);
 const storage = getStorage(app);
 
-// 🔗 Google Apps Script Backend (the one you gave)
+// 🔗 Google Apps Script Backend
 const scriptURL = "https://script.google.com/macros/s/AKfycbyC2AZkrZA1aIkIU0fGFUBswnn9usKOpV1VU2nYoh-tAnBYftx1jOV3GWV-8La-Q--I/exec";
 
 // ===============================
@@ -56,6 +56,10 @@ onAuthStateChanged(auth, async (user) => {
 
   // 🔗 Element References
   const userPhoto = document.getElementById("userPhoto");
+  const uploadPhotoInput = document.getElementById("uploadPhoto");
+  const uploadOptions = document.getElementById("uploadOptions");
+  const driveUploadBtn = document.getElementById("driveUploadBtn");
+
   const userNameEl = document.getElementById("userName");
   const userEmailEl = document.getElementById("userEmail");
   const userPhoneEl = document.getElementById("userPhone");
@@ -107,9 +111,28 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   // ==========================================
-  // 📸 Upload from Device
+  // 📸 UPLOAD OPTIONS AFTER CLICK
   // ==========================================
-  document.getElementById("uploadPhoto").addEventListener("change", async (e) => {
+  userPhoto.addEventListener("click", () => {
+    uploadOptions.classList.toggle("hidden");
+  });
+
+  // Add “Upload from Device” button dynamically if missing
+  if (!document.getElementById("deviceUploadBtn")) {
+    const deviceBtn = document.createElement("button");
+    deviceBtn.id = "deviceUploadBtn";
+    deviceBtn.className = "upload-btn";
+    deviceBtn.innerHTML = `<i class="fa-solid fa-desktop"></i> Upload from Device`;
+    uploadOptions.prepend(deviceBtn);
+
+    deviceBtn.addEventListener("click", () => {
+      uploadPhotoInput.click();
+      uploadOptions.classList.add("hidden");
+    });
+  }
+
+  // Upload from local device
+  uploadPhotoInput.addEventListener("change", async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -122,7 +145,6 @@ onAuthStateChanged(auth, async (user) => {
       const storageRef = ref(storage, `profilePhotos/${user.uid}`);
       await uploadBytes(storageRef, file);
       const photoURL = await getDownloadURL(storageRef);
-
       await updateProfile(user, { photoURL });
       userPhoto.src = photoURL;
       showToast("✅ Profile photo updated successfully!", "success");
@@ -132,37 +154,33 @@ onAuthStateChanged(auth, async (user) => {
     }
   });
 
-  // ==========================================
-  // ☁️ Upload from Google Drive
-  // ==========================================
-  const driveBtn = document.getElementById("driveUploadBtn");
-  if (driveBtn) {
-    driveBtn.addEventListener("click", async () => {
-      const driveLink = prompt("📂 Paste your Google Drive image link here:");
-      if (!driveLink || !driveLink.includes("https://drive.google.com")) {
-        showToast("⚠️ Invalid Google Drive link.", "error");
-        return;
-      }
+  // Upload from Google Drive
+  driveUploadBtn.addEventListener("click", async () => {
+    uploadOptions.classList.add("hidden");
+    const driveLink = prompt("📂 Paste your Google Drive image link here:");
+    if (!driveLink || !driveLink.includes("https://drive.google.com")) {
+      showToast("⚠️ Invalid Google Drive link.", "error");
+      return;
+    }
 
-      const fileIdMatch = driveLink.match(/[-\\w]{25,}/);
-      if (!fileIdMatch) {
-        showToast("⚠️ Invalid link format.", "error");
-        return;
-      }
+    const fileIdMatch = driveLink.match(/[-\\w]{25,}/);
+    if (!fileIdMatch) {
+      showToast("⚠️ Invalid link format.", "error");
+      return;
+    }
 
-      const fileId = fileIdMatch[0];
-      const directLink = `https://drive.google.com/uc?export=view&id=${fileId}`;
+    const fileId = fileIdMatch[0];
+    const directLink = `https://drive.google.com/uc?export=view&id=${fileId}`;
 
-      try {
-        await updateProfile(user, { photoURL: directLink });
-        userPhoto.src = directLink;
-        showToast("✅ Profile photo updated from Google Drive!", "success");
-      } catch (err) {
-        console.error("Drive update error:", err);
-        showToast("❌ Failed to set photo.", "error");
-      }
-    });
-  }
+    try {
+      await updateProfile(user, { photoURL: directLink });
+      userPhoto.src = directLink;
+      showToast("✅ Profile photo updated from Google Drive!", "success");
+    } catch (err) {
+      console.error("Drive update error:", err);
+      showToast("❌ Failed to set photo.", "error");
+    }
+  });
 });
 
 // ===============================
@@ -213,16 +231,8 @@ style.innerHTML = `
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
-.toast.success {
-  border-color: #00ff99;
-  color: #00ffcc;
-}
-.toast.error {
-  border-color: #ff5555;
-  color: #ff8888;
-}
-.toast.info {
-  border-color: cyan;
-  color: cyan;
-}`;
+.toast.success { border-color: #00ff99; color: #00ffcc; }
+.toast.error { border-color: #ff5555; color: #ff8888; }
+.toast.info { border-color: cyan; color: cyan; }
+`;
 document.head.appendChild(style);
