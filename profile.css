@@ -26,16 +26,16 @@ body {
 }
 
 .profile-container {
-  background: rgba(0, 0, 0, 0.75);
-  border: 1.5px solid cyan;
-  border-radius: 20px;
-  box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
-  width: 92%;
-  max-width: 1100px;
-  padding: 40px;
+  background: rgba(0, 0, 0, 0.78);
+  border: 1.8px solid cyan;
+  border-radius: 24px;
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.35);
+  width: 95%;              /* 🔹 More horizontal space */
+  max-width: 1250px;       /* 🔹 Wider for desktop */
+  padding: 50px;           /* 🔹 Spacious interior */
   color: #e3f8ff;
   transition: 0.3s ease;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
 }
 
 /* ---------- HEADER (PHOTO + INFO) ---------- */
@@ -43,15 +43,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 60px;
-  margin-bottom: 40px;
+  gap: 80px;               /* 🔹 More gap between photo & info */
+  margin-bottom: 50px;
   flex-wrap: nowrap;
 }
 
 /* ---------- PROFILE PHOTO ---------- */
 .profile-photo {
   text-align: center;
-  flex: 0 0 180px;
+  flex: 0 0 200px;
 }
 
 .photo-wrapper {
@@ -60,8 +60,8 @@ body {
 }
 
 .profile-photo img {
-  width: 160px;
-  height: 160px;
+  width: 180px;
+  height: 180px;
   border-radius: 50%;
   border: 2px solid cyan;
   object-fit: cover;
@@ -93,7 +93,7 @@ body {
 
 .photo-overlay i {
   color: cyan;
-  font-size: 1.8rem;
+  font-size: 2rem;
 }
 
 .photo-wrapper:hover .photo-overlay {
@@ -124,7 +124,7 @@ body {
   color: black;
   padding: 8px 18px;
   border-radius: 20px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
   border: none;
@@ -156,11 +156,11 @@ body {
 /* ---------- PROFILE INFO ---------- */
 .profile-info {
   flex: 1;
-  min-width: 300px;
+  min-width: 350px;
 }
 
 .profile-info p {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   margin: 10px 0;
   text-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
 }
@@ -171,7 +171,7 @@ body {
   text-shadow: 0 0 10px cyan;
   margin-bottom: 25px;
   text-align: center;
-  font-size: 1.9rem;
+  font-size: 2rem;
 }
 
 /* ---------- PASS LIST ---------- */
@@ -179,7 +179,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 30px;
+  gap: 35px;
   width: 100%;
 }
 
@@ -188,8 +188,8 @@ body {
   background: rgba(0, 0, 0, 0.6);
   border: 1.5px solid rgba(0, 255, 255, 0.6);
   border-radius: 18px;
-  padding: 25px 30px;
-  width: 440px;
+  padding: 28px 35px;
+  width: 460px;
   color: #dff;
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
   transition: 0.3s ease;
@@ -199,13 +199,13 @@ body {
 
 .pass-item:hover {
   transform: translateY(-3px);
-  box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+  box-shadow: 0 0 35px rgba(0, 255, 255, 0.5);
 }
 
 .pass-item h3 {
   color: cyan;
   text-shadow: 0 0 15px cyan;
-  font-size: 1.5rem;
+  font-size: 1.55rem;
   margin-bottom: 10px;
   letter-spacing: 0.5px;
 }
@@ -272,6 +272,7 @@ body {
   }
 
   .profile-container {
-    padding: 25px;
+    width: 92%;
+    padding: 30px;
   }
 }
