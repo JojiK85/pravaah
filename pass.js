@@ -17,7 +17,7 @@ document.querySelectorAll(".select-btn").forEach(btn => {
   btn.addEventListener("click", (e) => {
     const card = e.target.closest(".pass-card");
     selectedPass = card.dataset.name;
-    selectedPrice = parseInt(card.dataset.price);
+    selectedPrice = parseInt(card.dataset.price, 10);
     selectionArea.classList.remove("hidden");
     selectedPassText.innerText = `Selected: ${selectedPass} — ₹${selectedPrice}`;
     totalAmount.innerText = `Total: ₹0`;
@@ -32,12 +32,11 @@ document.querySelectorAll(".select-btn").forEach(btn => {
 // 🔹 Dynamic participant form
 function updateParticipantForm(count) {
   participantForm.innerHTML = "";
-  if (count === 0) {
+  if (!count || count === 0) {
     totalAmount.innerText = `Total: ₹0`;
     payBtn.style.display = "none";
     return;
   }
-
   for (let i = 1; i <= count; i++) {
     const div = document.createElement("div");
     div.classList.add("participant-card");
@@ -50,7 +49,6 @@ function updateParticipantForm(count) {
     `;
     participantForm.appendChild(div);
   }
-
   total = selectedPrice * count;
   totalAmount.innerText = `Total: ₹${total}`;
   payBtn.style.display = "inline-block";
@@ -58,23 +56,27 @@ function updateParticipantForm(count) {
 
 // 🔹 + / - buttons
 increaseBtn.addEventListener("click", () => {
-  let value = parseInt(numInput.value);
-  if (value < parseInt(numInput.max)) {
-    numInput.value = value + 1;
-    updateParticipantForm(value + 1);
+  let value = parseInt(numInput.value || "0", 10);
+  const max = parseInt(numInput.max || "100", 10);
+  if (value < max) {
+    value += 1;
+    numInput.value = value;
+    updateParticipantForm(value);
   }
 });
 decreaseBtn.addEventListener("click", () => {
-  let value = parseInt(numInput.value);
+  let value = parseInt(numInput.value || "0", 10);
   if (value > 0) {
-    numInput.value = value - 1;
-    updateParticipantForm(value - 1);
+    value -= 1;
+    numInput.value = value;
+    updateParticipantForm(value);
   }
 });
 
 // ✅ Razorpay + Google Sheet
 payBtn.addEventListener("click", async (e) => {
   e.preventDefault();
+  if (!selectedPass) return alert("Please select a pass first.");
   if (total === 0) return alert("Please add participants first.");
 
   const names = [...document.querySelectorAll(".pname")].map(i => i.value.trim());
@@ -90,23 +92,27 @@ payBtn.addEventListener("click", async (e) => {
   }
 
   try {
+    // Make timerInterval visible to the handler (avoid undefined if handler fires fast)
+    let timerInterval;
+
     const options = {
       key: "rzp_test_Re1mOkmIGroT2c",
-      amount: total * 100,
+      amount: total * 100, // paise
       currency: "INR",
       name: "PRAVAAH 2026",
       description: `${selectedPass} Registration`,
       image: "pravah-logo.png",
 
       handler: async function (response) {
-        clearInterval(timerInterval);
+        if (timerInterval) clearInterval(timerInterval);
         timerDisplay.style.display = "none";
 
         const scriptURL = "https://script.google.com/macros/s/AKfycbwHR5zp3-09nakNxpryLvtmcSUebhkfaohrYWvhlnh32mt0wFfljkqO5JoOJtFsuudJfw/exec";
         try {
           const res = await fetch(scriptURL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            // ✅ Use text/plain to avoid CORS preflight
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({
               paymentId: response.razorpay_payment_id,
               passType: selectedPass,
@@ -120,14 +126,16 @@ payBtn.addEventListener("click", async (e) => {
             }),
           });
 
-          const data = await res.json();
+          const raw = await res.text();
+          let data;
+          try { data = JSON.parse(raw); } catch { data = { status: "error", message: "Non-JSON", raw }; }
           console.log("🟢 Script Response:", data);
 
-          if (data.status === "success") {
+          if (res.ok && data.status === "success") {
             alert("✅ Payment successful & data recorded!");
             window.location.href = "payment_success.html";
           } else {
-            alert("⚠️ Payment done but data not recorded.");
+            alert("⚠️ Payment done but data not recorded.\n" + (data.message || raw));
             window.location.href = "payment_success.html";
           }
         } catch (err) {
@@ -139,10 +147,15 @@ payBtn.addEventListener("click", async (e) => {
       theme: { color: "#00ffff" },
     };
 
+    // Ensure Razorpay script is loaded on the page:
+    // <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
     const rzp = new Razorpay(options);
+
+    // Start timer AFTER options are set so handler can clear it
     let timeLeft = 300;
     timerDisplay.style.display = "block";
-    const timerInterval = setInterval(() => {
+    timerInterval = setInterval(() => {
       timeLeft--;
       const min = Math.floor(timeLeft / 60);
       const sec = (timeLeft % 60).toString().padStart(2, "0");
