@@ -42,8 +42,7 @@
   transform: scale(1.07);
 }
 
-/* Mobile: stack vertically */
-/* ---------- MOBILE FIX: Make category buttons fit properly ---------- */
+/* ---------- MOBILE FIX ---------- */
 @media (max-width: 900px) {
   .category-switch {
     flex-direction: column;
@@ -62,18 +61,16 @@
     text-align: center;
     font-size: clamp(0.9rem, 3.5vw, 1.1rem);
     border-radius: 50px;
-    white-space: normal;          /* allow wrapping */
+    white-space: normal;
     line-height: 1.2;
-    word-break: break-word;       /* ensure long words wrap */
+    word-break: break-word;
     text-wrap: balance;
   }
 
-  /* Optional: smaller top heading for better fit */
   .pg-heading {
     font-size: 2.3rem;
   }
 }
-
 
 /* ---------- EVENT SECTIONS ---------- */
 .event-section {
@@ -109,7 +106,6 @@
   transform: translateY(0);
 }
 
-/* Smooth fade-out for transitions */
 .event-section.fade-out .event-grid {
   opacity: 0;
   transform: translateY(20px);
@@ -208,25 +204,58 @@
 /* ---------- BUTTONS ---------- */
 .btn-group {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
-.btn {
-  padding: 8px 18px;
-  border-radius: 20px;
-  border: 1.5px solid cyan;
-  background: rgba(0,255,255,0.1);
+/* 🔹 REGISTER NOW (Same as Accommodation Page) */
+.register-btn {
+  display: inline-block;
+  padding: 12px 30px;
+  border: 2px solid cyan;
+  border-radius: 30px;
+  background: transparent;
+  color: cyan;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+}
+
+.register-btn:hover {
+  background: cyan;
+  color: black;
+  transform: scale(1.08);
+  box-shadow: 0 0 25px cyan;
+  animation: glowPulse 1.5s infinite alternate;
+}
+
+/* 🔹 KNOW MORE BUTTON (Complementary Style) */
+.btn.know-more {
+  padding: 10px 25px;
+  border-radius: 25px;
+  border: 2px solid rgba(0,255,255,0.6);
+  background: rgba(0,255,255,0.08);
   color: cyan;
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.btn:hover {
-  background: cyan;
-  color: black;
-  box-shadow: 0 0 15px cyan;
+.btn.know-more:hover {
+  background: rgba(0,255,255,0.2);
+  box-shadow: 0 0 20px rgba(0,255,255,0.6);
+  transform: scale(1.05);
+}
+
+/* Subtle breathing glow effect */
+@keyframes glowPulse {
+  0% { box-shadow: 0 0 10px rgba(0,255,255,0.4); }
+  100% { box-shadow: 0 0 25px rgba(0,255,255,0.9); }
 }
 
 /* ---------- TITLE ---------- */
