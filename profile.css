@@ -202,6 +202,7 @@ body {
   transition: 0.3s ease;
   text-align: left;
   backdrop-filter: blur(8px);
+  overflow: hidden; /* prevents text going out visually */
 }
 
 .pass-item:hover {
@@ -215,11 +216,17 @@ body {
   font-size: 1.55rem;
   margin-bottom: 10px;
   letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .pass-item p {
   margin: 6px 0;
   font-size: 1.05rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .pass-item ul {
@@ -255,7 +262,7 @@ body {
 @media (max-width: 768px) {
   .profile-container {
     width: 94%;
-    padding: 25px 20px;
+    padding: 28px 20px;
     border-radius: 20px;
   }
 
@@ -280,7 +287,7 @@ body {
   }
 
   .profile-info p {
-    font-size: 1rem;
+    font-size: 1.05rem; /* ✅ only slightly smaller */
     margin: 6px 0;
     line-height: 1.4rem;
   }
@@ -293,7 +300,20 @@ body {
 
   .pass-item {
     width: 90%;
-    padding: 22px;
+    padding: 20px 22px;
+    font-size: 0.95rem; /* ✅ minor size decrease */
+  }
+
+  .pass-item h3 {
+    font-size: 1.3rem; /* ✅ heading still visible */
+  }
+
+  .pass-item p {
+    font-size: 0.9rem;
+  }
+
+  .pass-item ul {
+    font-size: 0.85rem;
   }
 
   .upload-btn {
