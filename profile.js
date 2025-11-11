@@ -30,8 +30,8 @@ body {
   border: 1.5px solid cyan;
   border-radius: 20px;
   box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
-  width: 92%;
-  max-width: 1100px;
+  width: 90%;
+  max-width: 1000px;
   padding: 40px;
   color: #e3f8ff;
   transition: 0.3s ease;
@@ -171,51 +171,47 @@ body {
   font-size: 1.9rem;
 }
 
-/* ---------- PASS LIST ---------- */
 .passes-list {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 30px;
-  width: 100%;
+  gap: 25px;
 }
 
 /* ---------- PASS CARD ---------- */
 .pass-item {
   background: rgba(0, 0, 0, 0.6);
   border: 1.5px solid rgba(0, 255, 255, 0.6);
-  border-radius: 18px;
-  padding: 25px 30px;
-  width: 420px; /* ⬅️ Wider for desktop */
+  border-radius: 15px;
+  padding: 22px;
+  width: 340px;
   color: #dff;
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
   transition: 0.3s ease;
   text-align: left;
-  backdrop-filter: blur(6px);
 }
 
 .pass-item:hover {
   transform: translateY(-3px);
-  box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
 }
 
 .pass-item h3 {
   color: cyan;
-  text-shadow: 0 0 15px cyan;
-  font-size: 1.5rem;
+  text-shadow: 0 0 8px cyan;
+  font-size: 1.4rem;
   margin-bottom: 10px;
-  letter-spacing: 0.5px;
 }
 
 .pass-item p {
-  margin: 6px 0;
-  font-size: 1.05rem;
+  margin: 5px 0;
+  font-size: 1rem;
 }
 
 .pass-item ul {
   list-style-type: disc;
-  margin-left: 20px;
-  font-size: 1rem;
+  margin-left: 18px;
+  font-size: 0.95rem;
   color: #bff;
 }
 
@@ -230,7 +226,7 @@ body {
 }
 
 /* ---------- RESPONSIVE ---------- */
-@media (max-width: 1000px) {
+@media (max-width: 900px) {
   .profile-header {
     flex-direction: column;
     align-items: center;
@@ -252,7 +248,7 @@ body {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 480px) {
   .profile-container {
     padding: 25px;
   }
