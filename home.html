@@ -177,22 +177,6 @@
       <p><span>@PRAVAAH'26 IIT BHUBANESWAR</span> | MADE WITH 💜 BY WEB TEAM | All Rights Reserved</p>
     </div>
   </footer>
-  <script>
-  // Pause auto-scroll when user manually scrolls
-  const carousel = document.querySelector('.highlights-carousel');
-  const track = document.querySelector('.slider-track');
-  let scrollTimeout;
-
-  if (carousel && track) {
-    carousel.addEventListener('scroll', () => {
-      track.style.animationPlayState = 'paused';
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        track.style.animationPlayState = 'running';
-      }, 1500); // resume after 1.5 seconds of no manual scroll
-    });
-  }
-</script>
-
+  
 </body>
 </html>
