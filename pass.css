@@ -61,7 +61,6 @@ body {
   color: #ccc;
   font-size: 1rem;
   margin-bottom: 35px;
-  text-align: center;
   line-height: 1.6;
 }
 
@@ -82,6 +81,8 @@ body {
   width: 300px;
   box-shadow: 0 0 10px rgba(0,255,255,0.15);
   transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
 }
 
 .pass-card:hover {
@@ -110,21 +111,34 @@ body {
   line-height: 1.5;
 }
 
-.select-btn {
-  background: cyan;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-weight: 700;
-  color: black;
-  cursor: pointer;
-  transition: 0.3s;
+/* ---------- SELECT INDICATOR ---------- */
+.select-indicator {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  color: cyan;
+  font-size: 1.5rem;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.3s ease;
 }
 
-.select-btn:hover {
-  background: #00ffff;
-  box-shadow: 0 0 12px rgba(0,255,255,0.5);
-  transform: scale(1.04);
+/* ---------- SELECTED CARD HIGHLIGHT ---------- */
+.pass-card.selected {
+  border: 2px solid cyan;
+  box-shadow: 0 0 25px rgba(0,255,255,0.7);
+  transform: scale(1.05);
+  animation: pulseGlow 2.5s ease-in-out infinite alternate;
+}
+
+.pass-card.selected .select-indicator {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 15px rgba(0,255,255,0.4); }
+  100% { box-shadow: 0 0 35px rgba(0,255,255,0.9); }
 }
 
 /* ---------- SELECTION AREA ---------- */
@@ -137,9 +151,7 @@ body {
   box-shadow: 0 0 15px rgba(0,255,255,0.15);
 }
 
-.hidden {
-  display: none;
-}
+.hidden { display: none; }
 
 #selectedPass {
   color: cyan;
