@@ -5,13 +5,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* 🔹 FIREBASE CONFIG */
   const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_BUCKET",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
-  };
+  apiKey: "AIzaSyCbXKleOw4F46gFDXz2Wynl3YzPuHsVwh8",
+  authDomain: "pravaah-55b1d.firebaseapp.com",
+  projectId: "pravaah-55b1d",
+  storageBucket: "pravaah-55b1d.appspot.com",
+  messagingSenderId: "287687647267",
+  appId: "1:287687647267:web:7aecd603ee202779b89196"
+};
+
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
