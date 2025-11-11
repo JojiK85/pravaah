@@ -1,12 +1,8 @@
-// ==========================
-// 🔥 PRAVAAH PROFILE LOGIC
-// ==========================
-
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
-// ✅ Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyCbXKleOw4F46gFDXz2Wynl3YzPuHsVwh8",
   authDomain: "pravaah-55b1d.firebaseapp.com",
@@ -16,67 +12,114 @@ const firebaseConfig = {
   appId: "1:287687647267:web:7aecd603ee202779b89196"
 };
 
-// ✅ Initialize Firebase
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
-// Elements
-const nameField = document.getElementById("userName");
-const emailField = document.getElementById("userEmail");
-const phoneField = document.getElementById("userPhone");
-const collegeField = document.getElementById("userCollege");
-const passesList = document.getElementById("passesList");
-
-// 🔐 User Auth Check
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "index.html";
     return;
   }
 
-  // ✅ Display name and email
-  nameField.textContent = user.displayName || "PRAVAAH User";
-  emailField.textContent = user.email;
+  const userPhoto = document.getElementById("userPhoto");
+  const userNameEl = document.getElementById("userName");
+  const userEmailEl = document.getElementById("userEmail");
+  const userPhoneEl = document.getElementById("userPhone");
+  const userCollegeEl = document.getElementById("userCollege");
+  const passesList = document.getElementById("passesList");
 
-  try {
-    const ref = doc(db, "users", user.uid);
-    const snap = await getDoc(ref);
+  // 🧠 Basic user info
+  userEmailEl.textContent = user.email;
+  userNameEl.textContent = user.displayName || "PRAVAAH User";
 
-    if (!snap.exists()) {
-      passesList.innerHTML = `<p class="no-passes">Not yet registered.</p>`;
-      phoneField.textContent = "Not provided";
-      collegeField.textContent = "Not provided";
-      return;
-    }
+  const refUser = doc(db, "users", user.uid);
+  const snap = await getDoc(refUser);
 
+  // 🖼️ Profile photo logic
+  if (user.photoURL) {
+    userPhoto.src = user.photoURL;
+  } else if (snap.exists() && snap.data().photoURL) {
+    userPhoto.src = snap.data().photoURL;
+  } else {
+    userPhoto.src = "default-avatar.png";
+  }
+
+  // 🎟️ Pass display
+  if (snap.exists()) {
     const data = snap.data();
-    phoneField.textContent = data.phone || "Not provided";
-    collegeField.textContent = data.college || "Not provided";
+    userPhoneEl.textContent = data.phone || "Not provided";
+    userCollegeEl.textContent = data.college || "Not provided";
 
     const passes = data.passes || [];
-    if (passes.length === 0) {
-      passesList.innerHTML = `<p class="no-passes">Not yet registered.</p>`;
-    } else {
-      passesList.innerHTML = passes.map(p => `
+    passesList.innerHTML = passes.length
+      ? passes.map(p => `
         <div class="pass-item">
           <h3>${p.passType}</h3>
           <p><strong>Amount:</strong> ₹${p.totalAmount}</p>
           <p><strong>Payment ID:</strong> ${p.paymentId}</p>
           <p><strong>Participants:</strong></p>
-          <ul>
-            ${p.participants.map(pt => `<li>${pt.name} (${pt.email})</li>`).join("")}
-          </ul>
+          <ul>${p.participants.map(pt => `<li>${pt.name} (${pt.email})</li>`).join("")}</ul>
         </div>
-      `).join("");
-    }
-  } catch (err) {
-    console.error("Error fetching profile data:", err);
-    passesList.innerHTML = `<p class="no-passes">Failed to load data.</p>`;
+      `).join("")
+      : `<p class="no-passes">Not yet registered.</p>`;
+  } else {
+    passesList.innerHTML = `<p class="no-passes">Not yet registered.</p>`;
   }
+
+  // 📤 Upload from Device
+  document.getElementById("uploadPhoto").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      alert("Uploading your photo... please wait ⏳");
+      const storageRef = ref(storage, `profilePhotos/${user.uid}`);
+      await uploadBytes(storageRef, file);
+      const photoURL = await getDownloadURL(storageRef);
+
+      // Save URL in Firestore + Auth profile
+      await setDoc(refUser, { photoURL }, { merge: true });
+      await updateProfile(user, { photoURL });
+
+      userPhoto.src = photoURL;
+      alert("✅ Profile photo updated successfully!");
+    } catch (err) {
+      console.error("Upload error:", err);
+      alert("❌ Failed to upload photo. Please try again.");
+    }
+  });
+
+  // ☁️ Google Drive Link Upload
+  document.getElementById("driveUploadBtn").addEventListener("click", async () => {
+    const driveLink = prompt("📂 Paste your Google Drive image link here:");
+
+    if (driveLink && driveLink.includes("https://drive.google.com")) {
+      const fileIdMatch = driveLink.match(/[-\w]{25,}/);
+      if (fileIdMatch) {
+        const fileId = fileIdMatch[0];
+        const directLink = `https://drive.google.com/uc?export=view&id=${fileId}`;
+
+        try {
+          await setDoc(refUser, { photoURL: directLink }, { merge: true });
+          await updateProfile(user, { photoURL: directLink });
+          userPhoto.src = directLink;
+          alert("✅ Profile photo updated from Google Drive!");
+        } catch (err) {
+          console.error("Drive link update error:", err);
+          alert("❌ Could not set profile photo. Try again later.");
+        }
+      } else {
+        alert("⚠️ Invalid Google Drive link format.");
+      }
+    } else {
+      alert("⚠️ Please paste a valid Google Drive share link.");
+    }
+  });
 });
 
-// 🚪 Logout (Desktop + Mobile)
+// 🚪 Logout
 document.addEventListener("DOMContentLoaded", () => {
   const logoutDesktop = document.getElementById("logoutDesktop");
   const logoutMobile = document.getElementById("logoutMobile");
@@ -84,20 +127,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const logout = async () => {
     try {
       await signOut(auth);
+      alert("👋 Logged out successfully!");
       window.location.href = "index.html";
     } catch (e) {
       alert("Logout failed: " + e.message);
     }
   };
 
-  if (logoutDesktop) logoutDesktop.addEventListener("click", logout);
-  if (logoutMobile) logoutMobile.addEventListener("click", logout);
-
-  // 📱 Navbar toggle
-  const menuToggle = document.getElementById("menuToggle");
-  if (menuToggle) {
-    menuToggle.addEventListener("click", () => {
-      document.getElementById("menu").classList.toggle("active");
-    });
-  }
+  logoutDesktop?.addEventListener("click", logout);
+  logoutMobile?.addEventListener("click", logout);
 });
