@@ -7,7 +7,6 @@
   font-family: 'Orbitron', sans-serif;
 }
 
-/* ---------- BODY ---------- */
 body {
   min-height: 100vh;
   background: linear-gradient(120deg, #2c1a55, #3e5d75, #022c43, #5b2a86);
@@ -49,32 +48,40 @@ nav {
   user-select: none;
 }
 
+/* Show only on mobile/tablet */
 @media (max-width: 900px) {
-  .menu-toggle { display: block; }
+  .menu-toggle {
+    display: block;
+  }
 }
-
+/* LOGO (clean, no glow) */
 .logo {
   font-size: 1.6rem;
   color: #ffffff;
   font-weight: 700;
   letter-spacing: 2px;
+  text-shadow: none;
 }
 
-/* MENU LINKS */
+/* MENU */
 #menu {
   display: flex;
   list-style: none;
   gap: 40px;
 }
 
+/* MENU LINKS */
+/* MENU LINKS */
 #menu li a {
   color: #e0e0e0;
   text-decoration: none;
   font-size: 1rem;
+  letter-spacing: 0.5px;
   position: relative;
   transition: color 0.3s ease, transform 0.3s ease, text-shadow 0.3s ease;
 }
 
+/* Underline Effect */
 #menu li a::after {
   content: "";
   position: absolute;
@@ -88,133 +95,235 @@ nav {
   transition: width 0.3s ease;
 }
 
+/* Hover: color + glow + slight rise */
 #menu li a:hover {
   color: cyan;
   transform: translateY(-2px);
   text-shadow: 0 0 8px cyan;
 }
-#menu li a:hover::after { width: 100%; }
 
+#menu li a:hover::after {
+  width: 100%;
+}
+
+/* Active Page Link */
 #menu li a.active {
   color: cyan;
   text-shadow: 0 0 10px cyan;
 }
-#menu li a.active::after { width: 100%; }
 
-@media (max-width: 900px) {
-  nav { flex-direction: column; padding: 20px 0; }
-  .logo { margin-bottom: 10px; }
-  #menu { flex-wrap: wrap; justify-content: center; gap: 25px; }
+#menu li a.active::after {
+  width: 100%;
 }
 
-/* ---------- LOGOUT BUTTON ---------- */
+
+/* LINE EFFECT UNDER TEXT */
+#menu li a::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0%;
+  height: 2px;
+  background: cyan;
+  transition: width 0.3s ease;
+}
+
+/* Hover: color + animated underline */
+#menu li a:hover {
+  color: cyan;
+}
+
+#menu li a:hover::after {
+  width: 100%;
+}
+
+/* Active (optional, if you add active class) */
+#menu li a.active {
+  color: cyan;
+}
+#menu li a.active::after {
+  width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  nav {
+    flex-direction: column;
+    padding: 20px 0;
+  }
+
+  .logo {
+    margin-bottom: 10px;
+  }
+
+  #menu {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+  }
+}
+
+
+/* 🔹 Logout Button (Desktop View) */
 .logout-btn {
   background: linear-gradient(90deg, cyan, #00ffff);
   border: none;
   color: black;
   padding: 8px 18px;
+  font-family: 'Orbitron', sans-serif;
   border-radius: 8px;
   cursor: pointer;
   transition: 0.3s;
   font-weight: 600;
 }
+
 .logout-btn:hover {
   box-shadow: 0 0 15px cyan;
   transform: scale(1.05);
 }
 
+/* Hide logout button on mobile */
 @media (max-width: 900px) {
-  .logout-btn { display: none; }
-  .mobile-only { display: block; }
+  .logout-btn {
+    display: none;
+  }
+  .mobile-only {
+    display: block;
+  }
 }
+
+/* Hide mobile logout on desktop */
 @media (min-width: 901px) {
-  .mobile-only { display: none; }
+  .mobile-only {
+    display: none;
+  }
 }
 
 /* ---------- HIGHLIGHTS SECTION ---------- */
 .highlights {
   width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scrollbar-color: cyan transparent;
+  overflow: hidden;
   text-align: center;
-  margin: 7rem 0;
-  -webkit-overflow-scrolling: touch;
-}
-
-.highlights::-webkit-scrollbar {
-  height: 6px;
-}
-.highlights::-webkit-scrollbar-thumb {
-  background: rgba(0,255,255,0.5);
-  border-radius: 10px;
+  margin: 7rem -1rem;
 }
 
 .section-title {
   font-size: clamp(1.4rem, 3vw, 2rem);
   margin-bottom: 2rem;
   text-shadow: 0 0 15px cyan;
-  font-weight: 700;
   letter-spacing: 1.5px;
+  font-weight: 700;
 }
+
 
 .highlights-carousel {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
   display: flex;
+  justify-content: center;
   align-items: center;
+  padding: 15px 0;
+}
+
+/* 🔹 Continuous, seamless highlight scroll */
+/* 🔹 Seamless Infinite Scroll (No Gaps) */
+/* 🔹 Perfect Continuous Highlights Scroll (Works Everywhere) */
+.slider-track {
+  display: flex;
+  flex-wrap: nowrap;
   gap: 30px;
-  padding: 15px 40px;
   width: max-content;
-  animation: scrollSeamless 40s linear infinite;
+  animation: scrollSeamless 30s linear infinite;
   will-change: transform;
+  backface-visibility: hidden;
 }
 
+/* Smooth continuous animation */
 @keyframes scrollSeamless {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
-.highlights:hover .highlights-carousel {
+/* Hover pause for desktop */
+.highlights-carousel:hover .slider-track {
   animation-play-state: paused;
 }
 
-/* Highlight Cards */
+/* Mobile: faster scroll, same animation name */
+@media (max-width: 900px) {
+  .slider-track {
+    animation: scrollSeamless 1s linear infinite;
+  }
+}
+
+.slider-track {
+  transform: translateZ(0);
+}
+.slide img {
+  will-change: transform;
+}
+
+
+/* Pause animation on hover for desktop */
+.highlights-carousel:hover .slider-track {
+  animation-play-state: paused;
+}
+
+/* Ensure slides don't shrink or stretch */
+.slide {
+  flex-shrink: 0;
+}
+
+/* Mobile: Faster scroll speed */
+@media (max-width: 900px) {
+  .slider-track {
+    animation: scrollSeamless 15s linear infinite; /* 💨 Faster for phones */
+  }
+}
+
+
+/* 🔹 Highlight Card (Edge Glow Only) */
 .slide {
   width: 320px;
   height: 200px;
   border-radius: 18px;
   overflow: hidden;
   position: relative;
+  flex-shrink: 0;
   border: 2px solid cyan;
   box-shadow: 0 0 12px rgba(0,255,255,0.4);
   transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
   animation: pulseGlow 3s ease-in-out infinite;
-  flex-shrink: 0;
 }
 
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 10px rgba(0,255,255,0.3); }
-  50% { box-shadow: 0 0 20px rgba(0,255,255,0.8); }
-}
-
+/* Image inside highlight */
 .slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 16px;
-  transition: transform 0.4s ease;
+  display: block;
 }
 
+/* Neon edge highlight */
 .slide:hover {
   transform: scale(1.05);
   border-color: #00ffff;
-  box-shadow: 0 0 25px #00ffff, 0 0 40px rgba(0,255,255,0.6);
+  box-shadow: 0 0 20px #00ffff, 0 0 40px rgba(0,255,255,0.6);
 }
+
 .slide:hover img {
   transform: scale(1.1);
 }
 
+/* Caption overlay */
 .slide::after {
   content: attr(data-title);
   position: absolute;
@@ -222,16 +331,30 @@ nav {
   left: 0;
   width: 100%;
   padding: 10px 0;
+  font-size: 1.1rem;
   background: rgba(0, 0, 0, 0.6);
   color: cyan;
-  font-size: 1rem;
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(20px);
   transition: all 0.4s ease;
+  border-radius: 0 0 18px 18px;
 }
+
 .slide:hover::after {
   opacity: 1;
   transform: translateY(0);
+}
+
+
+
+.highlights-carousel:hover .slider-track {
+  animation-play-state: paused;
+}
+
+/* Subtle breathing border glow */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(0,255,255,0.3); }
+  50% { box-shadow: 0 0 20px rgba(0,255,255,0.8); }
 }
 
 /* ---------- CALENDAR + FEED ---------- */
