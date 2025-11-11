@@ -148,5 +148,26 @@
 
   <!-- JS -->
   <script src="pass.js"></script>
+  <script>
+    // 🚪 Logout handler
+    document.addEventListener("DOMContentLoaded", () => {
+      const logoutDesktop = document.getElementById("logoutDesktop");
+      const logoutMobile = document.getElementById("logoutMobile");
+
+      const logout = async () => {
+        try {
+          await signOut(auth);
+          console.log("✅ Logged out successfully");
+          window.location.href = "index.html";
+        } catch (err) {
+          alert("Logout failed: " + err.message);
+        }
+      };
+
+      if (logoutDesktop) logoutDesktop.addEventListener("click", logout);
+      if (logoutMobile) logoutMobile.addEventListener("click", logout);
+    });
+  </script>
+
 </body>
 </html>
