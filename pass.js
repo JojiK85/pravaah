@@ -1,5 +1,5 @@
 // =====================
-// PRAVAAH 2026 Registration + Payment (Fixed + Firebase Integration)
+// PRAVAAH 2026 Registration + Payment (Fully Fixed + Firebase Integration)
 // =====================
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  // HTML refs
+  // HTML Elements
   const passCards = document.querySelectorAll(".pass-card");
   const selectionArea = document.getElementById("selectionArea");
   const selectedPassText = document.getElementById("selectedPass");
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedPrice = 0;
   let total = 0;
 
-  // Google Sheet Script Endpoint
+  // Google Apps Script endpoint
   const scriptURL = "https://script.google.com/macros/s/AKfycbwHR5zp3-09nakNxpryLvtmcSUebhkfaohrYWvhlnh32mt0wFfljkqO5JoOJtFsuudJfw/exec";
 
   // 🎟️ Pass Selection
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // 👥 Participant Management
+  // 👥 Update participant form dynamically
   function updateParticipantForm(count) {
     participantForm.innerHTML = "";
     if (!count || count === 0) {
@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // 💳 Payment
+  // 💳 Payment & Firestore Update
   payBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     if (!selectedPass || total === 0) return;
@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     for (let i = 0; i < names.length; i++) {
       if (!names[i] || !emails[i] || !phones[i] || !colleges[i]) {
-        alert("Please fill all participant details!");
+        alert("⚠️ Please fill all participant details!");
         return;
       }
     }
@@ -127,21 +127,17 @@ document.addEventListener("DOMContentLoaded", () => {
       return (window.location.href = "index.html");
     }
 
-    try {
-      let timerInterval;
+    // 🧾 Payment Logic
+    const options = {
+      key: "rzp_test_Re1mOkmIGroT2c",
+      amount: total * 100,
+      currency: "INR",
+      name: "PRAVAAH 2026",
+      description: `${selectedPass} Registration`,
+      image: "pravah-logo.png",
 
-      const options = {
-        key: "rzp_test_Re1mOkmIGroT2c",
-        amount: total * 100,
-        currency: "INR",
-        name: "PRAVAAH 2026",
-        description: `${selectedPass} Registration`,
-        image: "pravah-logo.png",
-
-        handler: async function (response) {
-          if (timerInterval) clearInterval(timerInterval);
-          timerDisplay.style.display = "none";
-
+      handler: async function (response) {
+        try {
           const passData = {
             paymentId: response.razorpay_payment_id,
             passType: selectedPass,
@@ -154,51 +150,49 @@ document.addEventListener("DOMContentLoaded", () => {
             })),
           };
 
-          // 🔹 Save to Firebase user document
+          // ✅ Save to Firestore
           const userRef = doc(db, "users", user.uid);
           const snap = await getDoc(userRef);
           const existingPasses = snap.exists() ? snap.data().passes || [] : [];
           existingPasses.push(passData);
           await setDoc(userRef, { passes: existingPasses }, { merge: true });
 
-          // 🔹 Send to Google Sheet
-          fetch(scriptURL, {
+          // ✅ Send to Google Sheet
+          await fetch(scriptURL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(passData)
-          }).catch(() => {});
+          });
 
-          // ✅ Redirect after short delay
-          setTimeout(() => {
-            window.location.href = "payment_success.html";
-          }, 500);
-        },
-
-        theme: { color: "#00ffff" },
-      };
-
-      const rzp = new Razorpay(options);
-
-      // ⏳ 5-min Timer
-      let timeLeft = 300;
-      timerDisplay.style.display = "block";
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        const min = Math.floor(timeLeft / 60);
-        const sec = (timeLeft % 60).toString().padStart(2, "0");
-        timerDisplay.textContent = `⏳ Payment window: ${min}:${sec}`;
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          rzp.close();
-          timerDisplay.style.display = "none";
+          // ✅ Confirmation Toast
+          alert("🎉 Payment successful! Redirecting...");
+          window.location.href = "payment_success.html";
+        } catch (err) {
+          console.error("Save Error:", err);
+          window.location.href = "payment_failure.html";
         }
-      }, 1000);
+      },
 
-      rzp.open();
+      theme: { color: "#00ffff" },
+      modal: { ondismiss: () => alert("Payment cancelled.") }
+    };
 
-    } catch (error) {
-      console.error(error);
-      window.location.href = "payment_failure.html";
-    }
+    // ⏳ Timer before payment closes
+    let timerInterval;
+    let timeLeft = 300;
+    timerDisplay.style.display = "block";
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      const min = Math.floor(timeLeft / 60);
+      const sec = (timeLeft % 60).toString().padStart(2, "0");
+      timerDisplay.textContent = `⏳ Payment window: ${min}:${sec}`;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        timerDisplay.style.display = "none";
+      }
+    }, 1000);
+
+    const rzp = new Razorpay(options);
+    rzp.open();
   });
 });
