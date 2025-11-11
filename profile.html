@@ -48,10 +48,19 @@
       <div class="profile-header">
         <!-- 🖼️ PHOTO AREA -->
         <div class="profile-photo" id="photoArea">
-          <img id="userPhoto" src="default-avatar.png" alt="Profile Photo" title="Click to upload new photo" />
+          <!-- ✅ Added overlay icon (camera) for clarity -->
+          <div class="photo-wrapper">
+            <img id="userPhoto" src="default-avatar.png" alt="Profile Photo" title="Click to upload new photo" />
+            <div class="photo-overlay">
+              <i class="fas fa-camera"></i>
+            </div>
+          </div>
+
           <input type="file" id="uploadPhoto" accept="image/*" hidden />
           
+          <!-- ✅ Upload options appear dynamically -->
           <div class="upload-options hidden" id="uploadOptions">
+            <!-- JS adds “Upload from Device” automatically -->
             <button id="driveUploadBtn" class="upload-btn drive-btn">
               <i class="fab fa-google-drive"></i> Upload from Drive
             </button>
@@ -122,12 +131,6 @@
   <script>
     document.getElementById("menuToggle").addEventListener("click", () => {
       document.getElementById("menu").classList.toggle("active");
-    });
-
-    // 🖼 Trigger upload when clicking the profile image
-    document.getElementById("userPhoto").addEventListener("click", () => {
-      document.getElementById("uploadPhoto").click();
-      document.getElementById("uploadOptions").classList.remove("hidden");
     });
   </script>
 </body>
