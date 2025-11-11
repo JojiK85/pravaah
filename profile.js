@@ -111,11 +111,14 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   // ==========================================
-  // 📸 UPLOAD OPTIONS AFTER CLICK
+  // 📸 UPLOAD PHOTO TOGGLE OPTIONS
   // ==========================================
-  userPhoto.addEventListener("click", () => {
-    uploadOptions.classList.toggle("hidden");
-  });
+  if (userPhoto && uploadOptions) {
+    userPhoto.addEventListener("click", () => {
+      const isHidden = uploadOptions.classList.toggle("hidden");
+      uploadOptions.style.display = isHidden ? "none" : "flex";
+    });
+  }
 
   // Add “Upload from Device” button dynamically if missing
   if (!document.getElementById("deviceUploadBtn")) {
@@ -128,10 +131,13 @@ onAuthStateChanged(auth, async (user) => {
     deviceBtn.addEventListener("click", () => {
       uploadPhotoInput.click();
       uploadOptions.classList.add("hidden");
+      uploadOptions.style.display = "none";
     });
   }
 
-  // Upload from local device
+  // ==========================================
+  // 📤 UPLOAD FROM DEVICE
+  // ==========================================
   uploadPhotoInput.addEventListener("change", async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -154,9 +160,13 @@ onAuthStateChanged(auth, async (user) => {
     }
   });
 
-  // Upload from Google Drive
+  // ==========================================
+  // ☁️ UPLOAD FROM GOOGLE DRIVE
+  // ==========================================
   driveUploadBtn.addEventListener("click", async () => {
     uploadOptions.classList.add("hidden");
+    uploadOptions.style.display = "none";
+
     const driveLink = prompt("📂 Paste your Google Drive image link here:");
     if (!driveLink || !driveLink.includes("https://drive.google.com")) {
       showToast("⚠️ Invalid Google Drive link.", "error");
@@ -214,7 +224,7 @@ style.innerHTML = `
   bottom: 30px;
   left: 50%;
   transform: translateX(-50%) translateY(20px);
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.85);
   color: white;
   padding: 12px 25px;
   border-radius: 25px;
