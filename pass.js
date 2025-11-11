@@ -1,26 +1,3 @@
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-
-// ===============================
-// 🔥 Firebase Config
-// ===============================
-const firebaseConfig = {
-  apiKey: "AIzaSyCbXKleOw4F46gFDXz2Wynl3YzPuHsVwh8",
-  authDomain: "pravaah-55b1d.firebaseapp.com",
-  projectId: "pravaah-55b1d",
-  storageBucket: "pravaah-55b1d.appspot.com",
-  messagingSenderId: "287687647267",
-  appId: "1:287687647267:web:7aecd603ee202779b89196"
-};
-
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// ===============================
-// 🎟️ DOM ELEMENTS
-// ===============================
 let selectedPass = null;
 let selectedPrice = 0;
 let total = 0;
@@ -35,20 +12,18 @@ const numInput = document.getElementById("numParticipants");
 const increaseBtn = document.getElementById("increaseBtn");
 const decreaseBtn = document.getElementById("decreaseBtn");
 
+// 🔗 Your Apps Script URL (ends with /exec)
 const scriptURL = "https://script.google.com/macros/s/AKfycbwHR5zp3-09nakNxpryLvtmcSUebhkfaohrYWvhlnh32mt0wFfljkqO5JoOJtFsuudJfw/exec";
 
-// ===============================
-// 🎫 PASS SELECTION
-// ===============================
+// Pass selection
 document.querySelectorAll(".select-btn").forEach(btn => {
   btn.addEventListener("click", (e) => {
     const card = e.target.closest(".pass-card");
     selectedPass = card.dataset.name;
     selectedPrice = parseInt(card.dataset.price, 10);
-
     selectionArea.classList.remove("hidden");
-    selectedPassText.innerText = `Selected: ${selectedPass} — ₹${selectedPrice}`;
-    totalAmount.innerText = `Total: ₹0`;
+    selectedPassText.innerText = Selected: ${selectedPass} — ₹${selectedPrice};
+    totalAmount.innerText = Total: ₹0;
     payBtn.style.display = "none";
     participantForm.innerHTML = "";
     total = 0;
@@ -57,17 +32,13 @@ document.querySelectorAll(".select-btn").forEach(btn => {
   });
 });
 
-// ===============================
-// 👥 PARTICIPANT MANAGEMENT
-// ===============================
 function updateParticipantForm(count) {
   participantForm.innerHTML = "";
   if (!count || count === 0) {
-    totalAmount.innerText = `Total: ₹0`;
+    totalAmount.innerText = Total: ₹0;
     payBtn.style.display = "none";
     return;
   }
-
   for (let i = 1; i <= count; i++) {
     const div = document.createElement("div");
     div.classList.add("participant-card");
@@ -80,12 +51,12 @@ function updateParticipantForm(count) {
     `;
     participantForm.appendChild(div);
   }
-
   total = selectedPrice * count;
-  totalAmount.innerText = `Total: ₹${total}`;
+  totalAmount.innerText = Total: ₹${total};
   payBtn.style.display = "inline-block";
 }
 
+// +/- buttons
 increaseBtn.addEventListener("click", () => {
   let value = parseInt(numInput.value || "0", 10);
   const max = parseInt(numInput.max || "100", 10);
@@ -95,7 +66,6 @@ increaseBtn.addEventListener("click", () => {
     updateParticipantForm(value);
   }
 });
-
 decreaseBtn.addEventListener("click", () => {
   let value = parseInt(numInput.value || "0", 10);
   if (value > 0) {
@@ -105,12 +75,11 @@ decreaseBtn.addEventListener("click", () => {
   }
 });
 
-// ===============================
-// 💳 PAYMENT + FIRESTORE + GOOGLE SHEET
-// ===============================
+// Razorpay + background Google Sheet write
 payBtn.addEventListener("click", async (e) => {
   e.preventDefault();
-  if (!selectedPass || total === 0) return;
+  if (!selectedPass) return;
+  if (total === 0) return;
 
   const names = [...document.querySelectorAll(".pname")].map(i => i.value.trim());
   const emails = [...document.querySelectorAll(".pemail")].map(i => i.value.trim());
@@ -122,82 +91,77 @@ payBtn.addEventListener("click", async (e) => {
   }
 
   try {
-    let timerInterval;
+    let timerInterval; // visible to handler
 
     const options = {
       key: "rzp_test_Re1mOkmIGroT2c",
       amount: total * 100,
       currency: "INR",
       name: "PRAVAAH 2026",
-      description: `${selectedPass} Registration`,
+      description: ${selectedPass} Registration,
       image: "pravah-logo.png",
 
-      handler: async function (response) {
+      // INSTANT redirect; data sent in background
+      handler: function (response) {
         if (timerInterval) clearInterval(timerInterval);
         timerDisplay.style.display = "none";
 
-        const passData = {
+        const payload = JSON.stringify({
           paymentId: response.razorpay_payment_id,
           passType: selectedPass,
           totalAmount: total,
-          participants: names.map((n, i) => ({
-            name: n,
+          participants: names.map((name, i) => ({
+            name,
             email: emails[i],
             phone: phones[i],
             college: colleges[i],
           })),
-        };
+        });
 
-        // 🔹 Send to Google Sheet (background)
-        const payload = JSON.stringify(passData);
+        // Try sendBeacon first (non-blocking, survives navigation)
+        let queued = false;
         try {
           if (navigator.sendBeacon) {
             const blob = new Blob([payload], { type: "text/plain" });
-            navigator.sendBeacon(scriptURL, blob);
-          } else {
+            queued = navigator.sendBeacon(scriptURL, blob);
+          }
+        } catch (_) { /* noop */ }
+
+        // Fallback to keepalive fetch (also survives navigation)
+        if (!queued) {
+          try {
             fetch(scriptURL, {
               method: "POST",
               headers: { "Content-Type": "text/plain;charset=utf-8" },
               body: payload,
               keepalive: true
             }).catch(() => {});
-          }
-        } catch (_) {}
-
-        // 🔹 Save to Firestore user profile
-        const user = auth.currentUser;
-        if (user) {
-          try {
-            const userRef = doc(db, "users", user.uid);
-            const snap = await getDoc(userRef);
-            const existingPasses = snap.exists() ? snap.data().passes || [] : [];
-            existingPasses.push(passData);
-            await setDoc(userRef, { passes: existingPasses }, { merge: true });
-          } catch (fireErr) {
-            console.error("❌ Firestore save failed:", fireErr);
-          }
+          } catch (_) {}
         }
 
-        // ✅ Redirect instantly
+        // Redirect immediately (no alerts)
         window.location.href = "payment_success.html";
       },
 
       theme: { color: "#00ffff" },
     };
 
+    // Ensure you have: <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     const rzp = new Razorpay(options);
 
-    // Timer (5 minutes)
+    // Payment timer (no alerts on expiry)
     let timeLeft = 300;
     timerDisplay.style.display = "block";
     timerInterval = setInterval(() => {
       timeLeft--;
       const min = Math.floor(timeLeft / 60);
       const sec = (timeLeft % 60).toString().padStart(2, "0");
-      timerDisplay.textContent = `⏳ Payment window: ${min}:${sec}`;
+      timerDisplay.textContent = ⏳ Payment window: ${min}:${sec};
       if (timeLeft <= 0) {
         clearInterval(timerInterval);
         rzp.close();
+        // No alert; optionally show inline text:
+        // timerDisplay.textContent = "Payment window expired.";
         timerDisplay.style.display = "none";
       }
     }, 1000);
@@ -205,7 +169,8 @@ payBtn.addEventListener("click", async (e) => {
     rzp.open();
 
   } catch (error) {
-    console.error("❌ Payment error:", error);
+    // Silent fail -> optional navigate to failure page
     window.location.href = "payment_failure.html";
   }
 });
+this  sthw orking pass.js add that profile data also
