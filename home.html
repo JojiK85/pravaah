@@ -91,15 +91,21 @@
   <!-- 🖼️ HIGHLIGHTS -->
   <section class="highlights" id="highlights">
     <h2 class="section-title">✨ HIGHLIGHTS OF 2K25 ✨</h2>
-    <div class="highlights-carousel">
-      <div class="slider-track">
-        <div class="slide" data-title="Opening Ceremony"><img src="DSC09133.JPG" alt=""></div>
-        <div class="slide" data-title="Cultural Night"><img src="DSC09133.JPG" alt=""></div>
-        <div class="slide" data-title="Tech Expo"><img src="DSC09133.JPG" alt=""></div>
-        <div class="slide" data-title="Sports Gala"><img src="DSC09133.JPG" alt=""></div>
-        <div class="slide" data-title="Prize Distribution"><img src="DSC09133.JPG" alt=""></div>
-      </div>
-    </div>
+    <div class="highlights-carousel" id="carousel">
+  <div class="slider-track" id="sliderTrack">
+    <div class="slide" data-title="Opening Ceremony"><img src="DSC09133.JPG" alt=""></div>
+    <div class="slide" data-title="Cultural Night"><img src="DSC09133.JPG" alt=""></div>
+    <div class="slide" data-title="Tech Expo"><img src="DSC09133.JPG" alt=""></div>
+    <div class="slide" data-title="Sports Gala"><img src="DSC09133.JPG" alt=""></div>
+    <div class="slide" data-title="Prize Distribution"><img src="DSC09133.JPG" alt=""></div>
+    <!-- 🔁 Duplicate for seamless loop -->
+    <div class="slide" data-title="Opening Ceremony"><img src="DSC09133.JPG" alt=""></div>
+    <div class="slide" data-title="Cultural Night"><img src="DSC09133.JPG" alt=""></div>
+    <div class="slide" data-title="Tech Expo"><img src="DSC09133.JPG" alt=""></div>
+    <div class="slide" data-title="Sports Gala"><img src="DSC09133.JPG" alt=""></div>
+    <div class="slide" data-title="Prize Distribution"><img src="DSC09133.JPG" alt=""></div>
+  </div>
+</div>
   </section>
 
   <!-- 🎬 AFTERMOVIE SECTION -->
@@ -177,5 +183,64 @@
       <p><span>@PRAVAAH'26 IIT BHUBANESWAR</span> | MADE WITH 💜 BY WEB TEAM | All Rights Reserved</p>
     </div>
   </footer>
+  <script>
+const carousel = document.getElementById("carousel");
+const track = document.getElementById("sliderTrack");
+
+let isDown = false;
+let startX;
+let scrollLeft;
+let isDragged = false;
+
+carousel.addEventListener("mousedown", (e) => {
+  isDown = true;
+  startX = e.pageX - carousel.offsetLeft;
+  scrollLeft = carousel.scrollLeft;
+  carousel.style.cursor = "grabbing";
+  track.style.animationPlayState = "paused";
+});
+
+carousel.addEventListener("mouseleave", () => {
+  isDown = false;
+  carousel.style.cursor = "grab";
+  track.style.animationPlayState = "running";
+});
+
+carousel.addEventListener("mouseup", () => {
+  isDown = false;
+  carousel.style.cursor = "grab";
+  track.style.animationPlayState = "running";
+});
+
+carousel.addEventListener("mousemove", (e) => {
+  if (!isDown) return;
+  e.preventDefault();
+  const x = e.pageX - carousel.offsetLeft;
+  const walk = (x - startX) * 1.5; // scroll speed multiplier
+  carousel.scrollLeft = scrollLeft - walk;
+  isDragged = true;
+});
+
+/* Touch support */
+carousel.addEventListener("touchstart", (e) => {
+  isDown = true;
+  startX = e.touches[0].pageX - carousel.offsetLeft;
+  scrollLeft = carousel.scrollLeft;
+  track.style.animationPlayState = "paused";
+});
+
+carousel.addEventListener("touchend", () => {
+  isDown = false;
+  track.style.animationPlayState = "running";
+});
+
+carousel.addEventListener("touchmove", (e) => {
+  if (!isDown) return;
+  const x = e.touches[0].pageX - carousel.offsetLeft;
+  const walk = (x - startX) * 1.5;
+  carousel.scrollLeft = scrollLeft - walk;
+});
+</script>
+
 </body>
 </html>
