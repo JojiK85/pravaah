@@ -90,23 +90,17 @@
 
   <!-- 🖼 HIGHLIGHTS -->
   <section class="highlights" id="highlights">
-  <h2 class="section-title">✨ HIGHLIGHTS OF 2K25 ✨</h2>
-
-  <div class="highlights-carousel">
-    <!-- 👇 scrollable viewport -->
-    <div class="highlights-viewport" id="hlViewport" aria-label="Highlights Carousel" role="region">
-      <!-- 👇 track auto-clones slides for seamless loop -->
-      <div class="slider-track" id="hlTrack">
-        <!-- 🧩 original slides (keep only unique ones here) -->
-        <div class="slide" data-title="Opening Ceremony"><img src="DSC09133.JPG" alt="Opening Ceremony"></div>
-        <div class="slide" data-title="Cultural Night"><img src="DSC09133.JPG" alt="Cultural Night"></div>
-        <div class="slide" data-title="Tech Expo"><img src="DSC09133.JPG" alt="Tech Expo"></div>
-        <div class="slide" data-title="Sports Gala"><img src="DSC09133.JPG" alt="Sports Gala"></div>
-        <div class="slide" data-title="Prize Distribution"><img src="DSC09133.JPG" alt="Prize Distribution"></div>
+    <h2 class="section-title">✨ HIGHLIGHTS OF 2K25 ✨</h2>
+    <div class="highlights-carousel">
+      <div class="slider-track">
+        <div class="slide" data-title="Opening Ceremony"><img src="DSC09133.JPG" alt=""></div>
+        <div class="slide" data-title="Cultural Night"><img src="DSC09133.JPG" alt=""></div>
+        <div class="slide" data-title="Tech Expo"><img src="DSC09133.JPG" alt=""></div>
+        <div class="slide" data-title="Sports Gala"><img src="DSC09133.JPG" alt=""></div>
+        <div class="slide" data-title="Prize Distribution"><img src="DSC09133.JPG" alt=""></div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
   <!-- 🎬 AFTERMOVIE SECTION -->
   <section class="aftermovie-section" id="aftermovie">
@@ -183,5 +177,22 @@
       <p><span>@PRAVAAH'26 IIT BHUBANESWAR</span> | MADE WITH 💜 BY WEB TEAM | All Rights Reserved</p>
     </div>
   </footer>
+  <script>
+  // Pause auto-scroll when user manually scrolls
+  const carousel = document.querySelector('.highlights-carousel');
+  const track = document.querySelector('.slider-track');
+  let scrollTimeout;
+
+  if (carousel && track) {
+    carousel.addEventListener('scroll', () => {
+      track.style.animationPlayState = 'paused';
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        track.style.animationPlayState = 'running';
+      }, 1500); // resume after 1.5 seconds of no manual scroll
+    });
+  }
+</script>
+
 </body>
 </html>
