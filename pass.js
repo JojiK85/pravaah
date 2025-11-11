@@ -1,6 +1,24 @@
 // =====================
-// PRAVAAH 2026 Registration + Payment (Hybrid Optimized)
+// PRAVAAH 2026 Registration + Payment (Hybrid Optimized + Firebase Sync)
 // =====================
+
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+// 🔥 Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyCbXKleOw4F46gFDXz2Wynl3YzPuHsVwh8",
+  authDomain: "pravaah-55b1d.firebaseapp.com",
+  projectId: "pravaah-55b1d",
+  storageBucket: "pravaah-55b1d.appspot.com",
+  messagingSenderId: "287687647267",
+  appId: "1:287687647267:web:7aecd603ee202779b89196"
+};
+
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 let selectedPass = null;
 let selectedPrice = 0;
@@ -101,7 +119,16 @@ payBtn.addEventListener("click", async (e) => {
   const colleges = [...document.querySelectorAll(".pcollege")].map(i => i.value.trim());
 
   for (let i = 0; i < names.length; i++) {
-    if (!names[i] || !emails[i] || !phones[i] || !colleges[i]) return;
+    if (!names[i] || !emails[i] || !phones[i] || !colleges[i]) {
+      alert("Please fill all participant details!");
+      return;
+    }
+  }
+
+  let user = auth.currentUser;
+  if (!user) {
+    alert("Please login to continue with payment!");
+    return window.location.href = "index.html";
   }
 
   try {
@@ -115,11 +142,11 @@ payBtn.addEventListener("click", async (e) => {
       description: `${selectedPass} Registration`,
       image: "pravah-logo.png",
 
-      handler: function (response) {
+      handler: async function (response) {
         if (timerInterval) clearInterval(timerInterval);
         timerDisplay.style.display = "none";
 
-        const payload = JSON.stringify({
+        const passData = {
           paymentId: response.razorpay_payment_id,
           passType: selectedPass,
           totalAmount: total,
@@ -129,8 +156,10 @@ payBtn.addEventListener("click", async (e) => {
             phone: phones[i],
             college: colleges[i],
           })),
-        });
+        };
 
+        // 🔹 Save to Google Sheet (existing)
+        const payload = JSON.stringify(passData);
         let queued = false;
         try {
           if (navigator.sendBeacon) {
@@ -138,7 +167,6 @@ payBtn.addEventListener("click", async (e) => {
             queued = navigator.sendBeacon(scriptURL, blob);
           }
         } catch (_) {}
-
         if (!queued) {
           try {
             fetch(scriptURL, {
@@ -150,6 +178,16 @@ payBtn.addEventListener("click", async (e) => {
           } catch (_) {}
         }
 
+        // 🔹 Save to Firebase user profile
+        const userRef = doc(db, "users", user.uid);
+        const snap = await getDoc(userRef);
+        let existingPasses = [];
+        if (snap.exists()) existingPasses = snap.data().passes || [];
+
+        existingPasses.push(passData);
+        await setDoc(userRef, { passes: existingPasses }, { merge: true });
+
+        alert("🎉 Registration successful! Your pass is saved in your profile.");
         window.location.href = "payment_success.html";
       },
 
@@ -176,6 +214,7 @@ payBtn.addEventListener("click", async (e) => {
     rzp.open();
 
   } catch (error) {
+    console.error(error);
     window.location.href = "payment_failure.html";
   }
 });
