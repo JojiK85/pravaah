@@ -202,12 +202,12 @@ nav {
 }
 
 /* ---------- HIGHLIGHTS SECTION ---------- */
-/* ---------- HIGHLIGHTS SECTION (Seamless + Scrollable) ---------- */
+/* ---------- HIGHLIGHTS SECTION (Fast + Scrollable + Seamless) ---------- */
 .highlights {
   width: 100%;
   overflow: hidden;
   text-align: center;
-  margin: 7rem -1rem;
+  margin: 7rem 0;
 }
 
 .section-title {
@@ -218,55 +218,48 @@ nav {
   font-weight: 700;
 }
 
-/* Outer frame */
+/* Outer carousel container */
 .highlights-carousel {
   position: relative;
   width: 100%;
   display: grid;
   place-items: center;
-  padding: 12px 0;
+  padding: 15px 0;
 }
 
-/* Scrollable viewport (drag / wheel) */
+/* Scrollable viewport for manual scrolling */
 .highlights-viewport {
   width: min(1200px, 92%);
   overflow-x: auto;
   overflow-y: hidden;
+  scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
-  mask-image: linear-gradient(to right, transparent 0, black 4%, black 96%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, black 5%, black 95%, transparent 100%);
+  scrollbar-width: none;
 }
+.highlights-viewport::-webkit-scrollbar { display: none; }
 
-.highlights-viewport::-webkit-scrollbar { height: 0; }
-.highlights-viewport { scrollbar-width: none; }
-
-/* Track that auto-loops */
+/* Continuous loop track */
 .slider-track {
-  --loop-distance: 0px;  /* set by JS */
-  --speed: 20s;          /* default; JS tunes */
   display: inline-flex;
   gap: 30px;
   width: max-content;
+  animation: scrollLoop 12s linear infinite; /* ⏩ faster */
   will-change: transform;
-  backface-visibility: hidden;
-  animation: hlScroll var(--speed) linear infinite;
 }
 
-/* pause when user interacts */
-.slider-track.pause { animation-play-state: paused; }
-
-/* desktop hover pause */
-@media (hover: hover) {
-  .highlights-viewport:hover .slider-track { animation-play-state: paused; }
+/* Pause on hover or manual scroll */
+.highlights-viewport:hover .slider-track {
+  animation-play-state: paused;
 }
 
-/* seamless move by exact original width */
-@keyframes hlScroll {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(calc(-1 * var(--loop-distance))); }
+/* Keyframes for smooth loop motion */
+@keyframes scrollLoop {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
-/* Cards */
+/* Each slide card */
 .slide {
   flex: 0 0 auto;
   width: 320px;
@@ -276,53 +269,67 @@ nav {
   position: relative;
   border: 2px solid cyan;
   box-shadow: 0 0 12px rgba(0,255,255,0.4);
-  transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
   animation: pulseGlow 3s ease-in-out infinite;
-  scroll-snap-align: start;
 }
 
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(0,255,255,0.3); }
+  50% { box-shadow: 0 0 20px rgba(0,255,255,0.8); }
+}
+
+/* Images */
 .slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 16px;
   display: block;
-  pointer-events: none;
   user-select: none;
+  pointer-events: none;
 }
 
+/* Hover effects */
 .slide:hover {
   transform: scale(1.05);
   border-color: #00ffff;
-  box-shadow: 0 0 20px #00ffff, 0 0 40px rgba(0,255,255,0.6);
+  box-shadow: 0 0 25px #00ffff, 0 0 40px rgba(0,255,255,0.6);
+}
+.slide:hover img {
+  transform: scale(1.1);
 }
 
+/* Title overlay */
 .slide::after {
   content: attr(data-title);
   position: absolute;
-  bottom: 0; left: 0; width: 100%;
+  bottom: 0;
+  left: 0;
+  width: 100%;
   padding: 10px 0;
-  font-size: 1.05rem;
-  background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0));
+  font-size: 1rem;
   color: cyan;
+  background: rgba(0, 0, 0, 0.6);
   opacity: 0;
-  transform: translateY(12px);
-  transition: all 0.35s ease;
-  border-radius: 0 0 18px 18px;
+  transform: translateY(10px);
+  transition: all 0.4s ease;
+}
+.slide:hover::after {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.slide:hover::after { opacity: 1; transform: translateY(0); }
-
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 10px rgba(0,255,255,0.3); }
-  50%      { box-shadow: 0 0 20px rgba(0,255,255,0.8); }
-}
-
-/* ✅ Mobile tweaks: faster + taller cards */
+/* Mobile: slightly faster + larger slides */
 @media (max-width: 900px) {
-  .slider-track { --speed: 12s; }
-  .slide { width: 260px; height: 230px; }
+  .slider-track {
+    animation: scrollLoop 8s linear infinite; /* 🚀 faster on phones */
+  }
+  .slide {
+    width: 260px;
+    height: 230px;
+  }
 }
+
 
 
 /* ---------- CALENDAR + FEED ---------- */
