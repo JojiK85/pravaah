@@ -72,16 +72,15 @@
         <!-- 🔹 After Selecting -->
         <div id="selectionArea" class="hidden">
           <h3 id="selectedPass"></h3>
-
           <div class="participant-section">
-            <label for="numParticipants">Number of Participants:</label>
-            <div class="custom-number-box">
-              <button type="button" class="num-btn" id="decreaseBtn">−</button>
-              <input type="number" id="numParticipants" min="1" max="10" value="1" />
-              <button type="button" class="num-btn" id="increaseBtn">+</button>
-            </div>
-            <button id="generateForm" class="main-btn">Add Participants</button>
+          <label for="numParticipants">Number of Participants:</label>
+          <div class="custom-number-box">
+            <button type="button" class="num-btn" id="decreaseBtn">−</button>
+            <input type="number" id="numParticipants" min="0" max="10" value="0" />
+            <button type="button" class="num-btn" id="increaseBtn">+</button>
           </div>
+        </div>
+
 
           <form id="participantForm" class="participants-form"></form>
 
@@ -154,5 +153,25 @@
 
   <!-- Custom Script -->
   <script src="pass.js"></script>
+    <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const menuToggle = document.getElementById("menuToggle");
+    const menu = document.getElementById("menu");
+
+    // Toggle menu open/close
+    menuToggle.addEventListener("click", () => {
+      menu.classList.toggle("active");
+      menuToggle.classList.toggle("open");
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener("click", (event) => {
+      if (!menu.contains(event.target) && !menuToggle.contains(event.target)) {
+        menu.classList.remove("active");
+        menuToggle.classList.remove("open");
+      }
+    });
+  });
+</script>
 </body>
 </html>
