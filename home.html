@@ -4,9 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PRAVAAH — Chronicles of Time</title>
+
+  <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <!-- ✅ Link your unified script -->
+
+  <!-- Scripts -->
   <script type="module" src="script.js" defer></script>
 </head>
 
@@ -25,27 +28,18 @@
       appId: "1:287687647267:web:7aecd603ee202779b89196"
     };
 
-    // Prevent duplicate app initialization
     const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
     const auth = getAuth(app);
 
     onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "index.html";
-      }
+      if (!user) window.location.href = "index.html";
     });
   </script>
 
   <!-- 🔹 NAVBAR -->
   <nav>
     <div class="logo">PRAVAAH</div>
-
-    <!-- Hamburger Menu Button -->
-    <div class="menu-toggle" id="menuToggle">
-      <i class="fas fa-bars"></i>
-    </div>
-
-    <!-- Navigation Links -->
+    <div class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></div>
     <ul id="menu">
       <li><a href="home.html" class="active">Home</a></li>
       <li><a href="events.html">Events</a></li>
@@ -54,18 +48,13 @@
       <li><a href="registrationPravaah.html">Register</a></li>
       <li><a href="contact_us.html">Contact Us</a></li>
       <li><a href="workshop.html">Workshop</a></li>
-
-      <!-- 🔹 Logout link for mobile -->
       <li class="mobile-only"><a href="#" id="logoutMobile">Logout</a></li>
     </ul>
-
-    <!-- 🔹 Logout button for desktop -->
     <button id="logoutDesktop" class="logout-btn">Logout</button>
   </nav>
 
   <!-- 📅 CALENDAR + FEED -->
   <h2 class="calendar-title">📅 PRAVAAH'26 CALENDAR</h2>
-
   <div class="container" id="feed">
     <div class="calendar-container">
       <div class="header">
@@ -73,12 +62,10 @@
         <h2 id="monthYear"></h2>
         <button id="nextMonth">❯</button>
       </div>
-
       <div class="days-of-week">
         <div>Sun</div><div>Mon</div><div>Tue</div>
         <div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
       </div>
-
       <div id="calendar" class="calendar-grid"></div>
     </div>
 
@@ -91,27 +78,28 @@
   <!-- 🖼️ HIGHLIGHTS -->
   <section class="highlights" id="highlights">
     <h2 class="section-title">✨ HIGHLIGHTS OF 2K25 ✨</h2>
+
     <div class="highlights-carousel" id="carousel">
-  <div class="slider-track" id="sliderTrack">
-    <div class="slide" data-title="Opening Ceremony"><img src="DSC09133.JPG" alt=""></div>
-    <div class="slide" data-title="Cultural Night"><img src="DSC09133.JPG" alt=""></div>
-    <div class="slide" data-title="Tech Expo"><img src="DSC09133.JPG" alt=""></div>
-    <div class="slide" data-title="Sports Gala"><img src="DSC09133.JPG" alt=""></div>
-    <div class="slide" data-title="Prize Distribution"><img src="DSC09133.JPG" alt=""></div>
-    <!-- 🔁 Duplicate for seamless loop -->
-    <div class="slide" data-title="Opening Ceremony"><img src="DSC09133.JPG" alt=""></div>
-    <div class="slide" data-title="Cultural Night"><img src="DSC09133.JPG" alt=""></div>
-    <div class="slide" data-title="Tech Expo"><img src="DSC09133.JPG" alt=""></div>
-    <div class="slide" data-title="Sports Gala"><img src="DSC09133.JPG" alt=""></div>
-    <div class="slide" data-title="Prize Distribution"><img src="DSC09133.JPG" alt=""></div>
-  </div>
-</div>
+      <div class="slider-track" id="sliderTrack">
+        <div class="slide" data-title="Opening Ceremony"><img src="DSC09133.JPG" alt="Opening Ceremony"></div>
+        <div class="slide" data-title="Cultural Night"><img src="DSC09133.JPG" alt="Cultural Night"></div>
+        <div class="slide" data-title="Tech Expo"><img src="DSC09133.JPG" alt="Tech Expo"></div>
+        <div class="slide" data-title="Sports Gala"><img src="DSC09133.JPG" alt="Sports Gala"></div>
+        <div class="slide" data-title="Prize Distribution"><img src="DSC09133.JPG" alt="Prize Distribution"></div>
+
+        <!-- 🔁 Duplicate for seamless scroll -->
+        <div class="slide" data-title="Opening Ceremony"><img src="DSC09133.JPG" alt="Opening Ceremony"></div>
+        <div class="slide" data-title="Cultural Night"><img src="DSC09133.JPG" alt="Cultural Night"></div>
+        <div class="slide" data-title="Tech Expo"><img src="DSC09133.JPG" alt="Tech Expo"></div>
+        <div class="slide" data-title="Sports Gala"><img src="DSC09133.JPG" alt="Sports Gala"></div>
+        <div class="slide" data-title="Prize Distribution"><img src="DSC09133.JPG" alt="Prize Distribution"></div>
+      </div>
+    </div>
   </section>
 
   <!-- 🎬 AFTERMOVIE SECTION -->
   <section class="aftermovie-section" id="aftermovie">
     <h2 class="section-title">🎥 VIDEOS — 2K25</h2>
-
     <div class="video-switch">
       <button id="aftermovieBtn" class="active">Aftermovie</button>
       <button id="themeBtn">Theme Video</button>
@@ -183,64 +171,29 @@
       <p><span>@PRAVAAH'26 IIT BHUBANESWAR</span> | MADE WITH 💜 BY WEB TEAM | All Rights Reserved</p>
     </div>
   </footer>
+
+  <!-- 🎡 Optional JS to make highlights draggable (for desktop users) -->
   <script>
-const carousel = document.getElementById("carousel");
-const track = document.getElementById("sliderTrack");
+    const highlights = document.querySelector('.highlights');
+    let isDown = false;
+    let startX, scrollLeft;
 
-let isDown = false;
-let startX;
-let scrollLeft;
-let isDragged = false;
-
-carousel.addEventListener("mousedown", (e) => {
-  isDown = true;
-  startX = e.pageX - carousel.offsetLeft;
-  scrollLeft = carousel.scrollLeft;
-  carousel.style.cursor = "grabbing";
-  track.style.animationPlayState = "paused";
-});
-
-carousel.addEventListener("mouseleave", () => {
-  isDown = false;
-  carousel.style.cursor = "grab";
-  track.style.animationPlayState = "running";
-});
-
-carousel.addEventListener("mouseup", () => {
-  isDown = false;
-  carousel.style.cursor = "grab";
-  track.style.animationPlayState = "running";
-});
-
-carousel.addEventListener("mousemove", (e) => {
-  if (!isDown) return;
-  e.preventDefault();
-  const x = e.pageX - carousel.offsetLeft;
-  const walk = (x - startX) * 1.5; // scroll speed multiplier
-  carousel.scrollLeft = scrollLeft - walk;
-  isDragged = true;
-});
-
-/* Touch support */
-carousel.addEventListener("touchstart", (e) => {
-  isDown = true;
-  startX = e.touches[0].pageX - carousel.offsetLeft;
-  scrollLeft = carousel.scrollLeft;
-  track.style.animationPlayState = "paused";
-});
-
-carousel.addEventListener("touchend", () => {
-  isDown = false;
-  track.style.animationPlayState = "running";
-});
-
-carousel.addEventListener("touchmove", (e) => {
-  if (!isDown) return;
-  const x = e.touches[0].pageX - carousel.offsetLeft;
-  const walk = (x - startX) * 1.5;
-  carousel.scrollLeft = scrollLeft - walk;
-});
-</script>
+    highlights.addEventListener('mousedown', (e) => {
+      isDown = true;
+      highlights.classList.add('active');
+      startX = e.pageX - highlights.offsetLeft;
+      scrollLeft = highlights.scrollLeft;
+    });
+    highlights.addEventListener('mouseleave', () => isDown = false);
+    highlights.addEventListener('mouseup', () => isDown = false);
+    highlights.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - highlights.offsetLeft;
+      const walk = (x - startX) * 2;
+      highlights.scrollLeft = scrollLeft - walk;
+    });
+  </script>
 
 </body>
 </html>
