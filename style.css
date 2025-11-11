@@ -231,45 +231,44 @@ nav {
 /* 🔹 Continuous, seamless highlight scroll */
 /* 🔹 Seamless Infinite Scroll (No Gaps) */
 /* 🔹 Perfect Continuous Highlights Scroll (Works Everywhere) */
-/* 🔹 Faster, scrollable seamless highlights */
-.highlights-carousel {
-  position: relative;
-  width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  scrollbar-width: none;
-}
-.highlights-carousel::-webkit-scrollbar {
-  display: none;
-}
-
 .slider-track {
   display: flex;
   flex-wrap: nowrap;
   gap: 30px;
   width: max-content;
-  animation: scrollSeamless 10s linear infinite; /* ⏩ faster */
+  animation: scrollSeamless 30s linear infinite;
   will-change: transform;
   backface-visibility: hidden;
-  pointer-events: none; /* allow manual scroll without glitch */
 }
 
-/* Pause on hover */
+/* Smooth continuous animation */
+@keyframes scrollSeamless {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Hover pause for desktop */
 .highlights-carousel:hover .slider-track {
   animation-play-state: paused;
 }
 
-/* Keyframes */
-@keyframes scrollSeamless {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+/* Mobile: faster scroll, same animation name */
+@media (max-width: 900px) {
+  .slider-track {
+    animation: scrollSeamless 1s linear infinite;
+  }
 }
 
+.slider-track {
+  transform: translateZ(0);
+}
+.slide img {
+  will-change: transform;
+}
 
 
 /* Pause animation on hover for desktop */
