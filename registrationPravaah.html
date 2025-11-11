@@ -191,5 +191,22 @@
 
   <!-- JS -->
   <script src="pass.js"></script>
+
+  <!-- 🔹 NAVBAR TOGGLE LOGIC -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const menuToggle = document.getElementById("menuToggle");
+      const menu = document.getElementById("menu");
+
+      menuToggle.addEventListener("click", () => {
+        menu.classList.toggle("active");
+      });
+
+      // Close menu when clicking a link (mobile)
+      document.querySelectorAll("#menu a").forEach(link => {
+        link.addEventListener("click", () => menu.classList.remove("active"));
+      });
+    });
+  </script>
 </body>
 </html>
