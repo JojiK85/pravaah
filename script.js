@@ -1,38 +1,39 @@
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+
   /* 🔹 FIREBASE CONFIG */
   const firebaseConfig = {
-    apiKey: "AIzaSyCbXKleOw4F46gFDXz2Wynl3YzPuHsVwh8",
-    authDomain: "pravaah-55b1d.firebaseapp.com",
-    projectId: "pravaah-55b1d",
-    storageBucket: "pravaah-55b1d.appspot.com",
-    messagingSenderId: "287687647267",
-    appId: "1:287687647267:web:7aecd603ee202779b89196"
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_BUCKET",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
   };
 
-  // ✅ Prevent duplicate app initialization
-  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+  const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
   /* 🧩 LOGOUT HANDLER */
   const logoutDesktop = document.getElementById("logoutDesktop");
   const logoutMobile = document.getElementById("logoutMobile");
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      window.location.href = "index.html";
-    } catch (error) {
-      alert("Error logging out: " + error.message);
-    }
-  };
+  function handleLogout() {
+    signOut(auth)
+      .then(() => {
+        window.location.href = "login.html";
+      })
+      .catch((error) => {
+        alert("Error logging out: " + error.message);
+      });
+  }
 
   if (logoutDesktop) logoutDesktop.addEventListener("click", handleLogout);
   if (logoutMobile) logoutMobile.addEventListener("click", handleLogout);
 
-  /* 📅 CALENDAR + FEED LOGIC */
+  /* 📅 CALENDAR + FEED LOGIC (same as before) */
   const monthYear = document.getElementById("monthYear");
   const calendar = document.getElementById("calendar");
   const prevMonth = document.getElementById("prevMonth");
@@ -72,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const month = date.getMonth();
     if (transition) calendar.classList.add("fade-out");
     setTimeout(() => {
-      monthYear.innerText = `${date.toLocaleString("default", { month: "long" })} ${year}`;
+      monthYear.innerText = ${date.toLocaleString("default", { month: "long" })} ${year};
       const firstDay = new Date(year, month, 1).getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       calendar.innerHTML = "";
@@ -87,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
         day.addEventListener("click", (e) => {
           document.querySelectorAll(".day").forEach(d => d.classList.remove("selected"));
           e.target.classList.add("selected");
-          renderFeed(`${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`);
+          renderFeed(${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")});
         });
         calendar.appendChild(day);
       }
@@ -108,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCalendar(currentDate, true);
   };
   renderCalendar(currentDate);
-  renderFeed(`${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`);
+  renderFeed(${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")});
 
   /* 🎥 VIDEO SWITCH */
   const mainVideo = document.getElementById("mainVideo");
@@ -150,140 +151,3 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-
-/* ============================
-   PRAVAAH Highlights: Seamless + Scrollable + Fast
-   ============================ */
-(function initHighlights() {
-  const viewport = document.getElementById('hlViewport');
-  const track = document.getElementById('hlTrack');
-  if (!viewport || !track) return;
-
-  // --- CONFIG ---
-  const GAP_PX = 30; // must match CSS gap
-  const DESKTOP_SPEED_S = 18; // faster than before
-  const MOBILE_SPEED_S = 10;  // even faster on phones
-  const MOBILE_BP = 900;
-
-  // keep references to originals (don’t mutate this NodeList after clones)
-  const originalSlides = Array.from(track.children).filter(el => !el.hasAttribute('data-clone'));
-
-  // measure the width of a set of elements including gap between them
-  function totalWidth(els) {
-    if (els.length === 0) return 0;
-    let sum = 0;
-    els.forEach((el, idx) => {
-      const rect = el.getBoundingClientRect();
-      sum += rect.width;
-      if (idx !== els.length - 1) sum += GAP_PX; // gap between siblings
-    });
-    return sum;
-  }
-
-  // remove previous clones
-  function removeClones() {
-    track.querySelectorAll('[data-clone]').forEach(el => el.remove());
-  }
-
-  // clone until the total track covers > 2x of the "first-run" so the loop has no gap
-  function buildClones() {
-    removeClones();
-
-    // ensure images have loaded so widths are correct
-    const imgs = track.querySelectorAll('img');
-    const loadPromises = Array.from(imgs).map(img => (
-      img.complete ? Promise.resolve() : new Promise(res => img.addEventListener('load', res, { once: true }))
-    ));
-
-    return Promise.all(loadPromises).then(() => {
-      const firstRunWidth = totalWidth(originalSlides);
-
-      // clone until track width >= firstRunWidth * 2
-      let currentWidth = totalWidth(Array.from(track.children));
-      let cloneRound = 0;
-      while (currentWidth < firstRunWidth * 2 && cloneRound < 10) {
-        originalSlides.forEach((slide) => {
-          const clone = slide.cloneNode(true);
-          clone.setAttribute('data-clone', 'true');
-          track.appendChild(clone);
-        });
-        currentWidth = totalWidth(Array.from(track.children));
-        cloneRound++;
-      }
-
-      // set the exact loop distance to the original block width (no 50% guess)
-      track.style.setProperty('--loop-distance', `${firstRunWidth}px`);
-
-      // set speed per device
-      const dur = window.innerWidth <= MOBILE_BP ? MOBILE_SPEED_S : DESKTOP_SPEED_S;
-      track.style.setProperty('--speed', `${dur}s`);
-    });
-  }
-
-  // pause helpers
-  let pauseTimer = null;
-  function pauseTrack(ms = 0) {
-    track.classList.add('pause');
-    if (pauseTimer) clearTimeout(pauseTimer);
-    if (ms > 0) pauseTimer = setTimeout(() => track.classList.remove('pause'), ms);
-  }
-  function resumeTrack() { track.classList.remove('pause'); }
-
-  // drag to scroll
-  let isDown = false;
-  let startX = 0;
-  let startScroll = 0;
-
-  viewport.addEventListener('pointerdown', (e) => {
-    isDown = true;
-    viewport.setPointerCapture(e.pointerId);
-    startX = e.clientX;
-    startScroll = viewport.scrollLeft;
-    pauseTrack(); // pause while dragging
-  });
-
-  viewport.addEventListener('pointermove', (e) => {
-    if (!isDown) return;
-    const dx = e.clientX - startX;
-    viewport.scrollLeft = startScroll - dx;
-  });
-
-  viewport.addEventListener('pointerup', (e) => {
-    isDown = false;
-    viewport.releasePointerCapture(e.pointerId);
-    // small delay feels better after drag
-    pauseTrack(600);
-  });
-
-  viewport.addEventListener('pointerleave', () => {
-    if (!isDown) resumeTrack();
-    isDown = false;
-  });
-
-  // mouse wheel (shift vertical wheel into horizontal)
-  viewport.addEventListener('wheel', (e) => {
-    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-      viewport.scrollLeft += e.deltaY;
-      e.preventDefault();
-      pauseTrack(400); // pause briefly on scroll
-    }
-  }, { passive: false });
-
-  // pause during manual scroll, resume after user stops
-  let scrollTimeout;
-  viewport.addEventListener('scroll', () => {
-    pauseTrack();
-    clearTimeout(scrollTimeout);
-    scrollTimeout = setTimeout(resumeTrack, 500);
-  });
-
-  // rebuild on resize (debounced)
-  let resizeTimer;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => buildClones(), 150);
-  });
-
-  // init
-  buildClones();
-})();
