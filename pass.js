@@ -2,31 +2,6 @@
 // PRAVAAH 2026 Registration + Payment (Hybrid Optimized)
 // =====================
 
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-
-// 🔥 Firebase Config
-const firebaseConfig = {
-  apiKey: "AIzaSyCbXKleOw4F46gFDXz2Wynl3YzPuHsVwh8",
-  authDomain: "pravaah-55b1d.firebaseapp.com",
-  projectId: "pravaah-55b1d",
-  storageBucket: "pravaah-55b1d.appspot.com",
-  messagingSenderId: "287687647267",
-  appId: "1:287687647267:web:7aecd603ee202779b89196"
-};
-
-// ⚙️ Initialize Firebase
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// 🔗 Google Apps Script endpoint
-const scriptURL = "https://script.google.com/macros/s/AKfycbwHR5zp3-09nakNxpryLvtmcSUebhkfaohrYWvhlnh32mt0wFfljkqO5JoOJtFsuudJfw/exec";
-
-// =====================
-// VARIABLES
-// =====================
 let selectedPass = null;
 let selectedPrice = 0;
 let total = 0;
@@ -40,6 +15,9 @@ const timerDisplay = document.getElementById("payment-timer");
 const numInput = document.getElementById("numParticipants");
 const increaseBtn = document.getElementById("increaseBtn");
 const decreaseBtn = document.getElementById("decreaseBtn");
+
+// 🔗 Google Apps Script endpoint
+const scriptURL = "https://script.google.com/macros/s/AKfycbwHR5zp3-09nakNxpryLvtmcSUebhkfaohrYWvhlnh32mt0wFfljkqO5JoOJtFsuudJfw/exec";
 
 // =====================
 // 🎟 PASS CARD SELECTION
@@ -123,13 +101,7 @@ payBtn.addEventListener("click", async (e) => {
   const colleges = [...document.querySelectorAll(".pcollege")].map(i => i.value.trim());
 
   for (let i = 0; i < names.length; i++) {
-    if (!names[i] || !emails[i] || !phones[i] || !colleges[i]) return alert("Please fill all participant details!");
-  }
-
-  const user = auth.currentUser;
-  if (!user) {
-    alert("Please log in first!");
-    return (window.location.href = "index.html");
+    if (!names[i] || !emails[i] || !phones[i] || !colleges[i]) return;
   }
 
   try {
@@ -143,11 +115,11 @@ payBtn.addEventListener("click", async (e) => {
       description: `${selectedPass} Registration`,
       image: "pravah-logo.png",
 
-      handler: async function (response) {
+      handler: function (response) {
         if (timerInterval) clearInterval(timerInterval);
         timerDisplay.style.display = "none";
 
-        const passData = {
+        const payload = JSON.stringify({
           paymentId: response.razorpay_payment_id,
           passType: selectedPass,
           totalAmount: total,
@@ -157,24 +129,27 @@ payBtn.addEventListener("click", async (e) => {
             phone: phones[i],
             college: colleges[i],
           })),
-        };
+        });
 
-        // 🔹 Save in Firestore
-        const userRef = doc(db, "users", user.uid);
-        const snap = await getDoc(userRef);
-        const existingPasses = snap.exists() ? snap.data().passes || [] : [];
-        existingPasses.push(passData);
-        await setDoc(userRef, { passes: existingPasses }, { merge: true });
+        let queued = false;
+        try {
+          if (navigator.sendBeacon) {
+            const blob = new Blob([payload], { type: "text/plain" });
+            queued = navigator.sendBeacon(scriptURL, blob);
+          }
+        } catch (_) {}
 
-        // 🔹 Send to Google Sheets
-        fetch(scriptURL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(passData),
-          keepalive: true
-        }).catch(() => {});
+        if (!queued) {
+          try {
+            fetch(scriptURL, {
+              method: "POST",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: payload,
+              keepalive: true
+            }).catch(() => {});
+          } catch (_) {}
+        }
 
-        // ✅ Redirect
         window.location.href = "payment_success.html";
       },
 
@@ -183,7 +158,7 @@ payBtn.addEventListener("click", async (e) => {
 
     const rzp = new Razorpay(options);
 
-    // 5-min Payment Timer
+    // 5-min payment window timer
     let timeLeft = 300;
     timerDisplay.style.display = "block";
     timerInterval = setInterval(() => {
@@ -201,7 +176,6 @@ payBtn.addEventListener("click", async (e) => {
     rzp.open();
 
   } catch (error) {
-    console.error("❌ Payment Error:", error);
     window.location.href = "payment_failure.html";
   }
 });
