@@ -150,3 +150,140 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+/* ============================
+   PRAVAAH Highlights: Seamless + Scrollable + Fast
+   ============================ */
+(function initHighlights() {
+  const viewport = document.getElementById('hlViewport');
+  const track = document.getElementById('hlTrack');
+  if (!viewport || !track) return;
+
+  // --- CONFIG ---
+  const GAP_PX = 30; // must match CSS gap
+  const DESKTOP_SPEED_S = 18; // faster than before
+  const MOBILE_SPEED_S = 10;  // even faster on phones
+  const MOBILE_BP = 900;
+
+  // keep references to originals (don’t mutate this NodeList after clones)
+  const originalSlides = Array.from(track.children).filter(el => !el.hasAttribute('data-clone'));
+
+  // measure the width of a set of elements including gap between them
+  function totalWidth(els) {
+    if (els.length === 0) return 0;
+    let sum = 0;
+    els.forEach((el, idx) => {
+      const rect = el.getBoundingClientRect();
+      sum += rect.width;
+      if (idx !== els.length - 1) sum += GAP_PX; // gap between siblings
+    });
+    return sum;
+  }
+
+  // remove previous clones
+  function removeClones() {
+    track.querySelectorAll('[data-clone]').forEach(el => el.remove());
+  }
+
+  // clone until the total track covers > 2x of the "first-run" so the loop has no gap
+  function buildClones() {
+    removeClones();
+
+    // ensure images have loaded so widths are correct
+    const imgs = track.querySelectorAll('img');
+    const loadPromises = Array.from(imgs).map(img => (
+      img.complete ? Promise.resolve() : new Promise(res => img.addEventListener('load', res, { once: true }))
+    ));
+
+    return Promise.all(loadPromises).then(() => {
+      const firstRunWidth = totalWidth(originalSlides);
+
+      // clone until track width >= firstRunWidth * 2
+      let currentWidth = totalWidth(Array.from(track.children));
+      let cloneRound = 0;
+      while (currentWidth < firstRunWidth * 2 && cloneRound < 10) {
+        originalSlides.forEach((slide) => {
+          const clone = slide.cloneNode(true);
+          clone.setAttribute('data-clone', 'true');
+          track.appendChild(clone);
+        });
+        currentWidth = totalWidth(Array.from(track.children));
+        cloneRound++;
+      }
+
+      // set the exact loop distance to the original block width (no 50% guess)
+      track.style.setProperty('--loop-distance', `${firstRunWidth}px`);
+
+      // set speed per device
+      const dur = window.innerWidth <= MOBILE_BP ? MOBILE_SPEED_S : DESKTOP_SPEED_S;
+      track.style.setProperty('--speed', `${dur}s`);
+    });
+  }
+
+  // pause helpers
+  let pauseTimer = null;
+  function pauseTrack(ms = 0) {
+    track.classList.add('pause');
+    if (pauseTimer) clearTimeout(pauseTimer);
+    if (ms > 0) pauseTimer = setTimeout(() => track.classList.remove('pause'), ms);
+  }
+  function resumeTrack() { track.classList.remove('pause'); }
+
+  // drag to scroll
+  let isDown = false;
+  let startX = 0;
+  let startScroll = 0;
+
+  viewport.addEventListener('pointerdown', (e) => {
+    isDown = true;
+    viewport.setPointerCapture(e.pointerId);
+    startX = e.clientX;
+    startScroll = viewport.scrollLeft;
+    pauseTrack(); // pause while dragging
+  });
+
+  viewport.addEventListener('pointermove', (e) => {
+    if (!isDown) return;
+    const dx = e.clientX - startX;
+    viewport.scrollLeft = startScroll - dx;
+  });
+
+  viewport.addEventListener('pointerup', (e) => {
+    isDown = false;
+    viewport.releasePointerCapture(e.pointerId);
+    // small delay feels better after drag
+    pauseTrack(600);
+  });
+
+  viewport.addEventListener('pointerleave', () => {
+    if (!isDown) resumeTrack();
+    isDown = false;
+  });
+
+  // mouse wheel (shift vertical wheel into horizontal)
+  viewport.addEventListener('wheel', (e) => {
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      viewport.scrollLeft += e.deltaY;
+      e.preventDefault();
+      pauseTrack(400); // pause briefly on scroll
+    }
+  }, { passive: false });
+
+  // pause during manual scroll, resume after user stops
+  let scrollTimeout;
+  viewport.addEventListener('scroll', () => {
+    pauseTrack();
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(resumeTrack, 500);
+  });
+
+  // rebuild on resize (debounced)
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => buildClones(), 150);
+  });
+
+  // init
+  buildClones();
+})();
