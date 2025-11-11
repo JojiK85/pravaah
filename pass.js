@@ -1,3 +1,8 @@
+// =====================
+// PRAVAAH 2026 Registration + Payment
+// Hybrid Optimized Version
+// =====================
+
 let selectedPass = null;
 let selectedPrice = 0;
 let total = 0;
@@ -12,19 +17,25 @@ const numInput = document.getElementById("numParticipants");
 const increaseBtn = document.getElementById("increaseBtn");
 const decreaseBtn = document.getElementById("decreaseBtn");
 
-// 🔗 Google Script URL
+// 🔗 Google Apps Script URL
 const scriptURL = "https://script.google.com/macros/s/AKfycbwHR5zp3-09nakNxpryLvtmcSUebhkfaohrYWvhlnh32mt0wFfljkqO5JoOJtFsuudJfw/exec";
 
-// ✅ Card Selection Logic
+// =====================
+// 🎟️ PASS CARD SELECTION
+// =====================
 const passCards = document.querySelectorAll(".pass-card");
+
 passCards.forEach(card => {
   card.addEventListener("click", () => {
+    // Remove old highlights
     passCards.forEach(c => c.classList.remove("selected"));
     card.classList.add("selected");
 
+    // Store selection
     selectedPass = card.dataset.name;
     selectedPrice = parseInt(card.dataset.price, 10);
 
+    // Reset UI
     selectionArea.classList.remove("hidden");
     selectedPassText.innerText = `Selected: ${selectedPass} — ₹${selectedPrice}`;
     totalAmount.innerText = `Total: ₹0`;
@@ -36,7 +47,9 @@ passCards.forEach(card => {
   });
 });
 
-// ✅ Participant Logic
+// =====================
+// 👥 PARTICIPANT MANAGEMENT
+// =====================
 function updateParticipantForm(count) {
   participantForm.innerHTML = "";
   if (!count || count === 0) {
@@ -66,12 +79,14 @@ function updateParticipantForm(count) {
 // + / - Buttons
 increaseBtn.addEventListener("click", () => {
   let value = parseInt(numInput.value || "0", 10);
-  if (value < 10) {
+  const max = 10; // limit for safety
+  if (value < max) {
     value++;
     numInput.value = value;
     updateParticipantForm(value);
   }
 });
+
 decreaseBtn.addEventListener("click", () => {
   let value = parseInt(numInput.value || "0", 10);
   if (value > 0) {
@@ -81,7 +96,9 @@ decreaseBtn.addEventListener("click", () => {
   }
 });
 
-// ✅ Payment
+// =====================
+// 💰 PAYMENT + SHEET WRITE
+// =====================
 payBtn.addEventListener("click", async (e) => {
   e.preventDefault();
   if (!selectedPass || total === 0) return;
@@ -91,12 +108,14 @@ payBtn.addEventListener("click", async (e) => {
   const phones = [...document.querySelectorAll(".pphone")].map(i => i.value.trim());
   const colleges = [...document.querySelectorAll(".pcollege")].map(i => i.value.trim());
 
+  // Validation
   for (let i = 0; i < names.length; i++) {
     if (!names[i] || !emails[i] || !phones[i] || !colleges[i]) return;
   }
 
   try {
     let timerInterval;
+
     const options = {
       key: "rzp_test_Re1mOkmIGroT2c",
       amount: total * 100,
@@ -104,28 +123,55 @@ payBtn.addEventListener("click", async (e) => {
       name: "PRAVAAH 2026",
       description: `${selectedPass} Registration`,
       image: "pravah-logo.png",
+
       handler: function (response) {
         if (timerInterval) clearInterval(timerInterval);
         timerDisplay.style.display = "none";
 
+        // Build payload
         const payload = JSON.stringify({
           paymentId: response.razorpay_payment_id,
           passType: selectedPass,
           totalAmount: total,
           participants: names.map((n, i) => ({
-            name: n, email: emails[i], phone: phones[i], college: colleges[i],
+            name: n,
+            email: emails[i],
+            phone: phones[i],
+            college: colleges[i],
           })),
         });
 
-        navigator.sendBeacon(scriptURL, new Blob([payload], { type: "text/plain" }));
+        // Try sendBeacon first
+        let queued = false;
+        try {
+          if (navigator.sendBeacon) {
+            const blob = new Blob([payload], { type: "text/plain" });
+            queued = navigator.sendBeacon(scriptURL, blob);
+          }
+        } catch (_) {}
+
+        // Fallback using keepalive fetch (for reliability)
+        if (!queued) {
+          try {
+            fetch(scriptURL, {
+              method: "POST",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: payload,
+              keepalive: true
+            }).catch(() => {});
+          } catch (_) {}
+        }
+
+        // Redirect instantly
         window.location.href = "payment_success.html";
       },
+
       theme: { color: "#00ffff" },
     };
 
     const rzp = new Razorpay(options);
 
-    // Timer
+    // Start 5-min Timer
     let timeLeft = 300;
     timerDisplay.style.display = "block";
     timerInterval = setInterval(() => {
@@ -140,7 +186,9 @@ payBtn.addEventListener("click", async (e) => {
       }
     }, 1000);
 
+    // Open Razorpay
     rzp.open();
+
   } catch (error) {
     window.location.href = "payment_failure.html";
   }
