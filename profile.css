@@ -172,6 +172,46 @@ body {
   white-space: normal;
 }
 
+/* ✅ Editable input styling */
+.editable-input {
+  border: 1px solid cyan;
+  background: rgba(255, 255, 255, 0.05);
+  color: cyan;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-family: 'Orbitron', sans-serif;
+  width: 60%;
+  outline: none;
+  transition: all 0.3s ease;
+  margin-left: 10px;
+}
+
+.editable-input:focus {
+  box-shadow: 0 0 8px cyan;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ✅ Save Button */
+.save-btn {
+  background: cyan;
+  color: black;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+  margin-top: 15px;
+  font-family: 'Orbitron', sans-serif;
+  box-shadow: 0 0 10px rgba(0,255,255,0.5);
+}
+
+.save-btn:hover {
+  background: #00ffcc;
+  transform: scale(1.05);
+  box-shadow: 0 0 20px cyan;
+}
+
 /* ---------- PASSES SECTION ---------- */
 .profile-container h2 {
   color: cyan;
@@ -202,7 +242,7 @@ body {
   transition: 0.3s ease;
   text-align: left;
   backdrop-filter: blur(8px);
-  overflow: hidden; /* prevents text going out visually */
+  overflow: hidden;
 }
 
 .pass-item:hover {
@@ -287,9 +327,20 @@ body {
   }
 
   .profile-info p {
-    font-size: 1.05rem; /* ✅ only slightly smaller */
+    font-size: 1.05rem;
     margin: 6px 0;
     line-height: 1.4rem;
+  }
+
+  .editable-input {
+    width: 80%;
+    margin-top: 6px;
+  }
+
+  .save-btn {
+    width: 90%;
+    font-size: 1rem;
+    margin-top: 12px;
   }
 
   .passes-list {
@@ -301,11 +352,11 @@ body {
   .pass-item {
     width: 90%;
     padding: 20px 22px;
-    font-size: 0.95rem; /* ✅ minor size decrease */
+    font-size: 0.95rem;
   }
 
   .pass-item h3 {
-    font-size: 1.3rem; /* ✅ heading still visible */
+    font-size: 1.3rem;
   }
 
   .pass-item p {
