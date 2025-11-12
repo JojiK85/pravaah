@@ -26,7 +26,6 @@
       <i class="fas fa-bars"></i>
     </div>
 
-    <!-- 🧭 NAVIGATION MENU -->
     <ul id="menu">
       <li><a href="home.html">Home</a></li>
       <li><a href="events.html">Events</a></li>
@@ -59,9 +58,8 @@
           <!-- Hidden file input -->
           <input type="file" id="uploadPhoto" accept="image/*" hidden />
 
-          <!-- Upload Options (handled by JS) -->
+          <!-- Upload Options -->
           <div class="upload-options hidden" id="uploadOptions">
-            <!-- Device upload added dynamically by JS -->
             <button id="driveUploadBtn" class="upload-btn drive-btn">
               <i class="fab fa-google-drive"></i> Upload from Drive
             </button>
@@ -72,8 +70,21 @@
         <div class="profile-info">
           <p><strong>Name:</strong> <span id="userName">Loading...</span></p>
           <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
-          <p><strong>Phone:</strong> <span id="userPhone">Loading...</span></p>
-          <p><strong>College:</strong> <span id="userCollege">Loading...</span></p>
+
+          <!-- Editable fields for Phone & College -->
+          <p>
+            <strong>Phone:</strong>
+            <input type="tel" id="userPhone" placeholder="Enter phone number" class="editable-input" />
+          </p>
+          <p>
+            <strong>College:</strong>
+            <input type="text" id="userCollege" placeholder="Enter college name" class="editable-input" />
+          </p>
+
+          <!-- Save Changes button -->
+          <button id="saveProfileBtn" class="save-btn">
+            💾 Save Changes
+          </button>
         </div>
       </div>
 
