@@ -1,12 +1,12 @@
 // =====================
 // PRAVAAH 2026 Registration + Payment
-// (Auto-fill when typed name matches stored profile name)
+// (Profile email-only autofill + background Sheets sync)
 // =====================
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-// ---- Firebase Initialization ----
+// ---- Firebase (reuse window.auth if already set) ----
 let auth = window.auth;
 if (!auth) {
   const firebaseConfig = {
@@ -22,35 +22,29 @@ if (!auth) {
   window.auth = auth;
 }
 
-// ---- Google Apps Script /exec URL ----
-const scriptURL = "https://script.google.com/macros/s/AKfycbwUqB2hdgPajzGcEDp87MC4ecmywWqnpAalUswVuGSPADGV3hvJRfHP0XiW5AIm9b_SPw/exec";
+// ---- Google Apps Script /exec URL (deployed: Execute as Me; Access: Anyone) ----
+const scriptURL = "https://script.google.com/macros/s/AKfycbyKGly5gR_OMt6LqAlIl166-Vucn2wAk8242XbnBU8hDRV67FY4lOQFWuFbE1oP5IvYuA/exec";
 
-// ---- DOM ----
-const selectionArea = document.getElementById("selectionArea");
-const selectedPassText = document.getElementById("selectedPass");
-const totalAmount = document.getElementById("totalAmount");
-const participantForm = document.getElementById("participantForm");
-const payBtn = document.getElementById("payBtn");
-const timerDisplay = document.getElementById("payment-timer");
-const numInput = document.getElementById("numParticipants");
-const increaseBtn = document.getElementById("increaseBtn");
-const decreaseBtn = document.getElementById("decreaseBtn");
-const passCards = document.querySelectorAll(".pass-card");
-
-// ---- State ----
+// ---- UI state ----
 let selectedPass = null;
 let selectedPrice = 0;
 let total = 0;
-let paying = false;
+let paying = false; // double-click guard
 
-// ---- Regex Validators ----
+const selectionArea     = document.getElementById("selectionArea");
+const selectedPassText  = document.getElementById("selectedPass");
+const totalAmount       = document.getElementById("totalAmount");
+const participantForm   = document.getElementById("participantForm");
+const payBtn            = document.getElementById("payBtn");
+const timerDisplay      = document.getElementById("payment-timer");
+const numInput          = document.getElementById("numParticipants");
+const increaseBtn       = document.getElementById("increaseBtn");
+const decreaseBtn       = document.getElementById("decreaseBtn");
+const passCards         = document.querySelectorAll(".pass-card");
+
+// ---- helpers ----
 const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
 const phoneRe = /^[0-9+\-\s]{7,15}$/;
-
-// ---- Helper Functions ----
-function forceShowSelectionArea() {
-  selectionArea.classList.remove("hidden");
-}
 
 function setPaying(state) {
   paying = state;
@@ -59,13 +53,8 @@ function setPaying(state) {
   payBtn.style.opacity = state ? "0.6" : "1";
 }
 
-function safeInt(v, fallback = 0) {
-  const n = parseInt((v ?? "").toString(), 10);
-  return Number.isFinite(n) ? n : fallback;
-}
-
 function resetSelectionUI() {
-  forceShowSelectionArea();
+  selectionArea.classList.remove("hidden");
   selectedPassText.textContent = `Selected: ${selectedPass} — ₹${selectedPrice}`;
   totalAmount.textContent = "Total: ₹0";
   payBtn.style.display = "none";
@@ -75,31 +64,29 @@ function resetSelectionUI() {
   numInput.value = 0;
 }
 
-// ---- Pass Selection ----
+// ---- Pass selection ----
 passCards.forEach((card) => {
   (card.querySelector(".select-btn") || card).addEventListener("click", () => {
     passCards.forEach((c) => c.classList.remove("selected"));
     card.classList.add("selected");
-    selectedPass = card.dataset.name;
-    selectedPrice = safeInt(card.dataset.price, 0);
+
+    selectedPass  = card.dataset.name;
+    selectedPrice = parseInt(card.dataset.price, 10) || 0;
+
     resetSelectionUI();
   });
 });
 
-// ---- Build Participant Form ----
+// ---- Build participant form ----
 function updateParticipantForm(count) {
-  forceShowSelectionArea();
   participantForm.innerHTML = "";
 
-  // Load stored profile (from profile.html)
+  // Profile from localStorage (for email-only autofill)
   const storedProfile = JSON.parse(localStorage.getItem("profileData") || "{}");
-  const storedName = (storedProfile.name || "").trim();
-  const storedEmail = (storedProfile.email || "").trim();
-  const storedPhone = (storedProfile.phone || "").trim();
-  const storedCollege = (storedProfile.college || "").trim();
-  const storedNameLC = storedName.toLowerCase();
+  const storedName  = (storedProfile.name || "").trim().toLowerCase();
+  const storedEmail = storedProfile.email || "";
 
-  if (!count || count <= 0) {
+  if (!count || count === 0) {
     totalAmount.textContent = "Total: ₹0";
     payBtn.style.display = "none";
     return;
@@ -110,28 +97,29 @@ function updateParticipantForm(count) {
     div.classList.add("participant-card");
     div.innerHTML = `
       <h4>Participant ${i}</h4>
-      <input type="text"  placeholder="Full Name" class="pname" required />
-      <input type="email" placeholder="Email" class="pemail" required />
-      <input type="tel" placeholder="Phone Number" class="pphone" required />
-      <input type="text" placeholder="College Name" class="pcollege" required />
+      <input type="text"  placeholder="Full Name"     class="pname"    required />
+      <input type="email" placeholder="Email"         class="pemail"   required />
+      <input type="tel"   placeholder="Phone Number"  class="pphone"   required />
+      <input type="text"  placeholder="College Name"  class="pcollege" required />
     `;
     participantForm.appendChild(div);
   }
 
-  // ---- Auto-fill if name matches profile ----
-  const nameInputs = participantForm.querySelectorAll(".pname");
+  // email-only autofill when typed name matches stored profile name
+  const nameInputs  = participantForm.querySelectorAll(".pname");
   const emailInputs = participantForm.querySelectorAll(".pemail");
-  const phoneInputs = participantForm.querySelectorAll(".pphone");
-  const collegeInputs = participantForm.querySelectorAll(".pcollege");
 
-  nameInputs.forEach((nameInput, idx) => {
-    nameInput.addEventListener("input", () => {
-      const typed = nameInput.value.trim().toLowerCase();
-      if (storedName && typed === storedNameLC) {
-        if (storedEmail) emailInputs[idx].value = storedEmail;
-        if (storedPhone) phoneInputs[idx].value = storedPhone;
-        if (storedCollege) collegeInputs[idx].value = storedCollege;
-        [emailInputs[idx], phoneInputs[idx], collegeInputs[idx]].forEach(flash);
+  nameInputs.forEach((input, index) => {
+    let autoFilled = false;
+    input.addEventListener("input", () => {
+      const typed = input.value.trim().toLowerCase();
+      if (!autoFilled && typed && storedName && typed === storedName) {
+        if (storedEmail) {
+          emailInputs[index].value = storedEmail;
+          emailInputs[index].style.boxShadow = "0 0 10px cyan";
+          setTimeout(() => (emailInputs[index].style.boxShadow = ""), 800);
+        }
+        autoFilled = true; // do it once per field
       }
     });
   });
@@ -141,60 +129,49 @@ function updateParticipantForm(count) {
   payBtn.style.display = "inline-block";
 }
 
-function flash(el) {
-  el.style.boxShadow = "0 0 10px cyan";
-  setTimeout(() => (el.style.boxShadow = ""), 900);
-}
-
-// ---- +/- Handlers ----
+// ---- +/- handlers ----
 increaseBtn.addEventListener("click", () => {
-  let v = safeInt(numInput.value, 0);
-  const max = safeInt(numInput.max, 10);
+  let v = parseInt(numInput.value || "0", 10);
+  const max = parseInt(numInput.max || "10", 10);
   if (v < max) {
-    v++;
-    numInput.value = v;
+    numInput.value = ++v;
     updateParticipantForm(v);
   }
 });
-
 decreaseBtn.addEventListener("click", () => {
-  let v = safeInt(numInput.value, 0);
+  let v = parseInt(numInput.value || "0", 10);
   if (v > 0) {
-    v--;
-    numInput.value = v;
+    numInput.value = --v;
     updateParticipantForm(v);
   }
 });
 
-// ---- Payment ----
+// ---- Payment + background Sheets sync (sendBeacon / keepalive) ----
 payBtn.addEventListener("click", (e) => {
   e.preventDefault();
-  if (paying) return;
-  if (!selectedPass || total <= 0) {
-    alert("Please select a pass and number of participants.");
-    return;
-  }
+  if (paying) return; // prevent double opens
+  if (!selectedPass || total <= 0) return;
 
-  const names = [...document.querySelectorAll(".pname")].map((x) => x.value.trim());
-  const emails = [...document.querySelectorAll(".pemail")].map((x) => x.value.trim());
-  const phones = [...document.querySelectorAll(".pphone")].map((x) => x.value.trim());
+  const names    = [...document.querySelectorAll(".pname")].map((x) => x.value.trim());
+  const emails   = [...document.querySelectorAll(".pemail")].map((x) => x.value.trim());
+  const phones   = [...document.querySelectorAll(".pphone")].map((x) => x.value.trim());
   const colleges = [...document.querySelectorAll(".pcollege")].map((x) => x.value.trim());
 
+  // basic validation (keep UX quiet; just stop if invalid)
   for (let i = 0; i < names.length; i++) {
-    if (!names[i] || !emails[i] || !phones[i] || !colleges[i]) {
-      alert("Please fill all participant details.");
-      return;
-    }
-    if (!emailRe.test(emails[i])) return alert("Invalid email format!");
-    if (!phoneRe.test(phones[i])) return alert("Invalid phone number!");
+    if (!names[i] || !emails[i] || !phones[i] || !colleges[i]) return;
+    if (!emailRe.test(emails[i])) return;
+    if (!phoneRe.test(phones[i])) return;
   }
 
   if (typeof Razorpay === "undefined") {
-    alert("⚠️ Razorpay SDK not loaded!");
+    console.error("Razorpay SDK not loaded. Include https://checkout.razorpay.com/v1/checkout.js");
     return;
   }
 
+  // build Razorpay options
   const currentUserEmail = auth?.currentUser?.email || "Guest";
+  let timerInterval;
 
   const options = {
     key: "rzp_test_Re1mOkmIGroT2c",
@@ -205,7 +182,8 @@ payBtn.addEventListener("click", (e) => {
     image: "pravah-logo.png",
 
     handler: async (response) => {
-      clearInterval(timerInterval);
+      // payment succeeded
+      if (timerInterval) clearInterval(timerInterval);
       timerDisplay.style.display = "none";
 
       const participants = names.map((n, i) => ({
@@ -223,21 +201,27 @@ payBtn.addEventListener("click", (e) => {
         participants,
       });
 
+      // send in background (no preflight)
+      let queued = false;
       try {
-        // Use Beacon (background save)
-        const blob = new Blob([payload], { type: "text/plain" });
-        navigator.sendBeacon(scriptURL, blob);
-      } catch {
-        // Fallback to fetch
-        fetch(scriptURL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: payload,
-          keepalive: true,
-        }).catch(() => {});
+        if (navigator.sendBeacon) {
+          const blob = new Blob([payload], { type: "text/plain" });
+          queued = navigator.sendBeacon(scriptURL, blob);
+        }
+      } catch (_) {}
+
+      if (!queued) {
+        try {
+          fetch(scriptURL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" }, // avoid preflight
+            body: payload,
+            keepalive: true,
+          }).catch(() => {});
+        } catch (_) {}
       }
 
-      // Update local profile if name matches
+      // Optional: update Firebase displayName & local profile if user's own name was among participants
       try {
         const stored = JSON.parse(localStorage.getItem("profileData") || "{}");
         const storedName = (stored.name || "").trim().toLowerCase();
@@ -250,7 +234,7 @@ payBtn.addEventListener("click", (e) => {
             "profileData",
             JSON.stringify({
               name: match.name,
-              email: match.email,
+              email: match.email || stored.email,
               phone: match.phone,
               college: match.college,
             })
@@ -260,7 +244,7 @@ payBtn.addEventListener("click", (e) => {
         console.warn("Profile update skipped:", e);
       }
 
-      alert("✅ Payment Successful!");
+      // redirect instantly (no alerts)
       window.location.href = "payment_success.html";
     },
 
@@ -269,12 +253,11 @@ payBtn.addEventListener("click", (e) => {
 
   const rzp = new Razorpay(options);
 
-  // ---- Timer ----
+  // start a 5-minute payment timer
   setPaying(true);
   let timeLeft = 300;
   timerDisplay.style.display = "block";
-
-  const timerInterval = setInterval(() => {
+  timerInterval = setInterval(() => {
     timeLeft--;
     const min = Math.floor(timeLeft / 60);
     const sec = String(timeLeft % 60).padStart(2, "0");
