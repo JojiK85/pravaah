@@ -19,8 +19,8 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0
 const auth = getAuth(app);
 const storage = getStorage(app);
 
-/* ---------- Backend Script URL ---------- */
-const scriptURL = "https://script.google.com/macros/s/AKfycby0ba4ujfw00bRk0w3h7dAhR6QxyNXQZK40BwAAd9vzyXWMNt2ylUdU1fWsdl76CeLB0g/exec";
+/* ---------- Backend Script URL (UPDATED) ---------- */
+const scriptURL = "https://script.google.com/macros/s/AKfycbwUqB2hdgPajzGcEDp87MC4ecmywWqnpAalUswVuGSPADGV3hvJRfHP0XiW5AIm9b_SPw/exec";
 
 /* ---------- Toast ---------- */
 function showToast(message, type = "info") {
@@ -65,7 +65,7 @@ async function saveProfileToSheet(profile) {
 
   try {
     if (navigator.sendBeacon) {
-      const blob = new Blob([payload], { type: "text/plain" });
+      const blob = new Blob([payload], { type: "text/plain" }); // text/plain avoids CORS preflight
       navigator.sendBeacon(scriptURL, blob);
     } else {
       await fetch(scriptURL, {
@@ -153,7 +153,7 @@ onAuthStateChanged(auth, async (user) => {
   const saveBtn = document.getElementById("saveProfileBtn");
   const cancelBtn = document.getElementById("cancelEditBtn");
 
-  /* Prefill */
+  /* Prefill (from Firebase) */
   userEmailEl.textContent = user.email;
   userNameEl.textContent = user.displayName || "PRAVAAH User";
   userPhoto.src = user.photoURL || "default-avatar.png";
@@ -163,7 +163,7 @@ onAuthStateChanged(auth, async (user) => {
 
   passesList.innerHTML = `<p class="no-passes">⏳ Loading your passes...</p>`;
 
-  /* Fetch profile */
+  /* Fetch profile from backend (Profiles file) */
   try {
     const profileRes = await fetch(`${scriptURL}?type=profile&email=${encodeURIComponent(user.email)}`);
     const profileData = await profileRes.json();
@@ -324,7 +324,7 @@ onAuthStateChanged(auth, async (user) => {
     }
   });
 
-  /* Fetch passes */
+  /* Fetch passes (GET ?email=...) */
   try {
     const res = await fetch(`${scriptURL}?email=${encodeURIComponent(user.email)}`);
     const passes = await res.json();
