@@ -12,7 +12,9 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
-// 🔥 Firebase Config
+/* -------------------------
+   Firebase Boot
+------------------------- */
 const firebaseConfig = {
   apiKey: "AIzaSyCbXKleOw4F46gFDXz2Wynl3YzPuHsVwh8",
   authDomain: "pravaah-55b1d.firebaseapp.com",
@@ -22,18 +24,19 @@ const firebaseConfig = {
   appId: "1:287687647267:web:7aecd603ee202779b89196"
 };
 
-// ⚙️ Initialize Firebase
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 const auth = getAuth(app);
 const storage = getStorage(app);
 
-// 🔗 Google Apps Script Backend
+/* -------------------------
+   Backend URL
+------------------------- */
 const scriptURL =
   "https://script.google.com/macros/s/AKfycby0ba4ujfw00bRk0w3h7dAhR6QxyNXQZK40BwAAd9vzyXWMNt2ylUdU1fWsdl76CeLB0g/exec";
 
-// ===============================
-// 🔔 Toast Notification Utility
-// ===============================
+/* -------------------------
+   Toasts
+------------------------- */
 function showToast(message, type = "info") {
   const toast = document.createElement("div");
   toast.className = `toast ${type}`;
@@ -46,57 +49,138 @@ function showToast(message, type = "info") {
   }, 3000);
 }
 
-// ===============================
-// 🔐 USER SESSION & DATA HANDLER
-// ===============================
+/* -------------------------
+   State + helpers
+------------------------- */
+let isEditing = false;
+let originalProfile = { phone: "", college: "" };
+
+function setEditMode(on, ctx) {
+  isEditing = on;
+
+  // toggle inputs
+  if (ctx.userPhoneInput) ctx.userPhoneInput.disabled = !on;
+  if (ctx.userCollegeInput) ctx.userCollegeInput.disabled = !on;
+
+  // toggle actions row
+  if (ctx.editActions) ctx.editActions.style.display = on ? "flex" : "none";
+
+  // hide upload options unless editing
+  if (ctx.uploadOptions) {
+    ctx.uploadOptions.classList.add("hidden");
+    ctx.uploadOptions.style.display = "none";
+  }
+
+  // small visual cue on photo while editing
+  if (ctx.userPhoto) {
+    ctx.userPhoto.style.outline = on ? "2px dashed cyan" : "none";
+    ctx.userPhoto.style.outlineOffset = "6px";
+  }
+}
+
+async function saveProfileToSheet(profile) {
+  const payload = JSON.stringify({
+    name: (profile.name || "").trim(),
+    email: (profile.email || "").trim().toLowerCase(),
+    phone: profile.phone || "",
+    college: profile.college || "",
+    photo: profile.photo || ""
+  });
+
+  try {
+    if (navigator.sendBeacon) {
+      const blob = new Blob([payload], { type: "text/plain" });
+      navigator.sendBeacon(scriptURL, blob);
+    } else {
+      await fetch(scriptURL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: payload
+      });
+    }
+  } catch (err) {
+    console.error("⚠️ Failed to save profile:", err);
+  }
+}
+
+/* -------------------------
+   Main
+------------------------- */
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "index.html";
     return;
   }
 
-  // 🔗 Elements
+  // Elements
   const userPhoto = document.getElementById("userPhoto");
   const uploadPhotoInput = document.getElementById("uploadPhoto");
   const uploadOptions = document.getElementById("uploadOptions");
   const driveUploadBtn = document.getElementById("driveUploadBtn");
+
   const userNameEl = document.getElementById("userName");
   const userEmailEl = document.getElementById("userEmail");
   const userPhoneInput = document.getElementById("userPhone");
   const userCollegeInput = document.getElementById("userCollege");
   const passesList = document.getElementById("passesList");
+
+  const logoutDesktop = document.getElementById("logoutDesktop");
+  const logoutMobile  = document.getElementById("logoutMobile");
+
+  // ✏️ Pen button (must exist in HTML inside .photo-wrapper)
+  let editPen = document.getElementById("editPen");
+  if (!editPen) {
+    // create one if it wasn’t added in HTML
+    editPen = document.createElement("button");
+    editPen.id = "editPen";
+    editPen.className = "edit-pen";
+    editPen.innerHTML = `<i class="fa-solid fa-pen"></i>`;
+    const photoWrapper = document.querySelector(".photo-wrapper");
+    if (photoWrapper) photoWrapper.appendChild(editPen);
+  }
+
+  // Build Save/Cancel row if missing
+  let editActions = document.getElementById("editActions");
+  if (!editActions) {
+    editActions = document.createElement("div");
+    editActions.id = "editActions";
+    editActions.className = "edit-actions";
+    editActions.innerHTML = `
+      <button id="saveProfileBtn" class="save-btn">Save</button>
+      <button id="cancelEditBtn" class="save-btn secondary">Cancel</button>
+    `;
+    const info = document.querySelector(".profile-info");
+    if (info) info.appendChild(editActions);
+  }
   const saveBtn = document.getElementById("saveProfileBtn");
+  const cancelBtn = document.getElementById("cancelEditBtn");
 
-  if (passesList)
-    passesList.innerHTML = `<p class="no-passes">⏳ Loading your passes...</p>`;
-
-  // 🧠 Basic Info
+  // Prefill basic
   if (userEmailEl) userEmailEl.textContent = user.email;
-  if (userNameEl) userNameEl.textContent = user.displayName || "PRAVAAH User";
-  if (userPhoto) userPhoto.src = user.photoURL || "default-avatar.png";
+  if (userNameEl)  userNameEl.textContent  = user.displayName || "PRAVAAH User";
+  if (userPhoto)   userPhoto.src           = user.photoURL || "default-avatar.png";
 
-  // ===============================
-  // 📡 Fetch Profile from Google Sheet
-  // ===============================
+  // Inputs are read-only until editing
+  if (userPhoneInput)  userPhoneInput.disabled = true;
+  if (userCollegeInput) userCollegeInput.disabled = true;
+
+  // Show loading in passes
+  if (passesList) passesList.innerHTML = `<p class="no-passes">⏳ Loading your passes...</p>`;
+
+  // Fetch profile from Sheets
   try {
-    const profileRes = await fetch(
-      `${scriptURL}?type=profile&email=${encodeURIComponent(user.email)}`
-    );
+    const profileRes = await fetch(`${scriptURL}?type=profile&email=${encodeURIComponent(user.email)}`);
     const profileData = await profileRes.json();
 
     if (profileData && profileData.name) {
-      userPhoneInput.value = profileData.phone || "";
-      userCollegeInput.value = profileData.college || "";
-
-      localStorage.setItem(
-        "profileData",
-        JSON.stringify({
-          name: profileData.name,
-          email: profileData.email,
-          phone: profileData.phone,
-          college: profileData.college
-        })
-      );
+      if (userPhoneInput)  userPhoneInput.value  = profileData.phone || "";
+      if (userCollegeInput) userCollegeInput.value = profileData.college || "";
+      localStorage.setItem("profileData", JSON.stringify({
+        name: profileData.name,
+        email: profileData.email,
+        phone: profileData.phone,
+        college: profileData.college
+      }));
     } else {
       const newProfile = {
         name: user.displayName || "PRAVAAH User",
@@ -111,35 +195,41 @@ onAuthStateChanged(auth, async (user) => {
     console.error("⚠️ Error fetching/updating profile:", err);
   }
 
-  // ===============================
-  // ✏️ Enable Field Editing
-  // ===============================
-  document.querySelectorAll(".edit-icon").forEach((icon) => {
-    icon.addEventListener("click", () => {
-      const target = icon.getAttribute("data-target");
-      const input = document.getElementById(target);
+  // Keep original values for Cancel
+  originalProfile = {
+    phone: userPhoneInput?.value || "",
+    college: userCollegeInput?.value || ""
+  };
 
-      if (input.hasAttribute("readonly")) {
-        input.removeAttribute("readonly");
-        input.classList.add("editing");
-        input.focus();
-        icon.classList.replace("fa-pen", "fa-check");
-        saveBtn.classList.remove("hidden");
-        showToast(`✏️ Editing ${target === "userPhone" ? "Phone" : "College"}`, "info");
-      } else {
-        input.setAttribute("readonly", true);
-        input.classList.remove("editing");
-        icon.classList.replace("fa-check", "fa-pen");
-      }
+  /* -------------------------
+     EDIT MODE via Pen
+  ------------------------- */
+  editPen?.addEventListener("click", () => {
+    if (!isEditing) {
+      originalProfile = {
+        phone: userPhoneInput?.value || "",
+        college: userCollegeInput?.value || ""
+      };
+    }
+    setEditMode(!isEditing, {
+      userPhoneInput,
+      userCollegeInput,
+      uploadOptions,
+      userPhoto,
+      editActions
     });
+
+    // when entering edit, also reveal upload choices nicely
+    if (isEditing && uploadOptions) {
+      uploadOptions.classList.remove("hidden");
+      uploadOptions.style.display = "flex";
+    }
   });
 
-  // ===============================
-  // 💾 Save Profile Changes
-  // ===============================
+  // Save
   saveBtn?.addEventListener("click", async () => {
-    const phone = userPhoneInput.value.trim();
-    const college = userCollegeInput.value.trim();
+    const phone = userPhoneInput?.value.trim() || "";
+    const college = userCollegeInput?.value.trim() || "";
 
     try {
       await saveProfileToSheet({
@@ -149,41 +239,44 @@ onAuthStateChanged(auth, async (user) => {
         college
       });
 
-      userPhoneInput.classList.add("saved");
-      userCollegeInput.classList.add("saved");
-      setTimeout(() => {
-        userPhoneInput.classList.remove("saved");
-        userCollegeInput.classList.remove("saved");
-      }, 1000);
-
-      localStorage.setItem(
-        "profileData",
-        JSON.stringify({
-          name: user.displayName,
-          email: user.email,
-          phone,
-          college
-        })
-      );
+      localStorage.setItem("profileData", JSON.stringify({
+        name: user.displayName,
+        email: user.email,
+        phone,
+        college
+      }));
 
       showToast("✅ Profile updated successfully!", "success");
-      saveBtn.classList.add("hidden");
+      setEditMode(false, { userPhoneInput, userCollegeInput, uploadOptions, userPhoto, editActions });
     } catch (err) {
       console.error("⚠️ Save failed:", err);
       showToast("❌ Failed to save changes.", "error");
     }
   });
 
-  // ===============================
-  // 📸 Upload Photo (Device or Drive)
-  // ===============================
-  if (userPhoto && uploadOptions) {
-    userPhoto.addEventListener("click", () => {
-      const isHidden = uploadOptions.classList.toggle("hidden");
-      uploadOptions.style.display = isHidden ? "none" : "flex";
-    });
-  }
+  // Cancel
+  cancelBtn?.addEventListener("click", () => {
+    if (userPhoneInput)  userPhoneInput.value  = originalProfile.phone;
+    if (userCollegeInput) userCollegeInput.value = originalProfile.college;
+    setEditMode(false, { userPhoneInput, userCollegeInput, uploadOptions, userPhoto, editActions });
+  });
 
+  /* -------------------------
+     Photo Upload (allowed only in edit mode)
+  ------------------------- */
+  // Disable opening upload on image click; pen controls edit/upload now.
+  userPhoto?.addEventListener("click", () => {
+    if (!isEditing) {
+      showToast("Tap the ✏️ pen to edit your profile.", "info");
+      return;
+    }
+    if (uploadOptions) {
+      uploadOptions.classList.toggle("hidden");
+      uploadOptions.style.display = uploadOptions.classList.contains("hidden") ? "none" : "flex";
+    }
+  });
+
+  // Add “Upload from Device” button if missing
   if (uploadOptions && !document.getElementById("deviceUploadBtn")) {
     const deviceBtn = document.createElement("button");
     deviceBtn.id = "deviceUploadBtn";
@@ -192,17 +285,26 @@ onAuthStateChanged(auth, async (user) => {
     uploadOptions.prepend(deviceBtn);
 
     deviceBtn.addEventListener("click", () => {
+      if (!isEditing) {
+        showToast("Tap the ✏️ pen to start editing.", "info");
+        return;
+      }
       uploadPhotoInput?.click();
       uploadOptions.classList.add("hidden");
       uploadOptions.style.display = "none";
     });
   }
 
-  // 📤 Upload from device
+  // Device upload
   uploadPhotoInput?.addEventListener("change", async (e) => {
+    if (!isEditing) {
+      showToast("Tap the ✏️ pen to start editing.", "info");
+      return;
+    }
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // instant preview
     const reader = new FileReader();
     reader.onload = (ev) => (userPhoto.src = ev.target.result);
     reader.readAsDataURL(file);
@@ -213,39 +315,42 @@ onAuthStateChanged(auth, async (user) => {
       await uploadBytes(storageRef, file);
       const photoURL = await getDownloadURL(storageRef);
       await updateProfile(user, { photoURL });
+      userPhoto.src = photoURL;
 
       await saveProfileToSheet({
         name: user.displayName,
         email: user.email,
-        phone: userPhoneInput.value,
-        college: userCollegeInput.value,
+        phone: userPhoneInput?.value,
+        college: userCollegeInput?.value,
         photo: photoURL
       });
 
-      showToast("✅ Profile photo updated successfully!", "success");
+      showToast("✅ Profile photo updated!", "success");
     } catch (err) {
       console.error("Upload error:", err);
       showToast("❌ Upload failed. Try again.", "error");
     }
   });
 
-  // ☁️ Upload from Google Drive
+  // Drive upload
   driveUploadBtn?.addEventListener("click", async () => {
+    if (!isEditing) {
+      showToast("Tap the ✏️ pen to start editing.", "info");
+      return;
+    }
     uploadOptions?.classList.add("hidden");
     uploadOptions.style.display = "none";
 
-    const driveLink = prompt("📂 Paste your Google Drive image link here:");
+    const driveLink = prompt("📂 Paste your Google Drive image link:");
     if (!driveLink || !driveLink.includes("https://drive.google.com")) {
       showToast("⚠️ Invalid Google Drive link.", "error");
       return;
     }
-
     const fileIdMatch = driveLink.match(/[-\w]{25,}/);
     if (!fileIdMatch) {
       showToast("⚠️ Invalid link format.", "error");
       return;
     }
-
     const fileId = fileIdMatch[0];
     const directLink = `https://drive.google.com/uc?export=view&id=${fileId}`;
 
@@ -255,20 +360,20 @@ onAuthStateChanged(auth, async (user) => {
       await saveProfileToSheet({
         name: user.displayName,
         email: user.email,
-        phone: userPhoneInput.value,
-        college: userCollegeInput.value,
+        phone: userPhoneInput?.value,
+        college: userCollegeInput?.value,
         photo: directLink
       });
-      showToast("✅ Profile photo updated from Google Drive!", "success");
+      showToast("✅ Profile photo updated from Drive!", "success");
     } catch (err) {
       console.error("Drive update error:", err);
       showToast("❌ Failed to set photo.", "error");
     }
   });
 
-  // ===============================
-  // 🎟 LOAD PASSES
-  // ===============================
+  /* -------------------------
+     Passes
+  ------------------------- */
   try {
     const res = await fetch(`${scriptURL}?email=${encodeURIComponent(user.email)}`);
     const passes = await res.json();
@@ -294,72 +399,40 @@ onAuthStateChanged(auth, async (user) => {
             <p><strong>Payment ID:</strong> ${paymentId}</p>
             <p><strong>Total Amount:</strong> ₹${items[0].totalAmount}</p>
             <p><strong>Participants:</strong></p>
-            <ul>${items
-              .map(
-                (p) =>
-                  `<li>${p.name} (${p.email}, ${p.phone || "-"}) — ${p.college || "-"}</li>`
-              )
-              .join("")}</ul>
-          </div>`
+            <ul>
+              ${items
+                .map(
+                  (p) => `<li>${p.name} (${p.email}, ${p.phone || "-"}) — ${p.college || "-"}</li>`
+                )
+                .join("")}
+            </ul>
+          </div>
+        `
       )
       .join("");
   } catch (err) {
     console.error("❌ Error fetching passes:", err);
   }
-});
 
-// ===============================
-// 🚪 LOGOUT HANDLER
-// ===============================
-document.addEventListener("DOMContentLoaded", () => {
-  const logoutDesktop = document.getElementById("logoutDesktop");
-  const logoutMobile = document.getElementById("logoutMobile");
-
+  /* -------------------------
+     Logout
+  ------------------------- */
   const logout = async () => {
     try {
       await signOut(auth);
       showToast("👋 Logged out successfully!", "success");
-      setTimeout(() => (window.location.href = "index.html"), 1500);
+      setTimeout(() => (window.location.href = "index.html"), 1200);
     } catch (e) {
       showToast("❌ Logout failed.", "error");
     }
   };
-
   logoutDesktop?.addEventListener("click", logout);
   logoutMobile?.addEventListener("click", logout);
 });
 
-// ===============================
-// 🧩 Save Profile to Google Sheets
-// ===============================
-async function saveProfileToSheet(profile) {
-  const payload = JSON.stringify({
-    name: profile.name.trim(),
-    email: profile.email.trim().toLowerCase(),
-    phone: profile.phone || "",
-    college: profile.college || "",
-    photo: profile.photo || ""
-  });
-
-  try {
-    if (navigator.sendBeacon) {
-      const blob = new Blob([payload], { type: "text/plain" });
-      navigator.sendBeacon(scriptURL, blob);
-    } else {
-      await fetch(scriptURL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: payload
-      });
-    }
-  } catch (err) {
-    console.error("⚠️ Failed to save profile:", err);
-  }
-}
-
-// ===============================
-// 🔔 Toast Styling
-// ===============================
+/* -------------------------
+   Inject toast CSS
+------------------------- */
 const style = document.createElement("style");
 style.innerHTML = `
 .toast {
@@ -382,7 +455,7 @@ style.innerHTML = `
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .toast.success { border-color: #00ff99; color: #00ffcc; }
-.toast.error { border-color: #ff5555; color: #ff8888; }
-.toast.info { border-color: cyan; color: cyan; }
+.toast.error   { border-color: #ff5555; color: #ff8888; }
+.toast.info    { border-color: cyan; color: cyan; }
 `;
 document.head.appendChild(style);
