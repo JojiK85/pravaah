@@ -1,11 +1,12 @@
 // =====================
-// PRAVAAH 2026 Registration + Payment (with Profile Auto-Update — Email only autofill)
+// PRAVAAH 2026 Registration + Payment
+// (Profile email-only autofill + background Sheets sync)
 // =====================
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-// ---- Firebase (use existing window.auth if already set elsewhere) ----
+// ---- Firebase (reuse window.auth if already set) ----
 let auth = window.auth;
 if (!auth) {
   const firebaseConfig = {
@@ -21,25 +22,47 @@ if (!auth) {
   window.auth = auth;
 }
 
-// ---- Google Apps Script /exec URL ----
-const scriptURL =
-  "https://script.google.com/macros/s/AKfycbyC2AZkrZA1aIkIU0fGFUBswnn9usKOpV1VU2nYoh-tAnBYftx1jOV3GWV-8La-Q--I/exec";
+// ---- Google Apps Script /exec URL (deployed: Execute as Me; Access: Anyone) ----
+const scriptURL = "https://script.google.com/macros/s/AKfycbyC2AZkrZA1aIkIU0fGFUBswnn9usKOpV1VU2nYoh-tAnBYftx1jOV3GWV-8La-Q--I/exec";
 
 // ---- UI state ----
 let selectedPass = null;
 let selectedPrice = 0;
 let total = 0;
+let paying = false; // double-click guard
 
-const selectionArea = document.getElementById("selectionArea");
-const selectedPassText = document.getElementById("selectedPass");
-const totalAmount = document.getElementById("totalAmount");
-const participantForm = document.getElementById("participantForm");
-const payBtn = document.getElementById("payBtn");
-const timerDisplay = document.getElementById("payment-timer");
-const numInput = document.getElementById("numParticipants");
-const increaseBtn = document.getElementById("increaseBtn");
-const decreaseBtn = document.getElementById("decreaseBtn");
-const passCards = document.querySelectorAll(".pass-card");
+const selectionArea     = document.getElementById("selectionArea");
+const selectedPassText  = document.getElementById("selectedPass");
+const totalAmount       = document.getElementById("totalAmount");
+const participantForm   = document.getElementById("participantForm");
+const payBtn            = document.getElementById("payBtn");
+const timerDisplay      = document.getElementById("payment-timer");
+const numInput          = document.getElementById("numParticipants");
+const increaseBtn       = document.getElementById("increaseBtn");
+const decreaseBtn       = document.getElementById("decreaseBtn");
+const passCards         = document.querySelectorAll(".pass-card");
+
+// ---- helpers ----
+const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+const phoneRe = /^[0-9+\-\s]{7,15}$/;
+
+function setPaying(state) {
+  paying = state;
+  payBtn.disabled = state;
+  payBtn.style.pointerEvents = state ? "none" : "auto";
+  payBtn.style.opacity = state ? "0.6" : "1";
+}
+
+function resetSelectionUI() {
+  selectionArea.classList.remove("hidden");
+  selectedPassText.textContent = `Selected: ${selectedPass} — ₹${selectedPrice}`;
+  totalAmount.textContent = "Total: ₹0";
+  payBtn.style.display = "none";
+  participantForm.innerHTML = "";
+  total = 0;
+  timerDisplay.style.display = "none";
+  numInput.value = 0;
+}
 
 // ---- Pass selection ----
 passCards.forEach((card) => {
@@ -47,17 +70,10 @@ passCards.forEach((card) => {
     passCards.forEach((c) => c.classList.remove("selected"));
     card.classList.add("selected");
 
-    selectedPass = card.dataset.name;
+    selectedPass  = card.dataset.name;
     selectedPrice = parseInt(card.dataset.price, 10) || 0;
 
-    selectionArea.classList.remove("hidden");
-    selectedPassText.textContent = `Selected: ${selectedPass} — ₹${selectedPrice}`;
-    totalAmount.textContent = "Total: ₹0";
-    payBtn.style.display = "none";
-    participantForm.innerHTML = "";
-    total = 0;
-    timerDisplay.style.display = "none";
-    numInput.value = 0;
+    resetSelectionUI();
   });
 });
 
@@ -65,10 +81,10 @@ passCards.forEach((card) => {
 function updateParticipantForm(count) {
   participantForm.innerHTML = "";
 
-  // ✅ Get profile data stored in localStorage
+  // Profile from localStorage (for email-only autofill)
   const storedProfile = JSON.parse(localStorage.getItem("profileData") || "{}");
-  const userName = storedProfile.name?.trim().toLowerCase() || "";
-  const userEmail = storedProfile.email || "";
+  const storedName  = (storedProfile.name || "").trim().toLowerCase();
+  const storedEmail = storedProfile.email || "";
 
   if (!count || count === 0) {
     totalAmount.textContent = "Total: ₹0";
@@ -89,19 +105,21 @@ function updateParticipantForm(count) {
     participantForm.appendChild(div);
   }
 
-  // ✅ Only autofill EMAIL when name matches
-  const nameInputs = participantForm.querySelectorAll(".pname");
+  // email-only autofill when typed name matches stored profile name
+  const nameInputs  = participantForm.querySelectorAll(".pname");
   const emailInputs = participantForm.querySelectorAll(".pemail");
 
   nameInputs.forEach((input, index) => {
+    let autoFilled = false;
     input.addEventListener("input", () => {
-      const typedName = input.value.trim().toLowerCase();
-      if (typedName && typedName === userName) {
-        emailInputs[index].value = userEmail;
-
-        // ✨ Visual feedback
-        emailInputs[index].style.boxShadow = "0 0 10px cyan";
-        setTimeout(() => (emailInputs[index].style.boxShadow = ""), 1000);
+      const typed = input.value.trim().toLowerCase();
+      if (!autoFilled && typed && storedName && typed === storedName) {
+        if (storedEmail) {
+          emailInputs[index].value = storedEmail;
+          emailInputs[index].style.boxShadow = "0 0 10px cyan";
+          setTimeout(() => (emailInputs[index].style.boxShadow = ""), 800);
+        }
+        autoFilled = true; // do it once per field
       }
     });
   });
@@ -128,27 +146,30 @@ decreaseBtn.addEventListener("click", () => {
   }
 });
 
-// ---- Payment + background Sheets sync ----
-payBtn.addEventListener("click", async (e) => {
+// ---- Payment + background Sheets sync (sendBeacon / keepalive) ----
+payBtn.addEventListener("click", (e) => {
   e.preventDefault();
+  if (paying) return; // prevent double opens
   if (!selectedPass || total <= 0) return;
 
-  const names = [...document.querySelectorAll(".pname")].map((x) => x.value.trim());
-  const emails = [...document.querySelectorAll(".pemail")].map((x) => x.value.trim());
-  const phones = [...document.querySelectorAll(".pphone")].map((x) => x.value.trim());
+  const names    = [...document.querySelectorAll(".pname")].map((x) => x.value.trim());
+  const emails   = [...document.querySelectorAll(".pemail")].map((x) => x.value.trim());
+  const phones   = [...document.querySelectorAll(".pphone")].map((x) => x.value.trim());
   const colleges = [...document.querySelectorAll(".pcollege")].map((x) => x.value.trim());
 
+  // basic validation (keep UX quiet; just stop if invalid)
   for (let i = 0; i < names.length; i++) {
     if (!names[i] || !emails[i] || !phones[i] || !colleges[i]) return;
+    if (!emailRe.test(emails[i])) return;
+    if (!phoneRe.test(phones[i])) return;
   }
 
   if (typeof Razorpay === "undefined") {
-    console.error(
-      "Razorpay SDK not loaded. Add <script src='https://checkout.razorpay.com/v1/checkout.js'></script> in HTML."
-    );
+    console.error("Razorpay SDK not loaded. Include https://checkout.razorpay.com/v1/checkout.js");
     return;
   }
 
+  // build Razorpay options
   const currentUserEmail = auth?.currentUser?.email || "Guest";
   let timerInterval;
 
@@ -161,14 +182,15 @@ payBtn.addEventListener("click", async (e) => {
     image: "pravah-logo.png",
 
     handler: async (response) => {
+      // payment succeeded
       if (timerInterval) clearInterval(timerInterval);
       timerDisplay.style.display = "none";
 
       const participants = names.map((n, i) => ({
-        name: n.trim(),
-        email: emails[i].trim(),
-        phone: phones[i].trim(),
-        college: colleges[i].trim(),
+        name: n,
+        email: emails[i],
+        phone: phones[i],
+        college: colleges[i],
       }));
 
       const payload = JSON.stringify({
@@ -179,7 +201,7 @@ payBtn.addEventListener("click", async (e) => {
         participants,
       });
 
-      // ---- Send data to Google Sheets ----
+      // send in background (no preflight)
       let queued = false;
       try {
         if (navigator.sendBeacon) {
@@ -192,43 +214,37 @@ payBtn.addEventListener("click", async (e) => {
         try {
           fetch(scriptURL, {
             method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            headers: { "Content-Type": "text/plain;charset=utf-8" }, // avoid preflight
             body: payload,
             keepalive: true,
           }).catch(() => {});
         } catch (_) {}
       }
 
-      // ✅ Profile Auto-Update Logic (only after payment)
-      const storedProfile = JSON.parse(localStorage.getItem("profileData") || "{}");
-      const userName = storedProfile.name?.trim().toLowerCase() || "";
-
-      const matched = participants.find((p) => p.name.toLowerCase() === userName);
-      if (matched && auth.currentUser) {
-        try {
-          // 🔹 Update Firebase displayName if changed
-          if (auth.currentUser.displayName !== matched.name) {
-            await updateProfile(auth.currentUser, { displayName: matched.name });
+      // Optional: update Firebase displayName & local profile if user's own name was among participants
+      try {
+        const stored = JSON.parse(localStorage.getItem("profileData") || "{}");
+        const storedName = (stored.name || "").trim().toLowerCase();
+        const match = participants.find((p) => p.name.trim().toLowerCase() === storedName);
+        if (match && auth.currentUser) {
+          if (auth.currentUser.displayName !== match.name) {
+            await updateProfile(auth.currentUser, { displayName: match.name });
           }
-
-          // 🔹 Update localStorage with latest phone & college
           localStorage.setItem(
             "profileData",
             JSON.stringify({
-              name: matched.name,
-              email: matched.email || storedProfile.email,
-              phone: matched.phone,
-              college: matched.college,
+              name: match.name,
+              email: match.email || stored.email,
+              phone: match.phone,
+              college: match.college,
             })
           );
-
-          console.log("✅ Profile updated locally after registration:", matched);
-        } catch (err) {
-          console.error("⚠️ Failed to update Firebase profile:", err);
         }
+      } catch (e) {
+        console.warn("Profile update skipped:", e);
       }
 
-      // ✅ Redirect
+      // redirect instantly (no alerts)
       window.location.href = "payment_success.html";
     },
 
@@ -237,7 +253,8 @@ payBtn.addEventListener("click", async (e) => {
 
   const rzp = new Razorpay(options);
 
-  // Optional: 5-min timer
+  // start a 5-minute payment timer
+  setPaying(true);
   let timeLeft = 300;
   timerDisplay.style.display = "block";
   timerInterval = setInterval(() => {
@@ -249,6 +266,7 @@ payBtn.addEventListener("click", async (e) => {
       clearInterval(timerInterval);
       rzp.close();
       timerDisplay.style.display = "none";
+      setPaying(false);
     }
   }, 1000);
 
