@@ -174,21 +174,54 @@ body {
 
 /* ✅ Editable input styling */
 .editable-input {
-  border: 1px solid cyan;
-  background: rgba(255, 255, 255, 0.05);
-  color: cyan;
-  padding: 6px 10px;
+  border: none;
+  background: transparent;
+  color: #ccc;
+  padding: 4px 10px;
   border-radius: 6px;
   font-family: 'Orbitron', sans-serif;
   width: 60%;
   outline: none;
   transition: all 0.3s ease;
   margin-left: 10px;
+  cursor: default;
+}
+
+.editable-input.editing {
+  border: 1px solid cyan;
+  background: rgba(255, 255, 255, 0.07);
+  color: cyan;
+  cursor: text;
+  box-shadow: 0 0 8px cyan;
 }
 
 .editable-input:focus {
-  box-shadow: 0 0 8px cyan;
-  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+}
+
+/* 🖊 Pen Icon */
+.edit-icon {
+  color: cyan;
+  font-size: 1rem;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.edit-icon:hover {
+  color: #00ffcc;
+  transform: scale(1.15);
+}
+
+/* ✨ Green flash after saving */
+@keyframes savedGlow {
+  0% { box-shadow: 0 0 8px lime; border-color: lime; }
+  50% { box-shadow: 0 0 15px lime; border-color: limegreen; }
+  100% { box-shadow: none; border-color: cyan; }
+}
+
+.editable-input.saved {
+  animation: savedGlow 1s ease;
 }
 
 /* ✅ Save Button */
@@ -210,6 +243,10 @@ body {
   background: #00ffcc;
   transform: scale(1.05);
   box-shadow: 0 0 20px cyan;
+}
+
+.save-btn.hidden {
+  display: none;
 }
 
 /* ---------- PASSES SECTION ---------- */
@@ -287,8 +324,6 @@ body {
 }
 
 /* ---------- RESPONSIVE ---------- */
-
-/* 🖥 Tablets / Small Laptops */
 @media (max-width: 1200px) {
   .profile-container {
     width: 90%;
@@ -298,7 +333,6 @@ body {
   }
 }
 
-/* 📱 Mobile Screens */
 @media (max-width: 768px) {
   .profile-container {
     width: 94%;
