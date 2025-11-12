@@ -26,6 +26,7 @@
       <i class="fas fa-bars"></i>
     </div>
 
+    <!-- 🧭 NAVIGATION MENU -->
     <ul id="menu">
       <li><a href="home.html">Home</a></li>
       <li><a href="events.html">Events</a></li>
@@ -53,13 +54,19 @@
             <div class="photo-overlay">
               <i class="fas fa-camera"></i>
             </div>
+
+            <!-- ✏️ Edit toggle button -->
+            <button id="editPen" class="edit-pen" title="Edit profile">
+              <i class="fas fa-pen"></i>
+            </button>
           </div>
 
           <!-- Hidden file input -->
           <input type="file" id="uploadPhoto" accept="image/*" hidden />
 
-          <!-- Upload Options -->
+          <!-- Upload Options (handled by JS) -->
           <div class="upload-options hidden" id="uploadOptions">
+            <!-- Device upload added dynamically by JS -->
             <button id="driveUploadBtn" class="upload-btn drive-btn">
               <i class="fab fa-google-drive"></i> Upload from Drive
             </button>
@@ -71,20 +78,22 @@
           <p><strong>Name:</strong> <span id="userName">Loading...</span></p>
           <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
 
-          <!-- Editable fields for Phone & College -->
           <p>
             <strong>Phone:</strong>
-            <input type="tel" id="userPhone" placeholder="Enter phone number" class="editable-input" />
+            <input id="userPhone" class="editable-input" type="tel" placeholder="Enter phone" disabled />
           </p>
           <p>
             <strong>College:</strong>
-            <input type="text" id="userCollege" placeholder="Enter college name" class="editable-input" />
+            <input id="userCollege" class="editable-input" type="text" placeholder="Enter college" disabled />
           </p>
 
-          <!-- Save Changes button -->
-          <button id="saveProfileBtn" class="save-btn">
-            💾 Save Changes
-          </button>
+          <!-- Save / Cancel (shown only in edit mode) -->
+          <div class="edit-actions" id="editActions" style="display:none; gap:10px; margin-top:10px;">
+            <button id="saveProfileBtn" class="save-btn">Save</button>
+            <button id="cancelEditBtn" class="save-btn" style="background:#222;color:#fff;border:1px solid cyan;">
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
 
