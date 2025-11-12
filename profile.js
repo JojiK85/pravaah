@@ -58,13 +58,13 @@ let originalProfile = { phone: "", college: "" };
 function setEditMode(on, ctx) {
   isEditing = on;
 
-  // toggle container class (CSS controls visibility of inputs vs spans)
+  // toggle container class (CSS handles inputs vs spans)
   ctx.container?.classList.toggle("is-edit", on);
 
   // actions row
   if (ctx.editActions) ctx.editActions.style.display = on ? "flex" : "none";
 
-  // hide upload options when leaving edit
+  // upload options
   if (ctx.uploadOptions) {
     if (on) {
       ctx.uploadOptions.classList.remove("hidden");
@@ -75,7 +75,7 @@ function setEditMode(on, ctx) {
     }
   }
 
-  // small visual cue on photo while editing
+  // visual cue on photo while editing
   if (ctx.userPhoto) {
     ctx.userPhoto.style.outline = on ? "2px dashed cyan" : "none";
     ctx.userPhoto.style.outlineOffset = "6px";
@@ -107,10 +107,9 @@ async function saveProfileToSheet(profile) {
   }
 }
 
-/* -------------------------
-   Utility: ensure display spans exist & sync them
-------------------------- */
+/* build/read-only span next to an input and keep it synced */
 function ensureFieldSpan(inputEl, spanId) {
+  if (!inputEl) return null;
   let span = document.getElementById(spanId);
   if (!span) {
     span = document.createElement("span");
@@ -118,7 +117,7 @@ function ensureFieldSpan(inputEl, spanId) {
     span.className = "field-text";
     inputEl.insertAdjacentElement("afterend", span);
   }
-  span.textContent = inputEl.value?.trim() || "-";
+  span.textContent = (inputEl.value || "").trim() || "-";
   return span;
 }
 
@@ -147,7 +146,7 @@ onAuthStateChanged(auth, async (user) => {
   const logoutDesktop    = document.getElementById("logoutDesktop");
   const logoutMobile     = document.getElementById("logoutMobile");
 
-  // ✏️ Pen button (must exist in HTML inside .photo-wrapper)
+  // ✏️ Pen button
   let editPen = document.getElementById("editPen");
   if (!editPen) {
     editPen = document.createElement("button");
@@ -157,7 +156,7 @@ onAuthStateChanged(auth, async (user) => {
     document.querySelector(".photo-wrapper")?.appendChild(editPen);
   }
 
-  // Build Save/Cancel row if missing
+  // Save/Cancel row (if missing)
   let editActions = document.getElementById("editActions");
   if (!editActions) {
     editActions = document.createElement("div");
@@ -172,19 +171,15 @@ onAuthStateChanged(auth, async (user) => {
   const saveBtn   = document.getElementById("saveProfileBtn");
   const cancelBtn = document.getElementById("cancelEditBtn");
 
-  // Prefill basic
-  userEmailEl && (userEmailEl.textContent = user.email);
-  userNameEl  && (userNameEl.textContent  = user.displayName || "PRAVAAH User");
-  userPhoto   && (userPhoto.src           = user.photoURL || "default-avatar.png");
+  // Basic info
+  if (userEmailEl) userEmailEl.textContent = user.email;
+  if (userNameEl)  userNameEl.textContent  = user.displayName || "PRAVAAH User";
+  if (userPhoto)   userPhoto.src           = user.photoURL || "default-avatar.png";
 
-  // Inputs are present but will be hidden by CSS until edit mode
-  userPhoneInput  && (userPhoneInput.disabled = false);
-  userCollegeInput&& (userCollegeInput.disabled = false);
+  // loading for passes
+  if (passesList) passesList.innerHTML = `<p class="no-passes">⏳ Loading your passes...</p>`;
 
-  // Show loading in passes
-  passesList && (passesList.innerHTML = `<p class="no-passes">⏳ Loading your passes...</p>`);
-
-  // Fetch profile from Sheets
+  // Load profile from Sheets
   try {
     const profileRes = await fetch(`${scriptURL}?type=profile&email=${encodeURIComponent(user.email)}`);
     const profileData = await profileRes.json();
@@ -199,12 +194,7 @@ onAuthStateChanged(auth, async (user) => {
         college: profileData.college
       }));
     } else {
-      const newProfile = {
-        name: user.displayName || "PRAVAAH User",
-        email: user.email,
-        phone: "",
-        college: ""
-      };
+      const newProfile = { name: user.displayName || "PRAVAAH User", email: user.email, phone: "", college: "" };
       await saveProfileToSheet(newProfile);
       localStorage.setItem("profileData", JSON.stringify(newProfile));
     }
@@ -212,11 +202,11 @@ onAuthStateChanged(auth, async (user) => {
     console.error("⚠️ Error fetching/updating profile:", err);
   }
 
-  // Create & sync display spans next to inputs (so non-edit shows text not boxes)
+  // Create/sync read-only text spans
   const phoneSpan   = ensureFieldSpan(userPhoneInput,   "userPhoneText");
   const collegeSpan = ensureFieldSpan(userCollegeInput, "userCollegeText");
 
-  // Keep originals for cancel
+  // originals for Cancel
   originalProfile = {
     phone: userPhoneInput?.value || "",
     college: userCollegeInput?.value || ""
@@ -242,8 +232,12 @@ onAuthStateChanged(auth, async (user) => {
     });
   });
 
-  // Save
+  // Save (debounced)
+  let saving = false;
   saveBtn?.addEventListener("click", async () => {
+    if (saving) return;
+    saving = true;
+
     const phone   = userPhoneInput?.value.trim()   || "";
     const college = userCollegeInput?.value.trim() || "";
 
@@ -256,8 +250,8 @@ onAuthStateChanged(auth, async (user) => {
       });
 
       // update display spans
-      phoneSpan.textContent   = phone   || "-";
-      collegeSpan.textContent = college || "-";
+      if (phoneSpan)   phoneSpan.textContent   = phone   || "-";
+      if (collegeSpan) collegeSpan.textContent = college || "-";
 
       localStorage.setItem("profileData", JSON.stringify({
         name: user.displayName,
@@ -271,6 +265,8 @@ onAuthStateChanged(auth, async (user) => {
     } catch (err) {
       console.error("⚠️ Save failed:", err);
       showToast("❌ Failed to save changes.", "error");
+    } finally {
+      saving = false;
     }
   });
 
@@ -278,11 +274,8 @@ onAuthStateChanged(auth, async (user) => {
   cancelBtn?.addEventListener("click", () => {
     if (userPhoneInput)   userPhoneInput.value   = originalProfile.phone;
     if (userCollegeInput) userCollegeInput.value = originalProfile.college;
-
-    // resync spans with originals
-    phoneSpan.textContent   = originalProfile.phone   || "-";
-    collegeSpan.textContent = originalProfile.college || "-";
-
+    if (phoneSpan)   phoneSpan.textContent   = originalProfile.phone   || "-";
+    if (collegeSpan) collegeSpan.textContent = originalProfile.college || "-";
     setEditMode(false, { container, userPhoneInput, userCollegeInput, uploadOptions, userPhoto, editActions });
   });
 
@@ -300,7 +293,7 @@ onAuthStateChanged(auth, async (user) => {
     }
   });
 
-  // Add “Upload from Device” if missing
+  // “Upload from Device” (add if missing)
   if (uploadOptions && !document.getElementById("deviceUploadBtn")) {
     const deviceBtn = document.createElement("button");
     deviceBtn.id = "deviceUploadBtn";
