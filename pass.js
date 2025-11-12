@@ -23,7 +23,7 @@ if (!auth) {
 }
 
 // ---- Google Apps Script /exec URL (deployed: Execute as Me; Access: Anyone) ----
-const scriptURL = "https://script.google.com/macros/s/AKfycbykM1XKYRynfcz2f44zd6qHF2jfx5r2h6rbrufWuF9K_HbU_PVYPjbdj64bPEnxCMAdVQ/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbyKGly5gR_OMt6LqAlIl166-Vucn2wAk8242XbnBU8hDRV67FY4lOQFWuFbE1oP5IvYuA/exec";
 
 // ---- UI state ----
 let selectedPass = null;
