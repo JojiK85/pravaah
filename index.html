@@ -44,6 +44,7 @@
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
     import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
+    // 🔥 Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyCbXKleOw4F46gFDXz2Wynl3YzPuHsVwh8",
       authDomain: "pravaah-55b1d.firebaseapp.com",
@@ -58,6 +59,11 @@
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
+    // 🔗 Your Google Apps Script backend URL
+    const scriptURL =
+      "https://script.google.com/macros/s/AKfycbyKGly5gR_OMt6LqAlIl166-Vucn2wAk8242XbnBU8hDRV67FY4lOQFWuFbE1oP5IvYuA/exec";
+
+    // DOM Elements
     const nameInput = document.getElementById('name');
     const emailInput = document.getElementById('email');
     const passInput = document.getElementById('password');
@@ -68,7 +74,9 @@
 
     let isLogin = true;
 
-    // 🔄 Toggle Login / Signup
+    /* -------------------------
+       Toggle Login / Signup
+    ------------------------- */
     toggleForm.addEventListener('click', () => {
       isLogin = !isLogin;
       formTitle.textContent = isLogin ? 'LOGIN TO PRAVAAH' : 'CREATE YOUR PRAVAAH ACCOUNT';
@@ -79,14 +87,41 @@
       nameInput.classList.toggle("hidden", isLogin);
     });
 
-    // ✉️ Email/Password Login or Signup
+    /* -------------------------
+       Helper: Save to Google Sheet
+    ------------------------- */
+    async function saveProfileToSheet(profile) {
+      const payload = JSON.stringify({
+        name: profile.name || "",
+        email: profile.email || "",
+        phone: profile.phone || "",
+        college: profile.college || "",
+        photo: profile.photo || ""
+      });
+      try {
+        await fetch(scriptURL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: payload
+        });
+      } catch (err) {
+        console.error("⚠️ Could not save to Sheets:", err);
+      }
+    }
+
+    /* -------------------------
+       Email/Password Login or Signup
+    ------------------------- */
     submitBtn.addEventListener('click', async () => {
       const email = emailInput.value.trim();
       const password = passInput.value.trim();
       const name = nameInput.value.trim();
+
       try {
         if (isLogin) {
           await signInWithEmailAndPassword(auth, email, password);
+          // 🟢 After login, ensure profile exists in Sheets
+          await saveProfileToSheet({ name: "", email });
         } else {
           const userCredential = await createUserWithEmailAndPassword(auth, email, password);
           await updateProfile(userCredential.user, { displayName: name });
@@ -97,6 +132,8 @@
             college: "",
             passes: []
           });
+          // 🟢 Also save to Google Sheets
+          await saveProfileToSheet({ name, email });
         }
         window.location.href = "home.html";
       } catch (err) {
@@ -104,7 +141,9 @@
       }
     });
 
-    // 🔹 Google Sign-In
+    /* -------------------------
+       Google Sign-In
+    ------------------------- */
     googleBtn.addEventListener('click', async () => {
       try {
         const result = await signInWithPopup(auth, provider);
@@ -116,13 +155,22 @@
           college: "",
           passes: []
         }, { merge: true });
+
+        // 🟢 Save Google user to Sheets too
+        await saveProfileToSheet({ 
+          name: user.displayName, 
+          email: user.email 
+        });
+
         window.location.href = "home.html";
       } catch (err) {
         alert(err.message);
       }
     });
 
-    // 🔒 Auto redirect if logged in
+    /* -------------------------
+       Auto redirect if logged in
+    ------------------------- */
     onAuthStateChanged(auth, (user) => {
       if (user) window.location.href = "home.html";
     });
