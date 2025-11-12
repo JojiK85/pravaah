@@ -22,7 +22,7 @@ if (!auth) {
   window.auth = auth;
 }
 
-// ---- Google Apps Script /exec URL ----
+// ---- Google Apps Script /exec URL (deployed: Execute as Me; Access: Anyone) ----
 const scriptURL = "https://script.google.com/macros/s/AKfycbyyWQJfKsLtHHFAmnaZS-C8oWVZB05QObaiCCAkznZ__dqgjcJGMlTTLVmkLoe1mQGgTQ/exec";
 
 // ---- UI state ----
@@ -61,7 +61,7 @@ function setPaying(state) {
 
 function resetSelectionUI() {
   forceShowSelectionArea(); // ✅ ensure it's visible
-  selectedPassText.textContent = `Selected: ${selectedPass} — ₹${selectedPrice}`;
+  selectedPassText.textContent = Selected: ${selectedPass} — ₹${selectedPrice};
   totalAmount.textContent = "Total: ₹0";
   payBtn.style.display = "none";
   participantForm.innerHTML = "";
@@ -96,6 +96,7 @@ document.addEventListener("click", (e) => {
   }
 });
 
+// ---- Build participant form ----
 // ---- Build participant form ----
 function updateParticipantForm(count) {
   participantForm.innerHTML = "";
@@ -145,13 +146,13 @@ function updateParticipantForm(count) {
       if (hasAutoFilled) return;
       if (!storedName || typed !== storedNameLC) return;
 
-      // Always allowed: email
+      // Always allowed: email (like before)
       if (storedEmail && !emailInputs[idx].value) {
         emailInputs[idx].value = storedEmail;
         flash(emailInputs[idx]);
       }
 
-      // Fill phone & college ONLY if profile is complete
+      // New rule: fill phone & college ONLY if profile is complete
       if (profileComplete) {
         if (!phoneInputs[idx].value)   { phoneInputs[idx].value   = storedPhone;   flash(phoneInputs[idx]); }
         if (!collegeInputs[idx].value) { collegeInputs[idx].value = storedCollege; flash(collegeInputs[idx]); }
@@ -161,27 +162,14 @@ function updateParticipantForm(count) {
   });
 
   total = selectedPrice * count;
-  totalAmount.textContent = `Total: ₹${total}`;
+  totalAmount.textContent = Total: ₹${total};
   payBtn.style.display = "inline-block";
 }
 
-// ===== NEW: Rebuild form when the number input changes =====
-const rebuildFromNum = () => {
-  const v = parseInt(numInput.value || "0", 10) || 0;
-  const min = parseInt(numInput.min || "0", 10) || 0;
-  const max = parseInt(numInput.max || "10", 10) || 10;
-  const clamped = Math.max(min, Math.min(max, v));
-  if (clamped !== v) numInput.value = clamped;
-  updateParticipantForm(clamped);
-  forceShowSelectionArea();
-};
-numInput.addEventListener("input", rebuildFromNum);
-numInput.addEventListener("change", rebuildFromNum);
-// =====================================
 
-// ---- +/- handlers ----
+// ---- +/- handlers (now also force show selection area) ----
 increaseBtn.addEventListener("click", () => {
-  forceShowSelectionArea();
+  forceShowSelectionArea(); // ✅
   let v = parseInt(numInput.value || "0", 10);
   const max = parseInt(numInput.max || "10", 10);
   if (v < max) {
@@ -190,7 +178,7 @@ increaseBtn.addEventListener("click", () => {
   }
 });
 decreaseBtn.addEventListener("click", () => {
-  forceShowSelectionArea();
+  forceShowSelectionArea(); // ✅
   let v = parseInt(numInput.value || "0", 10);
   if (v > 0) {
     numInput.value = --v;
@@ -230,7 +218,7 @@ payBtn.addEventListener("click", (e) => {
     amount: total * 100,
     currency: "INR",
     name: "PRAVAAH 2026",
-    description: `${selectedPass} Registration`,
+    description: ${selectedPass} Registration,
     image: "pravah-logo.png",
 
     handler: async (response) => {
@@ -271,7 +259,6 @@ payBtn.addEventListener("click", (e) => {
             keepalive: true,
           }).catch(() => {});
         } catch (_) {}
-
       }
 
       // Optional: update Firebase displayName & local profile if user's own name was among participants
@@ -314,7 +301,7 @@ payBtn.addEventListener("click", (e) => {
     timeLeft--;
     const min = Math.floor(timeLeft / 60);
     const sec = String(timeLeft % 60).padStart(2, "0");
-    timerDisplay.textContent = `⏳ Payment window: ${min}:${sec}`;
+    timerDisplay.textContent = ⏳ Payment window: ${min}:${sec};
     if (timeLeft <= 0) {
       clearInterval(timerInterval);
       rzp.close();
