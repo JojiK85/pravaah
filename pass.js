@@ -61,11 +61,20 @@ passCards.forEach(card => {
 // ---- Build participant form ----
 function updateParticipantForm(count) {
   participantForm.innerHTML = "";
+
+  // ✅ Get profile data stored in localStorage
+  const storedProfile = JSON.parse(localStorage.getItem("profileData") || "{}");
+  const userName = storedProfile.name?.trim().toLowerCase() || "";
+  const userEmail = storedProfile.email || "";
+  const userPhone = storedProfile.phone || "";
+  const userCollege = storedProfile.college || "";
+
   if (!count || count === 0) {
     totalAmount.textContent = "Total: ₹0";
     payBtn.style.display = "none";
     return;
   }
+
   for (let i = 1; i <= count; i++) {
     const div = document.createElement("div");
     div.classList.add("participant-card");
@@ -78,10 +87,36 @@ function updateParticipantForm(count) {
     `;
     participantForm.appendChild(div);
   }
+
+  // ✅ Smart matching & autofill logic
+  const nameInputs = participantForm.querySelectorAll(".pname");
+  const emailInputs = participantForm.querySelectorAll(".pemail");
+  const phoneInputs = participantForm.querySelectorAll(".pphone");
+  const collegeInputs = participantForm.querySelectorAll(".pcollege");
+
+  nameInputs.forEach((input, index) => {
+    input.addEventListener("input", () => {
+      const typedName = input.value.trim().toLowerCase();
+      if (typedName && typedName === userName) {
+        // 🎯 Auto-fill if the name matches
+        emailInputs[index].value = userEmail;
+        phoneInputs[index].value = userPhone;
+        collegeInputs[index].value = userCollege;
+
+        // ✨ Visual feedback
+        [input, emailInputs[index], phoneInputs[index], collegeInputs[index]].forEach(el => {
+          el.style.boxShadow = "0 0 10px cyan";
+          setTimeout(() => (el.style.boxShadow = ""), 1000);
+        });
+      }
+    });
+  });
+
   total = selectedPrice * count;
   totalAmount.textContent = `Total: ₹${total}`;
   payBtn.style.display = "inline-block";
 }
+
 
 // ---- +/- handlers ----
 increaseBtn.addEventListener("click", () => {
