@@ -76,7 +76,7 @@ onAuthStateChanged(auth, async (user) => {
   if (userPhoto) userPhoto.src = user.photoURL || "default-avatar.png";
 
   // ===============================
-  // 📡 Fetch Profile from Google Sheet (Profiles)
+  // 📡 Fetch Profile from Google Sheet
   // ===============================
   try {
     const profileRes = await fetch(
@@ -85,8 +85,8 @@ onAuthStateChanged(auth, async (user) => {
     const profileData = await profileRes.json();
 
     if (profileData && profileData.name) {
-      if (userPhoneInput) userPhoneInput.value = profileData.phone || "";
-      if (userCollegeInput) userCollegeInput.value = profileData.college || "";
+      userPhoneInput.value = profileData.phone || "";
+      userCollegeInput.value = profileData.college || "";
 
       localStorage.setItem(
         "profileData",
@@ -98,7 +98,6 @@ onAuthStateChanged(auth, async (user) => {
         })
       );
     } else {
-      // Create blank profile if not found
       const newProfile = {
         name: user.displayName || "PRAVAAH User",
         email: user.email,
@@ -111,6 +110,69 @@ onAuthStateChanged(auth, async (user) => {
   } catch (err) {
     console.error("⚠️ Error fetching/updating profile:", err);
   }
+
+  // ===============================
+  // ✏️ Enable Field Editing
+  // ===============================
+  document.querySelectorAll(".edit-icon").forEach((icon) => {
+    icon.addEventListener("click", () => {
+      const target = icon.getAttribute("data-target");
+      const input = document.getElementById(target);
+
+      if (input.hasAttribute("readonly")) {
+        input.removeAttribute("readonly");
+        input.classList.add("editing");
+        input.focus();
+        icon.classList.replace("fa-pen", "fa-check");
+        saveBtn.classList.remove("hidden");
+        showToast(`✏️ Editing ${target === "userPhone" ? "Phone" : "College"}`, "info");
+      } else {
+        input.setAttribute("readonly", true);
+        input.classList.remove("editing");
+        icon.classList.replace("fa-check", "fa-pen");
+      }
+    });
+  });
+
+  // ===============================
+  // 💾 Save Profile Changes
+  // ===============================
+  saveBtn?.addEventListener("click", async () => {
+    const phone = userPhoneInput.value.trim();
+    const college = userCollegeInput.value.trim();
+
+    try {
+      await saveProfileToSheet({
+        name: user.displayName,
+        email: user.email,
+        phone,
+        college
+      });
+
+      userPhoneInput.classList.add("saved");
+      userCollegeInput.classList.add("saved");
+      setTimeout(() => {
+        userPhoneInput.classList.remove("saved");
+        userCollegeInput.classList.remove("saved");
+      }, 1000);
+
+      localStorage.setItem(
+        "profileData",
+        JSON.stringify({
+          name: user.displayName,
+          email: user.email,
+          phone,
+          college
+        })
+      );
+
+      showToast("✅ Profile updated successfully!", "success");
+      saveBtn.classList.add("hidden");
+    } catch (err) {
+      console.error("⚠️ Save failed:", err);
+      showToast("❌ Failed to save changes.", "error");
+    }
+  });
 
   // ===============================
   // 📸 Upload Photo (Device or Drive)
@@ -201,38 +263,6 @@ onAuthStateChanged(auth, async (user) => {
     } catch (err) {
       console.error("Drive update error:", err);
       showToast("❌ Failed to set photo.", "error");
-    }
-  });
-
-  // ===============================
-  // 💾 Save Profile Changes (Phone + College only)
-  // ===============================
-  saveBtn?.addEventListener("click", async () => {
-    const phone = userPhoneInput.value.trim();
-    const college = userCollegeInput.value.trim();
-
-    try {
-      await saveProfileToSheet({
-        name: user.displayName,
-        email: user.email,
-        phone,
-        college
-      });
-
-      localStorage.setItem(
-        "profileData",
-        JSON.stringify({
-          name: user.displayName,
-          email: user.email,
-          phone,
-          college
-        })
-      );
-
-      showToast("✅ Profile updated successfully!", "success");
-    } catch (err) {
-      console.error("⚠️ Save failed:", err);
-      showToast("❌ Failed to save changes.", "error");
     }
   });
 
