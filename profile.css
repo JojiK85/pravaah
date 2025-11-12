@@ -398,14 +398,15 @@ body {
   }
 
   .profile-container {
-    width: 92%;
-    max-width: 420px;
-    margin: 0 auto;
-    padding: 22px 18px 36px 18px;
-    border-radius: 18px;
-    text-align: left;              /* default left for container (we'll center the photo separately) */
-    box-shadow: 0 0 25px rgba(0, 255, 255, 0.25);
-  }
+  width: 92%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 24px 20px 36px 20px;
+  border-radius: 18px;
+  text-align: center;             /* ✅ center all content inside the dark blue box */
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.25);
+}
+
 
   /* Stack vertically but allow profile-info to be full width and left aligned */
   .profile-header {
@@ -414,6 +415,8 @@ body {
     align-items: center;           /* centers photo */
     gap: 14px;
     margin-bottom: 18px;
+      justify-content: center;       /* ✅ centers content vertically in case of uneven spacing */
+
   }
 
   /* Smaller centered avatar */
@@ -440,12 +443,16 @@ body {
 
   /* Make the info area full width and left aligned under the avatar */
   .profile-info {
-    width: 100%;
-    text-align: left;              /* important: left-align details */
-    margin-top: 6px;
-    padding: 0 6px;                /* small side padding so text won't touch edges */
-    box-sizing: border-box;
-  }
+  width: 100%;
+  text-align: center;             /* ✅ make all text (including college) centered */
+  margin-top: 10px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  word-wrap: break-word;          /* ✅ wrap long college names */
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
 
   /* Make Name stand out and align left */
   #userName {
