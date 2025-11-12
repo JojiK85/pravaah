@@ -58,17 +58,21 @@ let originalProfile = { phone: "", college: "" };
 function setEditMode(on, ctx) {
   isEditing = on;
 
-  // toggle inputs
-  if (ctx.userPhoneInput) ctx.userPhoneInput.disabled = !on;
-  if (ctx.userCollegeInput) ctx.userCollegeInput.disabled = !on;
+  // toggle container class (CSS controls visibility of inputs vs spans)
+  ctx.container?.classList.toggle("is-edit", on);
 
-  // toggle actions row
+  // actions row
   if (ctx.editActions) ctx.editActions.style.display = on ? "flex" : "none";
 
-  // hide upload options unless editing
+  // hide upload options when leaving edit
   if (ctx.uploadOptions) {
-    ctx.uploadOptions.classList.add("hidden");
-    ctx.uploadOptions.style.display = "none";
+    if (on) {
+      ctx.uploadOptions.classList.remove("hidden");
+      ctx.uploadOptions.style.display = "flex";
+    } else {
+      ctx.uploadOptions.classList.add("hidden");
+      ctx.uploadOptions.style.display = "none";
+    }
   }
 
   // small visual cue on photo while editing
@@ -104,6 +108,21 @@ async function saveProfileToSheet(profile) {
 }
 
 /* -------------------------
+   Utility: ensure display spans exist & sync them
+------------------------- */
+function ensureFieldSpan(inputEl, spanId) {
+  let span = document.getElementById(spanId);
+  if (!span) {
+    span = document.createElement("span");
+    span.id = spanId;
+    span.className = "field-text";
+    inputEl.insertAdjacentElement("afterend", span);
+  }
+  span.textContent = inputEl.value?.trim() || "-";
+  return span;
+}
+
+/* -------------------------
    Main
 ------------------------- */
 onAuthStateChanged(auth, async (user) => {
@@ -113,30 +132,29 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   // Elements
-  const userPhoto = document.getElementById("userPhoto");
+  const container        = document.querySelector(".profile-container");
+  const userPhoto        = document.getElementById("userPhoto");
   const uploadPhotoInput = document.getElementById("uploadPhoto");
-  const uploadOptions = document.getElementById("uploadOptions");
-  const driveUploadBtn = document.getElementById("driveUploadBtn");
+  const uploadOptions    = document.getElementById("uploadOptions");
+  const driveUploadBtn   = document.getElementById("driveUploadBtn");
 
-  const userNameEl = document.getElementById("userName");
-  const userEmailEl = document.getElementById("userEmail");
-  const userPhoneInput = document.getElementById("userPhone");
+  const userNameEl       = document.getElementById("userName");
+  const userEmailEl      = document.getElementById("userEmail");
+  const userPhoneInput   = document.getElementById("userPhone");
   const userCollegeInput = document.getElementById("userCollege");
-  const passesList = document.getElementById("passesList");
+  const passesList       = document.getElementById("passesList");
 
-  const logoutDesktop = document.getElementById("logoutDesktop");
-  const logoutMobile  = document.getElementById("logoutMobile");
+  const logoutDesktop    = document.getElementById("logoutDesktop");
+  const logoutMobile     = document.getElementById("logoutMobile");
 
   // ✏️ Pen button (must exist in HTML inside .photo-wrapper)
   let editPen = document.getElementById("editPen");
   if (!editPen) {
-    // create one if it wasn’t added in HTML
     editPen = document.createElement("button");
     editPen.id = "editPen";
     editPen.className = "edit-pen";
     editPen.innerHTML = `<i class="fa-solid fa-pen"></i>`;
-    const photoWrapper = document.querySelector(".photo-wrapper");
-    if (photoWrapper) photoWrapper.appendChild(editPen);
+    document.querySelector(".photo-wrapper")?.appendChild(editPen);
   }
 
   // Build Save/Cancel row if missing
@@ -149,23 +167,22 @@ onAuthStateChanged(auth, async (user) => {
       <button id="saveProfileBtn" class="save-btn">Save</button>
       <button id="cancelEditBtn" class="save-btn secondary">Cancel</button>
     `;
-    const info = document.querySelector(".profile-info");
-    if (info) info.appendChild(editActions);
+    document.querySelector(".profile-info")?.appendChild(editActions);
   }
-  const saveBtn = document.getElementById("saveProfileBtn");
+  const saveBtn   = document.getElementById("saveProfileBtn");
   const cancelBtn = document.getElementById("cancelEditBtn");
 
   // Prefill basic
-  if (userEmailEl) userEmailEl.textContent = user.email;
-  if (userNameEl)  userNameEl.textContent  = user.displayName || "PRAVAAH User";
-  if (userPhoto)   userPhoto.src           = user.photoURL || "default-avatar.png";
+  userEmailEl && (userEmailEl.textContent = user.email);
+  userNameEl  && (userNameEl.textContent  = user.displayName || "PRAVAAH User");
+  userPhoto   && (userPhoto.src           = user.photoURL || "default-avatar.png");
 
-  // Inputs are read-only until editing
-  if (userPhoneInput)  userPhoneInput.disabled = true;
-  if (userCollegeInput) userCollegeInput.disabled = true;
+  // Inputs are present but will be hidden by CSS until edit mode
+  userPhoneInput  && (userPhoneInput.disabled = false);
+  userCollegeInput&& (userCollegeInput.disabled = false);
 
   // Show loading in passes
-  if (passesList) passesList.innerHTML = `<p class="no-passes">⏳ Loading your passes...</p>`;
+  passesList && (passesList.innerHTML = `<p class="no-passes">⏳ Loading your passes...</p>`);
 
   // Fetch profile from Sheets
   try {
@@ -173,7 +190,7 @@ onAuthStateChanged(auth, async (user) => {
     const profileData = await profileRes.json();
 
     if (profileData && profileData.name) {
-      if (userPhoneInput)  userPhoneInput.value  = profileData.phone || "";
+      if (userPhoneInput)   userPhoneInput.value   = profileData.phone   || "";
       if (userCollegeInput) userCollegeInput.value = profileData.college || "";
       localStorage.setItem("profileData", JSON.stringify({
         name: profileData.name,
@@ -195,7 +212,11 @@ onAuthStateChanged(auth, async (user) => {
     console.error("⚠️ Error fetching/updating profile:", err);
   }
 
-  // Keep original values for Cancel
+  // Create & sync display spans next to inputs (so non-edit shows text not boxes)
+  const phoneSpan   = ensureFieldSpan(userPhoneInput,   "userPhoneText");
+  const collegeSpan = ensureFieldSpan(userCollegeInput, "userCollegeText");
+
+  // Keep originals for cancel
   originalProfile = {
     phone: userPhoneInput?.value || "",
     college: userCollegeInput?.value || ""
@@ -212,23 +233,18 @@ onAuthStateChanged(auth, async (user) => {
       };
     }
     setEditMode(!isEditing, {
+      container,
       userPhoneInput,
       userCollegeInput,
       uploadOptions,
       userPhoto,
       editActions
     });
-
-    // when entering edit, also reveal upload choices nicely
-    if (isEditing && uploadOptions) {
-      uploadOptions.classList.remove("hidden");
-      uploadOptions.style.display = "flex";
-    }
   });
 
   // Save
   saveBtn?.addEventListener("click", async () => {
-    const phone = userPhoneInput?.value.trim() || "";
+    const phone   = userPhoneInput?.value.trim()   || "";
     const college = userCollegeInput?.value.trim() || "";
 
     try {
@@ -239,6 +255,10 @@ onAuthStateChanged(auth, async (user) => {
         college
       });
 
+      // update display spans
+      phoneSpan.textContent   = phone   || "-";
+      collegeSpan.textContent = college || "-";
+
       localStorage.setItem("profileData", JSON.stringify({
         name: user.displayName,
         email: user.email,
@@ -247,7 +267,7 @@ onAuthStateChanged(auth, async (user) => {
       }));
 
       showToast("✅ Profile updated successfully!", "success");
-      setEditMode(false, { userPhoneInput, userCollegeInput, uploadOptions, userPhoto, editActions });
+      setEditMode(false, { container, userPhoneInput, userCollegeInput, uploadOptions, userPhoto, editActions });
     } catch (err) {
       console.error("⚠️ Save failed:", err);
       showToast("❌ Failed to save changes.", "error");
@@ -256,15 +276,19 @@ onAuthStateChanged(auth, async (user) => {
 
   // Cancel
   cancelBtn?.addEventListener("click", () => {
-    if (userPhoneInput)  userPhoneInput.value  = originalProfile.phone;
+    if (userPhoneInput)   userPhoneInput.value   = originalProfile.phone;
     if (userCollegeInput) userCollegeInput.value = originalProfile.college;
-    setEditMode(false, { userPhoneInput, userCollegeInput, uploadOptions, userPhoto, editActions });
+
+    // resync spans with originals
+    phoneSpan.textContent   = originalProfile.phone   || "-";
+    collegeSpan.textContent = originalProfile.college || "-";
+
+    setEditMode(false, { container, userPhoneInput, userCollegeInput, uploadOptions, userPhoto, editActions });
   });
 
   /* -------------------------
-     Photo Upload (allowed only in edit mode)
+     Photo Upload (only in edit)
   ------------------------- */
-  // Disable opening upload on image click; pen controls edit/upload now.
   userPhoto?.addEventListener("click", () => {
     if (!isEditing) {
       showToast("Tap the ✏️ pen to edit your profile.", "info");
@@ -276,7 +300,7 @@ onAuthStateChanged(auth, async (user) => {
     }
   });
 
-  // Add “Upload from Device” button if missing
+  // Add “Upload from Device” if missing
   if (uploadOptions && !document.getElementById("deviceUploadBtn")) {
     const deviceBtn = document.createElement("button");
     deviceBtn.id = "deviceUploadBtn";
