@@ -218,7 +218,12 @@ body {
   font-size: 1.2rem;
   margin: 10px 0;
   text-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.4;
 }
+
 
 .field-text {
   display: inline-block;
@@ -309,6 +314,8 @@ body {
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
   transition: 0.3s ease;
   backdrop-filter: blur(8px);
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .pass-item:hover {
@@ -411,11 +418,15 @@ body {
 
   /* Smaller centered avatar */
   .photo-wrapper {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto;                /* center the avatar */
-    position: relative;
-  }
+  width: 120px;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  position: relative;
+}
+
 
   /* pen stays at the bottom-right of avatar without overflowing */
   .edit-pen {
