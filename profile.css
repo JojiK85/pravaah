@@ -60,7 +60,6 @@ body {
   flex: 0 0 200px;
 }
 
-/* keep wrapper sized so ring aligns perfectly */
 .photo-wrapper {
   position: relative;
   width: 180px;
@@ -68,7 +67,6 @@ body {
   display: inline-block;
 }
 
-/* concentric cyan ring (not affected by image shadows) */
 .photo-wrapper::before {
   content: "";
   position: absolute;
@@ -85,7 +83,7 @@ body {
 }
 
 .profile-photo img {
-  display: block;               /* remove inline gap */
+  display: block;
   width: 100%;
   height: 100%;
   border-radius: 50%;
@@ -93,15 +91,14 @@ body {
   cursor: pointer;
   transition: transform .25s ease, box-shadow .25s ease;
   position: relative;
-  z-index: 1;                    /* above ring */
-  box-shadow: 0 0 0 rgba(0,0,0,0); /* no glow (ring handles it) */
+  z-index: 1;
 }
 
 .profile-photo img:hover {
   transform: scale(1.03);
 }
 
-/* CAMERA OVERLAY */
+/* ---------- CAMERA OVERLAY ---------- */
 .photo-overlay {
   position: absolute;
   inset: 0;
@@ -126,7 +123,7 @@ body {
   background: rgba(0, 255, 255, 0.35);
 }
 
-/* ✏️ pen stays inside the circle */
+/* ---------- EDIT PEN ---------- */
 .edit-pen {
   position: absolute;
   right: 6px;
@@ -159,11 +156,11 @@ body {
   align-items: center;
   gap: 8px;
   transition: opacity 0.25s ease, transform 0.25s ease;
-  display: none;                 /* hidden by default */
+  display: none;
 }
 
 .profile-container.is-edit .upload-options {
-  display: flex;                 /* only in edit mode */
+  display: flex;
 }
 
 .upload-options.hidden {
@@ -211,14 +208,12 @@ body {
   flex: 1;
   min-width: 350px;
   overflow-wrap: break-word;
-  word-break: break-word;
 }
 
 .profile-info p {
   font-size: 1.2rem;
   margin: 10px 0;
   text-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
-  white-space: normal;
 }
 
 /* show spans normally, hide inputs until edit */
@@ -250,16 +245,15 @@ body {
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* Save / Cancel visible only in edit */
+/* ---------- EDIT ACTIONS ---------- */
 .edit-actions {
   display: none;
   gap: 10px;
-  margin-top: 10px;
+  margin-top: 15px;
 }
 
 .profile-container.is-edit .edit-actions { display: flex; }
 
-/* ✅ Buttons */
 .save-btn {
   background: cyan;
   color: black;
@@ -269,7 +263,6 @@ body {
   font-weight: bold;
   cursor: pointer;
   transition: 0.3s ease;
-  margin-top: 15px;
   font-family: 'Orbitron', sans-serif;
   box-shadow: 0 0 10px rgba(0,255,255,0.5);
 }
@@ -286,7 +279,7 @@ body {
   border: 1px solid cyan;
 }
 
-/* ---------- PASSES SECTION ---------- */
+/* ---------- PASSES ---------- */
 .profile-container h2 {
   color: cyan;
   text-shadow: 0 0 10px cyan;
@@ -295,7 +288,6 @@ body {
   font-size: 2rem;
 }
 
-/* ---------- PASS LIST ---------- */
 .passes-list {
   display: flex;
   flex-wrap: wrap;
@@ -304,7 +296,6 @@ body {
   width: 100%;
 }
 
-/* ---------- PASS CARD ---------- */
 .pass-item {
   background: rgba(0, 0, 0, 0.6);
   border: 1.5px solid rgba(0, 255, 255, 0.6);
@@ -314,9 +305,7 @@ body {
   color: #dff;
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
   transition: 0.3s ease;
-  text-align: left;
   backdrop-filter: blur(8px);
-  overflow: hidden;
 }
 
 .pass-item:hover {
@@ -330,9 +319,6 @@ body {
   font-size: 1.55rem;
   margin-bottom: 10px;
   letter-spacing: 0.5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .pass-item p { margin: 6px 0; font-size: 1.05rem; }
@@ -344,7 +330,6 @@ body {
   color: #bff;
 }
 
-/* ---------- NO PASSES ---------- */
 .no-passes {
   color: #ccc;
   text-align: center;
@@ -354,43 +339,109 @@ body {
   text-shadow: 0 0 10px rgba(0,255,255,0.3);
 }
 
-/* ---------- RESPONSIVE ---------- */
-@media (max-width: 1200px) {
+/* ---------- RESPONSIVE FIXES ---------- */
+@media (max-width: 992px) {
   .profile-container {
-    width: 90%;
-    max-width: 95%;
-    min-width: unset;
-    padding: 40px;
-  }
-}
-
-@media (max-width: 768px) {
-  .profile-container {
-    width: 94%;
-    padding: 28px 20px;
+    width: 92%;
+    padding: 35px 25px;
     border-radius: 20px;
   }
 
   .profile-header {
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    gap: 25px;
     text-align: center;
+  }
+
+  .photo-wrapper {
+    width: 150px;
+    height: 150px;
+  }
+
+  .edit-pen {
+    right: 5px;
+    bottom: 5px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .profile-info {
+    text-align: center;
+    width: 100%;
+  }
+
+  .profile-info p {
+    font-size: 1.05rem;
+    margin: 8px 0;
+  }
+
+  .editable-input {
+    width: 80%;
+    margin-top: 8px;
+  }
+
+  .save-btn {
+    width: 85%;
+    font-size: 0.95rem;
+  }
+
+  .edit-actions {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .passes-list {
+    flex-direction: column;
+    align-items: center;
     gap: 20px;
   }
 
-  .photo-wrapper { width: 140px; height: 140px; }
-  .edit-pen { right: 4px; bottom: 4px; width: 38px; height: 38px; }
+  .pass-item {
+    width: 92%;
+    padding: 22px;
+  }
+}
 
-  .profile-info { width: 100%; text-align: center; padding: 0 10px; }
-  .profile-info p { font-size: 1.05rem; margin: 6px 0; line-height: 1.4rem; }
+@media (max-width: 480px) {
+  .profile-container {
+    padding: 20px 15px;
+    border-radius: 16px;
+  }
 
-  .editable-input { width: 80%; margin-top: 6px; }
+  .photo-wrapper {
+    width: 120px;
+    height: 120px;
+  }
 
-  .save-btn { width: 90%; font-size: 1rem; }
-  .edit-actions { justify-content: center; }
+  .edit-pen {
+    width: 34px;
+    height: 34px;
+  }
 
-  .passes-list { flex-direction: column; align-items: center; gap: 25px; }
+  .profile-info p {
+    font-size: 0.95rem;
+    line-height: 1.3rem;
+  }
 
-  .pass-item { width: 90%; padding: 20px 22px; font-size: 0.95rem; }
+  .editable-input {
+    width: 90%;
+    font-size: 0.9rem;
+  }
+
+  .save-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .pass-item {
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 18px;
+  }
+
+  .profile-container h2 {
+    font-size: 1.4rem;
+  }
 }
