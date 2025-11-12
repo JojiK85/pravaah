@@ -1,6 +1,6 @@
 // =====================
 // PRAVAAH 2026 Registration + Payment
-// (Name-match autofill + background Sheets sync)
+// (Profile email-only autofill + background Sheets sync)
 // =====================
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
@@ -22,8 +22,8 @@ if (!auth) {
   window.auth = auth;
 }
 
-// ---- Google Apps Script /exec URL (Execute as Me; Anyone can access) ----
-const scriptURL = "https://script.google.com/macros/s/AKfycbwUqB2hdgPajzGcEDp87MC4ecmywWqnpAalUswVuGSPADGV3hvJRfHP0XiW5AIm9b_SPw/exec";
+// ---- Google Apps Script /exec URL (deployed: Execute as Me; Access: Anyone) ----
+const scriptURL = "https://script.google.com/macros/s/AKfycbyKGly5gR_OMt6LqAlIl166-Vucn2wAk8242XbnBU8hDRV67FY4lOQFWuFbE1oP5IvYuA/exec";
 
 // ---- UI state ----
 let selectedPass = null;
@@ -31,7 +31,6 @@ let selectedPrice = 0;
 let total = 0;
 let paying = false; // double-click guard
 
-// ---- DOM ----
 const selectionArea     = document.getElementById("selectionArea");
 const selectedPassText  = document.getElementById("selectedPass");
 const totalAmount       = document.getElementById("totalAmount");
@@ -41,9 +40,7 @@ const timerDisplay      = document.getElementById("payment-timer");
 const numInput          = document.getElementById("numParticipants");
 const increaseBtn       = document.getElementById("increaseBtn");
 const decreaseBtn       = document.getElementById("decreaseBtn");
-
-// make decorative indicators non-blocking (in case CSS misses it)
-document.querySelectorAll(".select-indicator").forEach(el => (el.style.pointerEvents = "none"));
+const passCards         = document.querySelectorAll(".pass-card");
 
 // ---- helpers ----
 const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
@@ -56,24 +53,8 @@ function setPaying(state) {
   payBtn.style.opacity = state ? "0.6" : "1";
 }
 
-function forceShowSelectionArea() {
-  if (selectionArea.classList.contains("hidden")) {
-    selectionArea.classList.remove("hidden");
-  }
-}
-
-function safeInt(v, fallback = 0) {
-  const n = parseInt((v ?? "").toString(), 10);
-  return Number.isFinite(n) ? n : fallback;
-}
-
-function flash(el) {
-  el.style.boxShadow = "0 0 10px cyan";
-  setTimeout(() => (el.style.boxShadow = ""), 900);
-}
-
 function resetSelectionUI() {
-  forceShowSelectionArea();
+  selectionArea.classList.remove("hidden");
   selectedPassText.textContent = `Selected: ${selectedPass} — ₹${selectedPrice}`;
   totalAmount.textContent = "Total: ₹0";
   payBtn.style.display = "none";
@@ -83,34 +64,29 @@ function resetSelectionUI() {
   numInput.value = 0;
 }
 
-// ---- Robust card selection via event delegation ----
-document.addEventListener("click", (e) => {
-  const card = e.target.closest(".pass-card");
-  if (!card) return;
+// ---- Pass selection ----
+passCards.forEach((card) => {
+  (card.querySelector(".select-btn") || card).addEventListener("click", () => {
+    passCards.forEach((c) => c.classList.remove("selected"));
+    card.classList.add("selected");
 
-  document.querySelectorAll(".pass-card.selected").forEach(c => c.classList.remove("selected"));
-  card.classList.add("selected");
+    selectedPass  = card.dataset.name;
+    selectedPrice = parseInt(card.dataset.price, 10) || 0;
 
-  selectedPass  = card.dataset.name || "";
-  selectedPrice = safeInt(card.dataset.price, 0);
-
-  resetSelectionUI();
+    resetSelectionUI();
+  });
 });
 
-// ---- Build participant form (autofill only when typed name matches) ----
+// ---- Build participant form ----
 function updateParticipantForm(count) {
-  forceShowSelectionArea();
   participantForm.innerHTML = "";
 
-  // Stored profile (from profile page)
+  // Profile from localStorage (for email-only autofill)
   const storedProfile = JSON.parse(localStorage.getItem("profileData") || "{}");
-  const storedName    = (storedProfile.name || "").trim();
-  const storedEmail   = (storedProfile.email || "").trim();
-  const storedPhone   = (storedProfile.phone || "").trim();
-  const storedCollege = (storedProfile.college || "").trim();
-  const storedNameLC  = storedName.toLowerCase();
+  const storedName  = (storedProfile.name || "").trim().toLowerCase();
+  const storedEmail = storedProfile.email || "";
 
-  if (!count || count <= 0) {
+  if (!count || count === 0) {
     totalAmount.textContent = "Total: ₹0";
     payBtn.style.display = "none";
     return;
@@ -129,33 +105,21 @@ function updateParticipantForm(count) {
     participantForm.appendChild(div);
   }
 
-  // Bind "match name -> autofill" per row (no overwrite of existing values)
-  const nameInputs    = participantForm.querySelectorAll(".pname");
-  const emailInputs   = participantForm.querySelectorAll(".pemail");
-  const phoneInputs   = participantForm.querySelectorAll(".pphone");
-  const collegeInputs = participantForm.querySelectorAll(".pcollege");
+  // email-only autofill when typed name matches stored profile name
+  const nameInputs  = participantForm.querySelectorAll(".pname");
+  const emailInputs = participantForm.querySelectorAll(".pemail");
 
-  nameInputs.forEach((nameInput, idx) => {
-    let hasAutoFilled = false; // one-time per row
-
-    nameInput.addEventListener("input", () => {
-      const typed = nameInput.value.trim().toLowerCase();
-
-      // Only when exact match (case-insensitive)
-      if (!hasAutoFilled && storedName && typed === storedNameLC) {
-        if (storedEmail && !emailInputs[idx].value) {
-          emailInputs[idx].value = storedEmail;
-          flash(emailInputs[idx]);
+  nameInputs.forEach((input, index) => {
+    let autoFilled = false;
+    input.addEventListener("input", () => {
+      const typed = input.value.trim().toLowerCase();
+      if (!autoFilled && typed && storedName && typed === storedName) {
+        if (storedEmail) {
+          emailInputs[index].value = storedEmail;
+          emailInputs[index].style.boxShadow = "0 0 10px cyan";
+          setTimeout(() => (emailInputs[index].style.boxShadow = ""), 800);
         }
-        if (storedPhone && !phoneInputs[idx].value) {
-          phoneInputs[idx].value = storedPhone;
-          flash(phoneInputs[idx]);
-        }
-        if (storedCollege && !collegeInputs[idx].value) {
-          collegeInputs[idx].value = storedCollege;
-          flash(collegeInputs[idx]);
-        }
-        hasAutoFilled = true;
+        autoFilled = true; // do it once per field
       }
     });
   });
@@ -167,22 +131,17 @@ function updateParticipantForm(count) {
 
 // ---- +/- handlers ----
 increaseBtn.addEventListener("click", () => {
-  forceShowSelectionArea();
-  let v = safeInt(numInput.value, 0);
-  const max = safeInt(numInput.max, 10);
+  let v = parseInt(numInput.value || "0", 10);
+  const max = parseInt(numInput.max || "10", 10);
   if (v < max) {
-    v = v + 1;
-    numInput.value = v;
+    numInput.value = ++v;
     updateParticipantForm(v);
   }
 });
-
 decreaseBtn.addEventListener("click", () => {
-  forceShowSelectionArea();
-  let v = safeInt(numInput.value, 0);
+  let v = parseInt(numInput.value || "0", 10);
   if (v > 0) {
-    v = v - 1;
-    numInput.value = v;
+    numInput.value = --v;
     updateParticipantForm(v);
   }
 });
@@ -198,7 +157,7 @@ payBtn.addEventListener("click", (e) => {
   const phones   = [...document.querySelectorAll(".pphone")].map((x) => x.value.trim());
   const colleges = [...document.querySelectorAll(".pcollege")].map((x) => x.value.trim());
 
-  // basic validation (quiet fail if invalid)
+  // basic validation (keep UX quiet; just stop if invalid)
   for (let i = 0; i < names.length; i++) {
     if (!names[i] || !emails[i] || !phones[i] || !colleges[i]) return;
     if (!emailRe.test(emails[i])) return;
@@ -210,6 +169,7 @@ payBtn.addEventListener("click", (e) => {
     return;
   }
 
+  // build Razorpay options
   const currentUserEmail = auth?.currentUser?.email || "Guest";
   let timerInterval;
 
@@ -222,6 +182,7 @@ payBtn.addEventListener("click", (e) => {
     image: "pravah-logo.png",
 
     handler: async (response) => {
+      // payment succeeded
       if (timerInterval) clearInterval(timerInterval);
       timerDisplay.style.display = "none";
 
@@ -260,7 +221,7 @@ payBtn.addEventListener("click", (e) => {
         } catch (_) {}
       }
 
-      // Optional: update Firebase displayName & local profile if user's own name appears
+      // Optional: update Firebase displayName & local profile if user's own name was among participants
       try {
         const stored = JSON.parse(localStorage.getItem("profileData") || "{}");
         const storedName = (stored.name || "").trim().toLowerCase();
@@ -283,6 +244,7 @@ payBtn.addEventListener("click", (e) => {
         console.warn("Profile update skipped:", e);
       }
 
+      // redirect instantly (no alerts)
       window.location.href = "payment_success.html";
     },
 
