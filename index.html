@@ -7,6 +7,9 @@
   <link rel="stylesheet" href="login.css" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    .hidden { display: none; }
+  </style>
 </head>
 
 <body>
@@ -14,7 +17,7 @@
     <div class="login-box">
       <h1 id="formTitle">LOGIN TO PRAVAAH</h1>
 
-      <!-- 👇 Hidden by default, visible only on signup -->
+      <!-- 👇 Only visible in signup mode -->
       <input type="text" id="name" placeholder="Full Name" class="hidden">
       <input type="email" id="email" placeholder="Enter your email" required>
       <input type="password" id="password" placeholder="Enter your password" required>
@@ -60,7 +63,7 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
-    // 🔗 Google Apps Script endpoint (your backend)
+    // 🔗 Google Apps Script endpoint
     const scriptURL =
       "https://script.google.com/macros/s/AKfycbxf83XTqxvN7dNZQP3MJ_IIyh8oGQJr1ih8lRCxribB7tpwuirm7ew28Z6FrvvMk0NMKQ/exec";
 
@@ -85,11 +88,11 @@
       toggleForm.innerHTML = isLogin 
         ? 'New user? <span>Create an account</span>'
         : 'Already have an account? <span>Login</span>';
-      nameInput.classList.toggle("hidden", isLogin);
+      nameInput.classList.toggle("hidden", isLogin); // Show name only for signup
     });
 
     /* -------------------------
-       Helper: Ensure profile exists in Google Sheets
+       Helper: Save profile to Sheets
     ------------------------- */
     async function ensureProfileExists(profile) {
       const payload = JSON.stringify({
@@ -124,7 +127,7 @@
         if (isLogin) {
           // ✅ LOGIN
           const userCred = await signInWithEmailAndPassword(auth, email, password);
-          await ensureProfileExists({ email: userCred.user.email }); // create if missing
+          await ensureProfileExists({ email: userCred.user.email }); 
         } else {
           // ✅ SIGNUP
           if (!name) return alert("Please enter your full name.");
