@@ -134,7 +134,7 @@ payBtn.addEventListener("click", async (e) => {
     let timerInterval;
 
     const options = {
-      key: "rzp_test_Re1mOkmIGroT2c",
+      key: "rzp_test_RejNnXKUklAnFG",
       amount: total * 100,
       currency: "INR",
       name: "PRAVAAH 2026",
