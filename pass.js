@@ -23,7 +23,7 @@ if (!auth) {
 }
 
 // ---- Google Apps Script /exec URL (deployed: Execute as Me; Access: Anyone) ----
-const scriptURL = "https://script.google.com/macros/s/AKfycbyyWQJfKsLtHHFAmnaZS-C8oWVZB05QObaiCCAkznZ__dqgjcJGMlTTLVmkLoe1mQGgTQ/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbyKGly5gR_OMt6LqAlIl166-Vucn2wAk8242XbnBU8hDRV67FY4lOQFWuFbE1oP5IvYuA/exec";
 
 // ---- UI state ----
 let selectedPass = null;
@@ -61,7 +61,7 @@ function setPaying(state) {
 
 function resetSelectionUI() {
   forceShowSelectionArea(); // ✅ ensure it's visible
-  selectedPassText.textContent = Selected: ${selectedPass} — ₹${selectedPrice};
+  selectedPassText.textContent = `Selected: ${selectedPass} — ₹${selectedPrice}`;
   totalAmount.textContent = "Total: ₹0";
   payBtn.style.display = "none";
   participantForm.innerHTML = "";
@@ -97,20 +97,14 @@ document.addEventListener("click", (e) => {
 });
 
 // ---- Build participant form ----
-// ---- Build participant form ----
 function updateParticipantForm(count) {
   participantForm.innerHTML = "";
-  forceShowSelectionArea();
+  forceShowSelectionArea(); // ✅ keep visible as user changes count
 
-  // Profile from localStorage
+  // Profile from localStorage (for email-only autofill)
   const storedProfile = JSON.parse(localStorage.getItem("profileData") || "{}");
-  const storedName    = (storedProfile.name || "").trim();
-  const storedEmail   = (storedProfile.email || "").trim();
-  const storedPhone   = (storedProfile.phone || "").trim();
-  const storedCollege = (storedProfile.college || "").trim();
-
-  const storedNameLC  = storedName.toLowerCase();
-  const profileComplete = !!(storedPhone && storedCollege); // ✅ both present
+  const storedName  = (storedProfile.name || "").trim().toLowerCase();
+  const storedEmail = storedProfile.email || "";
 
   if (!count || count === 0) {
     totalAmount.textContent = "Total: ₹0";
@@ -131,41 +125,29 @@ function updateParticipantForm(count) {
     participantForm.appendChild(div);
   }
 
-  const nameInputs    = participantForm.querySelectorAll(".pname");
-  const emailInputs   = participantForm.querySelectorAll(".pemail");
-  const phoneInputs   = participantForm.querySelectorAll(".pphone");
-  const collegeInputs = participantForm.querySelectorAll(".pcollege");
+  // email-only autofill when typed name matches stored profile name
+  const nameInputs  = participantForm.querySelectorAll(".pname");
+  const emailInputs = participantForm.querySelectorAll(".pemail");
 
-  const flash = (el) => { el.style.boxShadow = "0 0 10px cyan"; setTimeout(()=> el.style.boxShadow="", 900); };
-
-  // ✅ Autofill only when the typed name matches AND profile has both phone & college
-  nameInputs.forEach((nameInput, idx) => {
-    let hasAutoFilled = false;
-    nameInput.addEventListener("input", () => {
-      const typed = nameInput.value.trim().toLowerCase();
-      if (hasAutoFilled) return;
-      if (!storedName || typed !== storedNameLC) return;
-
-      // Always allowed: email (like before)
-      if (storedEmail && !emailInputs[idx].value) {
-        emailInputs[idx].value = storedEmail;
-        flash(emailInputs[idx]);
+  nameInputs.forEach((input, index) => {
+    let autoFilled = false;
+    input.addEventListener("input", () => {
+      const typed = input.value.trim().toLowerCase();
+      if (!autoFilled && typed && storedName && typed === storedName) {
+        if (storedEmail) {
+          emailInputs[index].value = storedEmail;
+          emailInputs[index].style.boxShadow = "0 0 10px cyan";
+          setTimeout(() => (emailInputs[index].style.boxShadow = ""), 800);
+        }
+        autoFilled = true; // do it once per field
       }
-
-      // New rule: fill phone & college ONLY if profile is complete
-      if (profileComplete) {
-        if (!phoneInputs[idx].value)   { phoneInputs[idx].value   = storedPhone;   flash(phoneInputs[idx]); }
-        if (!collegeInputs[idx].value) { collegeInputs[idx].value = storedCollege; flash(collegeInputs[idx]); }
-      }
-      hasAutoFilled = true;
     });
   });
 
   total = selectedPrice * count;
-  totalAmount.textContent = Total: ₹${total};
+  totalAmount.textContent = `Total: ₹${total}`;
   payBtn.style.display = "inline-block";
 }
-
 
 // ---- +/- handlers (now also force show selection area) ----
 increaseBtn.addEventListener("click", () => {
@@ -218,7 +200,7 @@ payBtn.addEventListener("click", (e) => {
     amount: total * 100,
     currency: "INR",
     name: "PRAVAAH 2026",
-    description: ${selectedPass} Registration,
+    description: `${selectedPass} Registration`,
     image: "pravah-logo.png",
 
     handler: async (response) => {
@@ -301,7 +283,7 @@ payBtn.addEventListener("click", (e) => {
     timeLeft--;
     const min = Math.floor(timeLeft / 60);
     const sec = String(timeLeft % 60).padStart(2, "0");
-    timerDisplay.textContent = ⏳ Payment window: ${min}:${sec};
+    timerDisplay.textContent = `⏳ Payment window: ${min}:${sec}`;
     if (timeLeft <= 0) {
       clearInterval(timerInterval);
       rzp.close();
