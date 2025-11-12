@@ -55,50 +55,47 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   // 🔗 Element References
-  const userPhoto = document.getElementById("userPhoto");
-  const uploadPhotoInput = document.getElementById("uploadPhoto");
-  const uploadOptions = document.getElementById("uploadOptions");
-  const driveUploadBtn = document.getElementById("driveUploadBtn");
+  const userPhoto       = document.getElementById("userPhoto");
+  const uploadPhotoInput= document.getElementById("uploadPhoto");
+  const uploadOptions   = document.getElementById("uploadOptions");
+  const driveUploadBtn  = document.getElementById("driveUploadBtn");
 
-  const userNameEl = document.getElementById("userName");
-  const userEmailEl = document.getElementById("userEmail");
-  const userPhoneEl = document.getElementById("userPhone");
-  const userCollegeEl = document.getElementById("userCollege");
-  const passesList = document.getElementById("passesList");
+  const userNameEl   = document.getElementById("userName");
+  const userEmailEl  = document.getElementById("userEmail");
+  const userPhoneEl  = document.getElementById("userPhone");
+  const userCollegeEl= document.getElementById("userCollege");
+  const passesList   = document.getElementById("passesList");
 
-  passesList.innerHTML = `<p class="no-passes">⏳ Loading your passes...</p>`;
+  if (passesList) {
+    passesList.innerHTML = `<p class="no-passes">⏳ Loading your passes...</p>`;
+  }
 
   // 🧠 Basic Info
-  userEmailEl.textContent = user.email;
-  userNameEl.textContent = user.displayName || "PRAVAAH User";
-  userPhoto.src = user.photoURL || "default-avatar.png";
+  if (userEmailEl) userEmailEl.textContent = user.email;
+  if (userNameEl)  userNameEl.textContent  = user.displayName || "PRAVAAH User";
+  if (userPhoto)   userPhoto.src = user.photoURL || "default-avatar.png";
 
   // ===============================
   // 📡 Fetch Profile from Google Sheet (Profiles Sheet)
   // ===============================
   try {
-    const profileRes = await fetch(`${scriptURL}?type=profile&email=${encodeURIComponent(user.email)}`);
+    const profileRes  = await fetch(`${scriptURL}?type=profile&email=${encodeURIComponent(user.email)}`);
     const profileData = await profileRes.json();
 
     if (profileData && profileData.name) {
-      // ✅ Found in Profiles Sheet — use latest data
-      userPhoneEl.textContent = profileData.phone || "Not provided";
-      userCollegeEl.textContent = profileData.college || "Not provided";
+      if (userPhoneEl)   userPhoneEl.textContent   = profileData.phone   || "Not provided";
+      if (userCollegeEl) userCollegeEl.textContent = profileData.college || "Not provided";
 
-      // Update localStorage for registration autofill
-      localStorage.setItem(
-        "profileData",
-        JSON.stringify({
-          name: profileData.name,
-          email: profileData.email,
-          phone: profileData.phone,
-          college: profileData.college
-        })
-      );
+      localStorage.setItem("profileData", JSON.stringify({
+        name: profileData.name,
+        email: profileData.email,
+        phone: profileData.phone,
+        college: profileData.college
+      }));
     } else {
       // ❌ Not found — new login, add to Profiles Sheet
-      userPhoneEl.textContent = "Not provided";
-      userCollegeEl.textContent = "Not provided";
+      if (userPhoneEl)   userPhoneEl.textContent   = "Not provided";
+      if (userCollegeEl) userCollegeEl.textContent = "Not provided";
 
       const newProfile = {
         name: user.displayName || "PRAVAAH User",
@@ -107,11 +104,23 @@ onAuthStateChanged(auth, async (user) => {
         college: ""
       };
 
-      await fetch(scriptURL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newProfile)
-      });
+      // FIXED: avoid CORS preflight — use text/plain (or sendBeacon)
+      const payload = JSON.stringify(newProfile);
+      let queued = false;
+      try {
+        if (navigator.sendBeacon) {
+          const blob = new Blob([payload], { type: "text/plain" });
+          queued = navigator.sendBeacon(scriptURL, blob);
+        }
+      } catch (_) {}
+
+      if (!queued) {
+        await fetch(scriptURL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: payload
+        });
+      }
 
       localStorage.setItem("profileData", JSON.stringify(newProfile));
       console.log("🆕 New user profile added to sheet:", newProfile);
@@ -126,6 +135,11 @@ onAuthStateChanged(auth, async (user) => {
   try {
     const res = await fetch(`${scriptURL}?email=${encodeURIComponent(user.email)}`);
     const passes = await res.json();
+
+    if (!passesList) {
+      // If UI node is missing, just stop here
+      return;
+    }
 
     if (!passes || passes.length === 0) {
       passesList.innerHTML = `<p class="no-passes">❌ No passes yet. Not registered.</p>`;
@@ -148,11 +162,9 @@ onAuthStateChanged(auth, async (user) => {
           <p><strong>Total Amount:</strong> ₹${items[0].totalAmount}</p>
           <p><strong>Participants:</strong></p>
           <ul>
-            ${items
-              .map(
-                (p) => `<li>${p.name} (${p.email}, ${p.phone}) — ${p.college}</li>`
-              )
-              .join("")}
+            ${items.map(
+              (p) => `<li>${p.name} (${p.email}, ${p.phone}) — ${p.college}</li>`
+            ).join("")}
           </ul>
         </div>
       `
@@ -160,7 +172,9 @@ onAuthStateChanged(auth, async (user) => {
       .join("");
   } catch (err) {
     console.error("❌ Error fetching passes:", err);
-    passesList.innerHTML = `<p class="no-passes">⚠️ Unable to load passes. Try again later.</p>`;
+    if (passesList) {
+      passesList.innerHTML = `<p class="no-passes">⚠️ Unable to load passes. Try again later.</p>`;
+    }
   }
 
   // ===============================
@@ -173,8 +187,8 @@ onAuthStateChanged(auth, async (user) => {
     });
   }
 
-  // Add “Upload from Device” button if missing
-  if (!document.getElementById("deviceUploadBtn")) {
+  // Add “Upload from Device” button if container exists
+  if (uploadOptions && !document.getElementById("deviceUploadBtn")) {
     const deviceBtn = document.createElement("button");
     deviceBtn.id = "deviceUploadBtn";
     deviceBtn.className = "upload-btn";
@@ -182,64 +196,70 @@ onAuthStateChanged(auth, async (user) => {
     uploadOptions.prepend(deviceBtn);
 
     deviceBtn.addEventListener("click", () => {
-      uploadPhotoInput.click();
+      if (uploadPhotoInput) {
+        uploadPhotoInput.click();
+      }
       uploadOptions.classList.add("hidden");
       uploadOptions.style.display = "none";
     });
   }
 
-  // 📤 Upload from device
-  uploadPhotoInput.addEventListener("change", async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  // 📤 Upload from device (guard element)
+  if (uploadPhotoInput) {
+    uploadPhotoInput.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (ev) => (userPhoto.src = ev.target.result);
-    reader.readAsDataURL(file);
+      const reader = new FileReader();
+      reader.onload = (ev) => { if (userPhoto) userPhoto.src = ev.target.result; };
+      reader.readAsDataURL(file);
 
-    try {
-      showToast("📸 Uploading photo...", "info");
-      const storageRef = ref(storage, `profilePhotos/${user.uid}`);
-      await uploadBytes(storageRef, file);
-      const photoURL = await getDownloadURL(storageRef);
-      await updateProfile(user, { photoURL });
-      userPhoto.src = photoURL;
-      showToast("✅ Profile photo updated successfully!", "success");
-    } catch (err) {
-      console.error("Upload error:", err);
-      showToast("❌ Upload failed. Try again.", "error");
-    }
-  });
+      try {
+        showToast("📸 Uploading photo...", "info");
+        const storageRef = ref(storage, `profilePhotos/${user.uid}`);
+        await uploadBytes(storageRef, file);
+        const photoURL = await getDownloadURL(storageRef);
+        await updateProfile(user, { photoURL });
+        if (userPhoto) userPhoto.src = photoURL;
+        showToast("✅ Profile photo updated successfully!", "success");
+      } catch (err) {
+        console.error("Upload error:", err);
+        showToast("❌ Upload failed. Try again.", "error");
+      }
+    });
+  }
 
-  // ☁️ Upload from Google Drive
-  driveUploadBtn.addEventListener("click", async () => {
-    uploadOptions.classList.add("hidden");
-    uploadOptions.style.display = "none";
+  // ☁️ Upload from Google Drive (guard element)
+  if (driveUploadBtn) {
+    driveUploadBtn.addEventListener("click", async () => {
+      uploadOptions?.classList.add("hidden");
+      if (uploadOptions) uploadOptions.style.display = "none";
 
-    const driveLink = prompt("📂 Paste your Google Drive image link here:");
-    if (!driveLink || !driveLink.includes("https://drive.google.com")) {
-      showToast("⚠️ Invalid Google Drive link.", "error");
-      return;
-    }
+      const driveLink = prompt("📂 Paste your Google Drive image link here:");
+      if (!driveLink || !driveLink.includes("https://drive.google.com")) {
+        showToast("⚠️ Invalid Google Drive link.", "error");
+        return;
+      }
 
-    const fileIdMatch = driveLink.match(/[-\w]{25,}/);
-    if (!fileIdMatch) {
-      showToast("⚠️ Invalid link format.", "error");
-      return;
-    }
+      const fileIdMatch = driveLink.match(/[-\w]{25,}/);
+      if (!fileIdMatch) {
+        showToast("⚠️ Invalid link format.", "error");
+        return;
+      }
 
-    const fileId = fileIdMatch[0];
-    const directLink = `https://drive.google.com/uc?export=view&id=${fileId}`;
+      const fileId = fileIdMatch[0];
+      const directLink = `https://drive.google.com/uc?export=view&id=${fileId}`;
 
-    try {
-      await updateProfile(user, { photoURL: directLink });
-      userPhoto.src = directLink;
-      showToast("✅ Profile photo updated from Google Drive!", "success");
-    } catch (err) {
-      console.error("Drive update error:", err);
-      showToast("❌ Failed to set photo.", "error");
-    }
-  });
+      try {
+        await updateProfile(user, { photoURL: directLink });
+        if (userPhoto) userPhoto.src = directLink;
+        showToast("✅ Profile photo updated from Google Drive!", "success");
+      } catch (err) {
+        console.error("Drive update error:", err);
+        showToast("❌ Failed to set photo.", "error");
+      }
+    });
+  }
 });
 
 // ===============================
@@ -247,7 +267,7 @@ onAuthStateChanged(auth, async (user) => {
 // ===============================
 document.addEventListener("DOMContentLoaded", () => {
   const logoutDesktop = document.getElementById("logoutDesktop");
-  const logoutMobile = document.getElementById("logoutMobile");
+  const logoutMobile  = document.getElementById("logoutMobile");
 
   const logout = async () => {
     try {
@@ -291,7 +311,7 @@ style.innerHTML = `
   transform: translateX(-50%) translateY(0);
 }
 .toast.success { border-color: #00ff99; color: #00ffcc; }
-.toast.error { border-color: #ff5555; color: #ff8888; }
-.toast.info { border-color: cyan; color: cyan; }
+.toast.error   { border-color: #ff5555; color: #ff8888; }
+.toast.info    { border-color: cyan;    color: cyan; }
 `;
 document.head.appendChild(style);
