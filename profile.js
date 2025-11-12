@@ -1,31 +1,12 @@
 /* ==========================================================
    PRAVAAH — Profile Management System (Firebase + Apps Script)
-   Features:
-   - Firebase Auth & Storage
-   - Profile Editing (Name, Phone, College)
-   - Device / Drive Photo Upload
-   - Save to Google Sheets
-   - Passes Fetch
-   - Logout + Toast Notifications
 ========================================================== */
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut,
-  updateProfile
-} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
+import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
-/* ----------------------------------------------------------
-   Firebase Initialization
----------------------------------------------------------- */
+/* ---------- Firebase ---------- */
 const firebaseConfig = {
   apiKey: "AIzaSyCbXKleOw4F46gFDXz2Wynl3YzPuHsVwh8",
   authDomain: "pravaah-55b1d.firebaseapp.com",
@@ -34,26 +15,19 @@ const firebaseConfig = {
   messagingSenderId: "287687647267",
   appId: "1:287687647267:web:7aecd603ee202779b89196"
 };
-
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 const auth = getAuth(app);
 const storage = getStorage(app);
 
-/* ----------------------------------------------------------
-   Backend Script URL (Google Apps Script)
----------------------------------------------------------- */
-const scriptURL =
-  "https://script.google.com/macros/s/AKfycby0ba4ujfw00bRk0w3h7dAhR6QxyNXQZK40BwAAd9vzyXWMNt2ylUdU1fWsdl76CeLB0g/exec";
+/* ---------- Backend Script URL ---------- */
+const scriptURL = "https://script.google.com/macros/s/AKfycby0ba4ujfw00bRk0w3h7dAhR6QxyNXQZK40BwAAd9vzyXWMNt2ylUdU1fWsdl76CeLB0g/exec";
 
-/* ----------------------------------------------------------
-   Toast Utility
----------------------------------------------------------- */
+/* ---------- Toast ---------- */
 function showToast(message, type = "info") {
   const toast = document.createElement("div");
   toast.className = `toast ${type}`;
   toast.textContent = message;
   document.body.appendChild(toast);
-
   setTimeout(() => toast.classList.add("show"), 50);
   setTimeout(() => {
     toast.classList.remove("show");
@@ -61,34 +35,25 @@ function showToast(message, type = "info") {
   }, 3000);
 }
 
-/* ----------------------------------------------------------
-   State Management
----------------------------------------------------------- */
+/* ---------- State ---------- */
 let isEditing = false;
 let originalProfile = { phone: "", college: "" };
 
 function setEditMode(on, ctx) {
   isEditing = on;
-
   ctx.container?.classList.toggle("is-edit", on);
   if (ctx.editActions) ctx.editActions.style.display = on ? "flex" : "none";
-
-  // Upload options
   if (ctx.uploadOptions) {
     ctx.uploadOptions.classList.toggle("hidden", !on);
     ctx.uploadOptions.style.display = on ? "flex" : "none";
   }
-
-  // Visual cue
   if (ctx.userPhoto) {
     ctx.userPhoto.style.outline = on ? "2px dashed cyan" : "none";
     ctx.userPhoto.style.outlineOffset = "6px";
   }
 }
 
-/* ----------------------------------------------------------
-   Save Profile Data to Google Sheet
----------------------------------------------------------- */
+/* ---------- Save to Sheet ---------- */
 async function saveProfileToSheet(profile) {
   const payload = JSON.stringify({
     name: (profile.name || "").trim(),
@@ -114,9 +79,7 @@ async function saveProfileToSheet(profile) {
   }
 }
 
-/* ----------------------------------------------------------
-   Helper — Create and Sync Display Spans
----------------------------------------------------------- */
+/* ---------- Helper: ensure span next to input ---------- */
 function ensureFieldSpan(inputEl, spanId) {
   let span = document.getElementById(spanId);
   if (!span) {
@@ -125,20 +88,31 @@ function ensureFieldSpan(inputEl, spanId) {
     span.className = "field-text";
     inputEl.insertAdjacentElement("afterend", span);
   }
-  span.textContent = inputEl.value?.trim() || "-";
+  span.textContent = (inputEl.value || "").trim() || "-";
   return span;
 }
 
-/* ----------------------------------------------------------
-   Main Logic
----------------------------------------------------------- */
+/* ---------- Auto-grow textareas (vertical, not wide) ---------- */
+function bindAutoGrow() {
+  const grow = (t) => {
+    t.style.height = "auto";
+    t.style.height = t.scrollHeight + "px";
+  };
+  document.querySelectorAll("textarea.auto-grow").forEach((t) => {
+    t.style.overflow = "hidden";
+    grow(t);
+    t.addEventListener("input", () => grow(t));
+  });
+}
+
+/* ---------- Main ---------- */
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "index.html";
     return;
   }
 
-  /* ------------ Elements ------------ */
+  /* Elements */
   const container = document.querySelector(".profile-container");
   const userPhoto = document.getElementById("userPhoto");
   const uploadPhotoInput = document.getElementById("uploadPhoto");
@@ -154,7 +128,7 @@ onAuthStateChanged(auth, async (user) => {
   const logoutDesktop = document.getElementById("logoutDesktop");
   const logoutMobile = document.getElementById("logoutMobile");
 
-  /* ------------ Edit Pen Setup ------------ */
+  /* Edit Pen (ensure exists) */
   let editPen = document.getElementById("editPen");
   if (!editPen) {
     editPen = document.createElement("button");
@@ -164,7 +138,7 @@ onAuthStateChanged(auth, async (user) => {
     document.querySelector(".photo-wrapper")?.appendChild(editPen);
   }
 
-  /* ------------ Save/Cancel Buttons ------------ */
+  /* Save/Cancel (ensure exists) */
   let editActions = document.getElementById("editActions");
   if (!editActions) {
     editActions = document.createElement("div");
@@ -176,11 +150,10 @@ onAuthStateChanged(auth, async (user) => {
     `;
     document.querySelector(".profile-info")?.appendChild(editActions);
   }
-
   const saveBtn = document.getElementById("saveProfileBtn");
   const cancelBtn = document.getElementById("cancelEditBtn");
 
-  /* ------------ Prefill Info ------------ */
+  /* Prefill */
   userEmailEl.textContent = user.email;
   userNameEl.textContent = user.displayName || "PRAVAAH User";
   userPhoto.src = user.photoURL || "default-avatar.png";
@@ -190,12 +163,12 @@ onAuthStateChanged(auth, async (user) => {
 
   passesList.innerHTML = `<p class="no-passes">⏳ Loading your passes...</p>`;
 
-  /* ------------ Fetch Profile ------------ */
+  /* Fetch profile */
   try {
     const profileRes = await fetch(`${scriptURL}?type=profile&email=${encodeURIComponent(user.email)}`);
     const profileData = await profileRes.json();
 
-    if (profileData && profileData.name) {
+    if (profileData && (profileData.name || profileData.email)) {
       userPhoneInput.value = profileData.phone || "";
       userCollegeInput.value = profileData.college || "";
       localStorage.setItem("profileData", JSON.stringify(profileData));
@@ -213,7 +186,7 @@ onAuthStateChanged(auth, async (user) => {
     console.error("⚠️ Error fetching profile:", err);
   }
 
-  /* ------------ Sync Display Fields ------------ */
+  /* Sync display spans */
   const phoneSpan = ensureFieldSpan(userPhoneInput, "userPhoneText");
   const collegeSpan = ensureFieldSpan(userCollegeInput, "userCollegeText");
 
@@ -222,9 +195,10 @@ onAuthStateChanged(auth, async (user) => {
     college: userCollegeInput.value
   };
 
-  /* ----------------------------------------------------------
-     Edit Mode — Enable / Disable
-  ---------------------------------------------------------- */
+  /* Bind autosize after prefill */
+  bindAutoGrow();
+
+  /* Edit toggle */
   editPen.addEventListener("click", () => {
     if (!isEditing) {
       originalProfile = {
@@ -235,7 +209,7 @@ onAuthStateChanged(auth, async (user) => {
     setEditMode(!isEditing, { container, userPhoneInput, userCollegeInput, uploadOptions, userPhoto, editActions });
   });
 
-  /* ------------ Save ------------ */
+  /* Save */
   saveBtn.addEventListener("click", async () => {
     const phone = userPhoneInput.value.trim();
     const college = userCollegeInput.value.trim();
@@ -244,9 +218,7 @@ onAuthStateChanged(auth, async (user) => {
       await saveProfileToSheet({ name: user.displayName, email: user.email, phone, college });
       phoneSpan.textContent = phone || "-";
       collegeSpan.textContent = college || "-";
-
       localStorage.setItem("profileData", JSON.stringify({ name: user.displayName, email: user.email, phone, college }));
-
       showToast("✅ Profile updated successfully!", "success");
       setEditMode(false, { container, userPhoneInput, userCollegeInput, uploadOptions, userPhoto, editActions });
     } catch (err) {
@@ -255,34 +227,30 @@ onAuthStateChanged(auth, async (user) => {
     }
   });
 
-  /* ------------ Cancel ------------ */
+  /* Cancel */
   cancelBtn.addEventListener("click", () => {
     userPhoneInput.value = originalProfile.phone;
     userCollegeInput.value = originalProfile.college;
-
     phoneSpan.textContent = originalProfile.phone || "-";
     collegeSpan.textContent = originalProfile.college || "-";
-
     setEditMode(false, { container, userPhoneInput, userCollegeInput, uploadOptions, userPhoto, editActions });
+    bindAutoGrow(); // reflow heights after reset
   });
 
-  /* ----------------------------------------------------------
-     Photo Upload — Device / Drive
-  ---------------------------------------------------------- */
+  /* Photo click toggles options in edit mode */
   userPhoto.addEventListener("click", () => {
     if (!isEditing) return showToast("Tap the ✏️ pen to edit your profile.", "info");
     uploadOptions.classList.toggle("hidden");
     uploadOptions.style.display = uploadOptions.classList.contains("hidden") ? "none" : "flex";
   });
 
-  // Upload from Device
+  /* Upload from Device (ensure button) */
   if (uploadOptions && !document.getElementById("deviceUploadBtn")) {
     const deviceBtn = document.createElement("button");
     deviceBtn.id = "deviceUploadBtn";
     deviceBtn.className = "upload-btn";
     deviceBtn.innerHTML = `<i class="fa-solid fa-desktop"></i> Upload from Device`;
     uploadOptions.prepend(deviceBtn);
-
     deviceBtn.addEventListener("click", () => {
       if (!isEditing) return showToast("Tap the ✏️ pen to start editing.", "info");
       uploadPhotoInput.click();
@@ -291,10 +259,9 @@ onAuthStateChanged(auth, async (user) => {
     });
   }
 
-  // Device Upload Handler
+  /* Device upload handler */
   uploadPhotoInput.addEventListener("change", async (e) => {
     if (!isEditing) return showToast("Tap the ✏️ pen to start editing.", "info");
-
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -325,10 +292,9 @@ onAuthStateChanged(auth, async (user) => {
     }
   });
 
-  // Upload from Google Drive
+  /* Upload from Google Drive */
   driveUploadBtn.addEventListener("click", async () => {
     if (!isEditing) return showToast("Tap the ✏️ pen to start editing.", "info");
-
     uploadOptions.classList.add("hidden");
     uploadOptions.style.display = "none";
 
@@ -358,9 +324,7 @@ onAuthStateChanged(auth, async (user) => {
     }
   });
 
-  /* ----------------------------------------------------------
-     Fetch Passes
-  ---------------------------------------------------------- */
+  /* Fetch passes */
   try {
     const res = await fetch(`${scriptURL}?email=${encodeURIComponent(user.email)}`);
     const passes = await res.json();
@@ -387,9 +351,7 @@ onAuthStateChanged(auth, async (user) => {
             <p><strong>Total Amount:</strong> ₹${items[0].totalAmount}</p>
             <p><strong>Participants:</strong></p>
             <ul>
-              ${items
-                .map((p) => `<li>${p.name} (${p.email}, ${p.phone || "-"}) — ${p.college || "-"}</li>`)
-                .join("")}
+              ${items.map((p) => `<li>${p.name} (${p.email}, ${p.phone || "-"}) — ${p.college || "-"}</li>`).join("")}
             </ul>
           </div>
         `
@@ -399,9 +361,7 @@ onAuthStateChanged(auth, async (user) => {
     console.error("❌ Error fetching passes:", err);
   }
 
-  /* ----------------------------------------------------------
-     Logout
-  ---------------------------------------------------------- */
+  /* Logout */
   const logout = async () => {
     try {
       await signOut(auth);
@@ -411,33 +371,21 @@ onAuthStateChanged(auth, async (user) => {
       showToast("❌ Logout failed.", "error");
     }
   };
-
   logoutDesktop?.addEventListener("click", logout);
   logoutMobile?.addEventListener("click", logout);
 });
 
-/* ----------------------------------------------------------
-   Inject Toast CSS
----------------------------------------------------------- */
+/* ---------- Inject Toast CSS ---------- */
 const style = document.createElement("style");
 style.innerHTML = `
 .toast {
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
+  position: fixed; bottom: 30px; left: 50%;
   transform: translateX(-50%) translateY(20px);
-  background: rgba(0, 0, 0, 0.85);
-  color: white;
-  padding: 12px 25px;
-  border-radius: 25px;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.95rem;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.4s ease;
-  z-index: 9999;
-  border: 1px solid cyan;
-  box-shadow: 0 0 15px rgba(0,255,255,0.5);
+  background: rgba(0, 0, 0, 0.85); color: white;
+  padding: 12px 25px; border-radius: 25px;
+  font-family: 'Orbitron', sans-serif; font-size: 0.95rem;
+  opacity: 0; pointer-events: none; transition: all 0.4s ease;
+  z-index: 9999; border: 1px solid cyan; box-shadow: 0 0 15px rgba(0,255,255,0.5);
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .toast.success { border-color: #00ff99; color: #00ffcc; }
