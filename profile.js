@@ -32,7 +32,7 @@ const storage = getStorage(app);
    Backend URL
 ------------------------- */
 const scriptURL =
-  "https://script.google.com/macros/s/AKfycbykM1XKYRynfcz2f44zd6qHF2jfx5r2h6rbrufWuF9K_HbU_PVYPjbdj64bPEnxCMAdVQ/exec";
+  "https://script.google.com/macros/s/AKfycbyKGly5gR_OMt6LqAlIl166-Vucn2wAk8242XbnBU8hDRV67FY4lOQFWuFbE1oP5IvYuA/exec";
 
 /* -------------------------
    Toasts
