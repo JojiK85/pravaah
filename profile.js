@@ -20,7 +20,7 @@ const auth = getAuth(app);
 const storage = getStorage(app);
 
 /* ---------- Backend Script URL (UPDATED) ---------- */
-const scriptURL = "https://script.google.com/macros/s/AKfycbwUqB2hdgPajzGcEDp87MC4ecmywWqnpAalUswVuGSPADGV3hvJRfHP0XiW5AIm9b_SPw/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbxf83XTqxvN7dNZQP3MJ_IIyh8oGQJr1ih8lRCxribB7tpwuirm7ew28Z6FrvvMk0NMKQ/exec";
 
 /* ---------- Toast ---------- */
 function showToast(message, type = "info") {
@@ -393,3 +393,4 @@ style.innerHTML = `
 .toast.info    { border-color: cyan; color: cyan; }
 `;
 document.head.appendChild(style);
+
