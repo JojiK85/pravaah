@@ -31,6 +31,7 @@ let selectedPrice = 0;
 let total = 0;
 let paying = false; // double-click guard
 
+// ---- DOM ----
 const selectionArea     = document.getElementById("selectionArea");
 const selectedPassText  = document.getElementById("selectedPass");
 const totalAmount       = document.getElementById("totalAmount");
@@ -53,8 +54,12 @@ function setPaying(state) {
   payBtn.style.opacity = state ? "0.6" : "1";
 }
 
-function resetSelectionUI() {
+function showSelectionArea() {
   selectionArea.classList.remove("hidden");
+}
+
+function resetSelectionUI() {
+  showSelectionArea();
   selectedPassText.textContent = `Selected: ${selectedPass} — ₹${selectedPrice}`;
   totalAmount.textContent = "Total: ₹0";
   payBtn.style.display = "none";
@@ -64,7 +69,7 @@ function resetSelectionUI() {
   numInput.value = 0;
 }
 
-// ---- Pass selection ----
+// ---- Pass selection (matches your HTML cards) ----
 passCards.forEach((card) => {
   (card.querySelector(".select-btn") || card).addEventListener("click", () => {
     passCards.forEach((c) => c.classList.remove("selected"));
@@ -81,7 +86,7 @@ passCards.forEach((card) => {
 function updateParticipantForm(count) {
   participantForm.innerHTML = "";
 
-  // Stored profile (from profile page)
+  // Stored profile (set by profile page)
   const storedProfile = JSON.parse(localStorage.getItem("profileData") || "{}");
   const storedName    = (storedProfile.name || "").trim();
   const storedEmail   = (storedProfile.email || "").trim();
@@ -151,7 +156,7 @@ function updateParticipantForm(count) {
   }
 }
 
-// ---- +/- handlers ----
+// ---- +/- handlers (match your controls) ----
 increaseBtn.addEventListener("click", () => {
   let v = parseInt(numInput.value || "0", 10);
   const max = parseInt(numInput.max || "10", 10);
