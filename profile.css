@@ -38,10 +38,10 @@ body {
   border: 1.8px solid cyan;
   border-radius: 24px;
   box-shadow: 0 0 30px rgba(0, 255, 255, 0.35);
-  width: 1150px;
-  max-width: 1150px;
+  width: 880px;                 /* ↓ smaller & cleaner */
+  max-width: 92vw;
   margin: 0 auto;
-  padding: 50px;
+  padding: 32px 26px;           /* ↓ tighter padding */
   color: #e3f8ff;
   transition: 0.3s ease;
   backdrop-filter: blur(10px);
@@ -54,23 +54,24 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 80px;
-  margin-bottom: 50px;
+  gap: 36px;                    /* ↓ smaller gap */
+  margin-bottom: 28px;
   width: 100%;
   flex-wrap: wrap;
 }
 
 .profile-photo {
   text-align: center;
-  flex: 0 0 200px;
+  flex: 0 0 auto;               /* don't force a wide column */
 }
 
 /* photo wrapper with glowing ring */
 .photo-wrapper {
   position: relative;
-  width: 180px;
-  height: 180px;
-  display: inline-block;
+  width: 150px;                 /* ↓ smaller avatar */
+  height: 150px;
+  display: block;
+  margin: 0 auto;               /* ✅ perfect centering */
 }
 
 .photo-wrapper::before {
@@ -100,9 +101,7 @@ body {
   z-index: 1;
 }
 
-.profile-photo img:hover {
-  transform: scale(1.03);
-}
+.profile-photo img:hover { transform: scale(1.03); }
 
 /* CAMERA OVERLAY */
 .photo-overlay {
@@ -118,24 +117,16 @@ body {
   z-index: 2;
   pointer-events: none;
 }
-
-.photo-overlay i {
-  color: cyan;
-  font-size: 2rem;
-}
-
-.photo-wrapper:hover .photo-overlay {
-  opacity: 1;
-  background: rgba(0, 255, 255, 0.35);
-}
+.photo-overlay i { color: cyan; font-size: 2rem; }
+.photo-wrapper:hover .photo-overlay { opacity: 1; background: rgba(0, 255, 255, 0.35); }
 
 /* ✏️ EDIT PEN */
 .edit-pen {
   position: absolute;
   right: 6px;
   bottom: 6px;
-  width: 44px;
-  height: 44px;
+  width: 36px;                  /* ↓ a touch smaller */
+  height: 36px;
   border-radius: 50%;
   border: 1px solid cyan;
   background: rgba(0,0,0,0.75);
@@ -148,75 +139,51 @@ body {
   transition: transform .2s ease, box-shadow .2s ease;
   z-index: 3;
 }
-
-.edit-pen:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 18px rgba(0,255,255,0.8);
-}
+.edit-pen:hover { transform: scale(1.08); box-shadow: 0 0 18px rgba(0,255,255,0.8); }
 
 /* ---------- UPLOAD OPTIONS ---------- */
 .upload-options {
-  margin-top: 15px;
+  margin-top: 12px;
   flex-direction: column;
   align-items: center;
   gap: 8px;
   transition: opacity 0.25s ease, transform 0.25s ease;
   display: none;
 }
-
-.profile-container.is-edit .upload-options {
-  display: flex;
-}
-
-.upload-options.hidden {
-  display: none !important;
-  opacity: 0;
-  transform: translateY(-5px);
-}
+.profile-container.is-edit .upload-options { display: flex; }
+.upload-options.hidden { display: none !important; opacity: 0; transform: translateY(-5px); }
 
 /* ---------- UPLOAD BUTTONS ---------- */
 .upload-btn {
   background: cyan;
   color: black;
-  padding: 8px 18px;
-  border-radius: 20px;
+  padding: 8px 14px;
+  border-radius: 18px;
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
   border: none;
   transition: transform .2s ease, box-shadow .2s ease;
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
-  width: 200px;
+  width: 180px;                 /* ↓ */
 }
-
 .upload-btn i { margin-right: 6px; }
+.upload-btn:hover { background: #00ffff; box-shadow: 0 0 20px cyan; transform: scale(1.05); }
 
-.upload-btn:hover {
-  background: #00ffff;
-  box-shadow: 0 0 20px cyan;
-  transform: scale(1.05);
-}
-
-.drive-btn {
-  background: #34a853;
-  color: white;
-  box-shadow: 0 0 10px rgba(52, 168, 83, 0.5);
-}
-
-.drive-btn:hover {
-  background: #2b8a44;
-  box-shadow: 0 0 20px #34a853;
-}
+.drive-btn { background: #34a853; color: white; box-shadow: 0 0 10px rgba(52, 168, 83, 0.5); }
+.drive-btn:hover { background: #2b8a44; box-shadow: 0 0 20px #34a853; }
 
 /* ---------- PROFILE INFO ---------- */
 .profile-info {
   flex: 1;
-  min-width: 350px;
+  min-width: 320px;
+  max-width: 520px;             /* ✅ keeps text/inputs inside box */
+  margin: 0 auto;               /* center column under photo on narrow screens */
 }
 
 .profile-info p {
-  font-size: 1.2rem;
-  margin: 10px 0;
+  font-size: 1.05rem;           /* ↓ a bit smaller */
+  margin: 8px 0;
   text-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
   white-space: normal;
   word-wrap: break-word;
@@ -224,42 +191,37 @@ body {
   line-height: 1.4;
 }
 
-
-.field-text {
-  display: inline-block;
-  margin-left: 10px;
-}
-
+.field-text { display: inline-block; margin-left: 10px; }
 .profile-container.is-edit .field-text { display: none; }
 
+/* Inputs stay within container and never overflow */
 .editable-input {
   display: none;
   border: 1px solid cyan;
   background: rgba(255, 255, 255, 0.05);
   color: cyan;
-  padding: 6px 10px;
-  border-radius: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
   font-family: 'Orbitron', sans-serif;
-  width: 60%;
+  width: 100%;                   /* ✅ full width of info column */
+  max-width: 520px;              /* ✅ never exceed container */
   outline: none;
   transition: all 0.3s ease;
-  margin-left: 10px;
+  margin: 8px 0 0 0;             /* remove left offset */
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
+.profile-container.is-edit .editable-input { display: block; }
+.editable-input:focus { box-shadow: 0 0 8px cyan; background: rgba(255, 255, 255, 0.1); }
 
-.profile-container.is-edit .editable-input { display: inline-block; }
-
-.editable-input:focus {
-  box-shadow: 0 0 8px cyan;
-  background: rgba(255, 255, 255, 0.1);
-}
+/* If you use <textarea> for long fields, this helps the feel */
+textarea.editable-input { resize: none; line-height: 1.35; min-height: 38px; }
 
 /* ---------- EDIT ACTIONS ---------- */
-.edit-actions {
-  display: none;
-  gap: 10px;
-  margin-top: 15px;
-}
-
+.edit-actions { display: none; gap: 10px; margin-top: 12px; }
 .profile-container.is-edit .edit-actions { display: flex; }
 
 .save-btn {
@@ -267,32 +229,22 @@ body {
   color: black;
   border: none;
   border-radius: 8px;
-  padding: 10px 20px;
+  padding: 10px 18px;
   font-weight: bold;
   cursor: pointer;
   transition: 0.3s ease;
   font-family: 'Orbitron', sans-serif;
   box-shadow: 0 0 10px rgba(0,255,255,0.5);
 }
-
-.save-btn:hover {
-  background: #00ffcc;
-  transform: scale(1.05);
-  box-shadow: 0 0 20px cyan;
-}
-
-.save-btn.secondary {
-  background: #222;
-  color: #fff;
-  border: 1px solid cyan;
-}
+.save-btn:hover { background: #00ffcc; transform: scale(1.05); box-shadow: 0 0 20px cyan; }
+.save-btn.secondary { background: #222; color: #fff; border: 1px solid cyan; }
 
 /* ---------- PASSES ---------- */
 .profile-container h2 {
   color: cyan;
   text-align: center;
-  margin-bottom: 25px;
-  font-size: 2rem;
+  margin-bottom: 20px;
+  font-size: 1.6rem;            /* ↓ */
   animation: pulseGlow 2.5s infinite ease-in-out;
 }
 
@@ -300,16 +252,16 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 35px;
+  gap: 22px;                     /* ↓ tighter */
   width: 100%;
 }
 
 .pass-item {
   background: rgba(0, 0, 0, 0.6);
   border: 1.5px solid rgba(0, 255, 255, 0.6);
-  border-radius: 18px;
-  padding: 28px 35px;
-  width: 460px;
+  border-radius: 14px;
+  padding: 18px 20px;            /* ↓ */
+  width: 360px;                  /* ↓ narrower cards */
   color: #dff;
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
   transition: 0.3s ease;
@@ -317,159 +269,79 @@ body {
   word-break: break-word;
   overflow-wrap: anywhere;
 }
-
-.pass-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 0 35px rgba(0, 255, 255, 0.5);
-}
-
-.pass-item h3 {
-  color: cyan;
-  text-shadow: 0 0 15px cyan;
-  font-size: 1.55rem;
-  margin-bottom: 10px;
-}
-
-.pass-item p { margin: 6px 0; font-size: 1.05rem; }
-
-.pass-item ul {
-  list-style-type: disc;
-  margin-left: 20px;
-  font-size: 1rem;
-  color: #bff;
-}
+.pass-item:hover { transform: translateY(-3px); box-shadow: 0 0 35px rgba(0, 255, 255, 0.5); }
+.pass-item h3 { color: cyan; text-shadow: 0 0 15px cyan; font-size: 1.25rem; margin-bottom: 8px; }
+.pass-item p { margin: 6px 0; font-size: 0.98rem; }
+.pass-item ul { list-style-type: disc; margin-left: 20px; font-size: 0.95rem; color: #bff; }
 
 .no-passes {
   color: #ccc;
   text-align: center;
-  margin-top: 20px;
+  margin-top: 16px;
   font-style: italic;
-  font-size: 1.1rem;
+  font-size: 1rem;
   text-shadow: 0 0 10px rgba(0,255,255,0.3);
 }
 
 /* ---------- TABLET (600–992px) ---------- */
 @media (max-width: 992px) {
-  .profile-container {
-    width: 92%;
-    padding: 35px 25px;
-    border-radius: 20px;
-  }
-
-  .profile-header {
-    flex-direction: column;
-    align-items: center;
-    gap: 25px;
-    text-align: center;
-  }
-
-  .photo-wrapper {
-    width: 150px;
-    height: 150px;
-  }
-
-  .profile-info {
-    text-align: center;
-  }
-
-  .editable-input {
-    width: 80%;
-  }
-
-  .passes-list {
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-  }
-
-  .pass-item {
-    width: 92%;
-  }
+  .profile-container { width: 92%; padding: 28px 20px; border-radius: 20px; }
+  .profile-header { flex-direction: column; align-items: center; gap: 22px; text-align: center; }
+  .photo-wrapper { width: 130px; height: 130px; }
+  .profile-info { text-align: center; }
+  .editable-input { width: 100%; max-width: 480px; }
+  .passes-list { flex-direction: column; align-items: center; gap: 16px; }
+  .pass-item { width: 92%; }
 }
 
-/* ---------- MOBILE (≤600px) - REPLACED ---------- */
+/* ---------- MOBILE (≤600px) ---------- */
 @media (max-width: 600px) {
-  body {
-    padding-top: 4rem;
-  }
-
-  .profile-section {
-    padding: 1rem 0.5rem;
-  }
+  body { padding-top: 4rem; }
+  .profile-section { padding: 1rem 0.5rem; }
 
   .profile-container {
-  width: 92%;
-  max-width: 420px;
-  margin: 0 auto;
-  padding: 24px 20px 36px 20px;
-  border-radius: 18px;
-  text-align: center;             /* ✅ center all content inside the dark blue box */
-  box-shadow: 0 0 25px rgba(0, 255, 255, 0.25);
-}
+    width: 92%;
+    max-width: 380px;            /* ↓ a bit tighter */
+    margin: 0 auto;
+    padding: 20px 16px 28px 16px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.25);
+  }
 
-
-  /* Stack vertically but allow profile-info to be full width and left aligned */
   .profile-header {
     display: flex;
     flex-direction: column;
-    align-items: center;           /* centers photo */
-    gap: 14px;
-    margin-bottom: 18px;
-      justify-content: center;       /* ✅ centers content vertically in case of uneven spacing */
-
+    align-items: center;         /* centers photo */
+    gap: 12px;
+    margin-bottom: 14px;
+    justify-content: center;
   }
 
-  /* Smaller centered avatar */
-  .photo-wrapper {
-  width: 120px;
-  height: 120px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto;
-  position: relative;
-}
+  .photo-wrapper { width: 110px; height: 110px; margin: 0 auto; position: relative; }
 
+  .edit-pen { width: 30px; height: 30px; right: 4px; bottom: 4px; position: absolute; z-index: 4; }
 
-  /* pen stays at the bottom-right of avatar without overflowing */
-  .edit-pen {
-    width: 34px;
-    height: 34px;
-    right: 6px;
-    bottom: 6px;
-    position: absolute;
-    z-index: 4;
-  }
-
-  /* Make the info area full width and left aligned under the avatar */
   .profile-info {
-  width: 100%;
-  text-align: center;             /* ✅ make all text (including college) centered */
-  margin-top: 10px;
-  padding: 0 10px;
-  box-sizing: border-box;
-  word-wrap: break-word;          /* ✅ wrap long college names */
-  overflow-wrap: break-word;
-  white-space: normal;
-}
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+    padding: 0 8px;
+    box-sizing: border-box;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
 
-
-  /* Make Name stand out and align left */
   #userName {
     display: block;
     margin: 0 0 6px 0;
-    font-size: 1.18rem;
+    font-size: 1.12rem;
     color: cyan;
     text-shadow: 0 0 10px cyan;
     line-height: 1.2;
   }
-
-  #userEmail {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 0.95rem;
-    color: #bff;
-  }
+  #userEmail { display: block; margin-bottom: 6px; font-size: 0.92rem; color: #bff; }
 
   .profile-info p {
     margin: 6px 0;
@@ -479,61 +351,31 @@ body {
     letter-spacing: 0.2px;
   }
 
-  /* keep field-text visible for read-only mode on mobile */
-  .field-text {
-    display: inline-block;
-    margin-left: 8px;
-  }
+  .field-text { display: inline-block; margin-left: 0; }
 
   .editable-input {
-    width: calc(100% - 16px);
+    width: 100%;
+    max-width: 100%;
     margin-top: 6px;
     font-size: 0.95rem;
     border-radius: 8px;
-    padding: 8px;
+    padding: 8px 10px;
   }
 
-  .save-btn {
-    width: 100%;
-    padding: 10px;
-    font-size: 0.95rem;
-    border-radius: 10px;
-  }
+  .save-btn { width: 100%; padding: 10px; font-size: 0.95rem; border-radius: 10px; }
 
-  .edit-actions {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    margin-top: 12px;
-  }
+  .edit-actions { flex-direction: column; align-items: center; gap: 10px; margin-top: 12px; }
 
   .profile-container h2 {
-    margin-top: 18px;
-    font-size: 1.35rem;
+    margin-top: 14px;
+    font-size: 1.25rem;
     letter-spacing: 0.5px;
     animation: pulseGlow 2.5s infinite ease-in-out;
     text-align: center;
   }
 
-  .passes-list {
-    margin-top: 14px;
-    gap: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .pass-item {
-    width: 95%;
-    padding: 16px;
-    border-radius: 14px;
-  }
-
-  .pass-item h3 {
-    font-size: 1.22rem;
-  }
-
-  footer {
-    margin-top: 42px;
-  }
+  .passes-list { margin-top: 12px; gap: 12px; display: flex; flex-direction: column; align-items: center; }
+  .pass-item { width: 95%; padding: 14px; border-radius: 12px; }
+  .pass-item h3 { font-size: 1.08rem; }
+  footer { margin-top: 32px; }
 }
