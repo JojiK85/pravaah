@@ -28,7 +28,7 @@ const auth = getAuth(app);
 const storage = getStorage(app);
 
 // 🔗 Google Apps Script Backend (Profiles + Registrations)
-const scriptURL = "https://script.google.com/macros/s/AKfycbzE3cOz2wpoGWQWIYdsF4pRDC0FhsPrcRFurkbAB0ogeFqDsD9dqqvoVQr022NfRgol-w/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycby0ba4ujfw00bRk0w3h7dAhR6QxyNXQZK40BwAAd9vzyXWMNt2ylUdU1fWsdl76CeLB0g/exec";
 
 // ===============================
 // 🔔 Toast Notification Utility
