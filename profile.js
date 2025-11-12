@@ -72,6 +72,17 @@ onAuthStateChanged(auth, async (user) => {
   userEmailEl.textContent = user.email;
   userNameEl.textContent = user.displayName || "PRAVAAH User";
   userPhoto.src = user.photoURL || "default-avatar.png";
+  // 🧠 Save profile data to localStorage for registration auto-fill
+localStorage.setItem(
+"profileData",
+JSON.stringify({
+    name: userNameEl.textContent.trim(),
+    email: userEmailEl.textContent.trim(),
+    phone: userPhoneEl.textContent.trim(),
+    college: userCollegeEl.textContent.trim(),
+})
+);
+
 
   // ==========================================
   // 🎟 LOAD PASSES FROM GOOGLE SHEET
