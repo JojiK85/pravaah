@@ -18,6 +18,12 @@ body {
   100% { background-position: 0% 50%; }
 }
 
+/* Neon Pulse Effect */
+@keyframes pulseGlow {
+  0%, 100% { text-shadow: 0 0 10px cyan, 0 0 20px cyan; }
+  50% { text-shadow: 0 0 25px #00ffff, 0 0 45px #00ffff; }
+}
+
 /* ---------- PROFILE SECTION ---------- */
 .profile-section {
   display: flex;
@@ -60,6 +66,7 @@ body {
   flex: 0 0 200px;
 }
 
+/* photo wrapper with glowing ring */
 .photo-wrapper {
   position: relative;
   width: 180px;
@@ -89,7 +96,7 @@ body {
   border-radius: 50%;
   object-fit: cover;
   cursor: pointer;
-  transition: transform .25s ease, box-shadow .25s ease;
+  transition: transform .25s ease;
   position: relative;
   z-index: 1;
 }
@@ -98,7 +105,7 @@ body {
   transform: scale(1.03);
 }
 
-/* ---------- CAMERA OVERLAY ---------- */
+/* CAMERA OVERLAY */
 .photo-overlay {
   position: absolute;
   inset: 0;
@@ -123,7 +130,7 @@ body {
   background: rgba(0, 255, 255, 0.35);
 }
 
-/* ---------- EDIT PEN ---------- */
+/* ✏️ EDIT PEN */
 .edit-pen {
   position: absolute;
   right: 6px;
@@ -139,14 +146,13 @@ body {
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 0 12px rgba(0,255,255,0.5);
-  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+  transition: transform .2s ease, box-shadow .2s ease;
   z-index: 3;
 }
 
 .edit-pen:hover {
   transform: scale(1.08);
   box-shadow: 0 0 18px rgba(0,255,255,0.8);
-  background: rgba(0,0,0,0.9);
 }
 
 /* ---------- UPLOAD OPTIONS ---------- */
@@ -179,7 +185,7 @@ body {
   font-weight: 700;
   cursor: pointer;
   border: none;
-  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+  transition: transform .2s ease, box-shadow .2s ease;
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
   width: 200px;
 }
@@ -207,7 +213,6 @@ body {
 .profile-info {
   flex: 1;
   min-width: 350px;
-  overflow-wrap: break-word;
 }
 
 .profile-info p {
@@ -216,7 +221,6 @@ body {
   text-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
 }
 
-/* show spans normally, hide inputs until edit */
 .field-text {
   display: inline-block;
   margin-left: 10px;
@@ -282,10 +286,10 @@ body {
 /* ---------- PASSES ---------- */
 .profile-container h2 {
   color: cyan;
-  text-shadow: 0 0 10px cyan;
-  margin-bottom: 25px;
   text-align: center;
+  margin-bottom: 25px;
   font-size: 2rem;
+  animation: pulseGlow 2.5s infinite ease-in-out;
 }
 
 .passes-list {
@@ -318,7 +322,6 @@ body {
   text-shadow: 0 0 15px cyan;
   font-size: 1.55rem;
   margin-bottom: 10px;
-  letter-spacing: 0.5px;
 }
 
 .pass-item p { margin: 6px 0; font-size: 1.05rem; }
@@ -339,7 +342,7 @@ body {
   text-shadow: 0 0 10px rgba(0,255,255,0.3);
 }
 
-/* ---------- RESPONSIVE FIXES ---------- */
+/* ---------- TABLET (600–992px) ---------- */
 @media (max-width: 992px) {
   .profile-container {
     width: 92%;
@@ -359,36 +362,12 @@ body {
     height: 150px;
   }
 
-  .edit-pen {
-    right: 5px;
-    bottom: 5px;
-    width: 40px;
-    height: 40px;
-  }
-
   .profile-info {
     text-align: center;
-    width: 100%;
-  }
-
-  .profile-info p {
-    font-size: 1.05rem;
-    margin: 8px 0;
   }
 
   .editable-input {
     width: 80%;
-    margin-top: 8px;
-  }
-
-  .save-btn {
-    width: 85%;
-    font-size: 0.95rem;
-  }
-
-  .edit-actions {
-    justify-content: center;
-    flex-wrap: wrap;
   }
 
   .passes-list {
@@ -399,49 +378,87 @@ body {
 
   .pass-item {
     width: 92%;
-    padding: 22px;
   }
 }
 
-@media (max-width: 480px) {
+/* ---------- MOBILE (≤540px) ---------- */
+@media (max-width: 540px) {
+  body {
+    padding-top: 4rem;
+  }
+
+  .profile-section {
+    padding: 1rem 0.5rem;
+  }
+
   .profile-container {
-    padding: 20px 15px;
-    border-radius: 16px;
+    width: 94%;
+    padding: 20px 15px 40px 15px;
+    border-radius: 18px;
+    text-align: center;
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.25);
   }
 
   .photo-wrapper {
-    width: 120px;
-    height: 120px;
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 12px auto;
   }
 
   .edit-pen {
-    width: 34px;
-    height: 34px;
+    width: 30px;
+    height: 30px;
+    right: 3px;
+    bottom: 3px;
   }
 
   .profile-info p {
-    font-size: 0.95rem;
+    margin: 6px 0;
+    font-size: 0.9rem;
     line-height: 1.3rem;
   }
 
+  #userName, #userEmail {
+    display: block;
+    margin-top: 4px;
+  }
+
   .editable-input {
-    width: 90%;
+    width: 85%;
+    margin-top: 6px;
     font-size: 0.9rem;
   }
 
   .save-btn {
-    width: 100%;
+    width: 90%;
     padding: 10px;
     font-size: 0.9rem;
   }
 
-  .pass-item {
-    width: 100%;
-    font-size: 0.9rem;
-    padding: 18px;
+  .edit-actions {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
   }
 
   .profile-container h2 {
-    font-size: 1.4rem;
+    margin-top: 25px;
+    font-size: 1.35rem;
+    letter-spacing: 0.5px;
+  }
+
+  .passes-list {
+    font-size: 0.9rem;
+    margin-top: 12px;
+  }
+
+  .pass-item {
+    width: 95%;
+    padding: 18px;
+    border-radius: 14px;
+  }
+
+  footer {
+    margin-top: 40px;
   }
 }
