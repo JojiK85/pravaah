@@ -1,180 +1,193 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login | PRAVAAH</title>
-  <link rel="stylesheet" href="login.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-</head>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import {
+    getAuth,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    signInWithPopup,
+    GoogleAuthProvider,
+    onAuthStateChanged,
+    updateProfile
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-<body>
-  <div class="login-container">
-    <div class="login-box">
-      <h1 id="formTitle">LOGIN TO PRAVAAH</h1>
+  // 🔥 Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCbXKleOw4F46gFDXz2Wynl3YzPuHsVwh8",
+    authDomain: "pravaah-55b1d.firebaseapp.com",
+    projectId: "pravaah-55b1d",
+    storageBucket: "pravaah-55b1d.appspot.com",
+    messagingSenderId: "287687647267",
+    appId: "1:287687647267:web:7aecd603ee202779b89196"
+  };
 
-      <input type="text" id="name" placeholder="Full Name" class="hidden">
-      <input type="email" id="email" placeholder="Enter your email" required>
-      <input type="password" id="password" placeholder="Enter your password" required>
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
 
-      <button id="submitBtn" class="main-btn">LOGIN</button>
+  // ✅ Your Apps Script backend (supports GET ?type=profile&email= and POST for upsert)
+  const scriptURL = "https://script.google.com/macros/s/AKfycbxf83XTqxvN7dNZQP3MJ_IIyh8oGQJr1ih8lRCxribB7tpwuirm7ew28Z6FrvvMk0NMKQ/exec";
 
-      <div class="divider">OR</div>
+  // DOM
+  const nameInput  = document.getElementById('name');
+  const emailInput = document.getElementById('email');
+  const passInput  = document.getElementById('password');
+  const submitBtn  = document.getElementById('submitBtn');
+  const toggleForm = document.getElementById('toggleForm');
+  const formTitle  = document.getElementById('formTitle');
+  const googleBtn  = document.getElementById('googleSignIn');
 
-      <button id="googleSignIn" class="google-btn">
-        <i class="fab fa-google"></i> Continue with Google
-      </button>
+  let isLogin = true; // start in Login mode
 
-      <p class="toggle-text" id="toggleForm">New user? <span>Create an account</span></p>
-    </div>
-  </div>
+  /* -------------------------
+     UI: Toggle Login / Signup
+  ------------------------- */
+  toggleForm.addEventListener('click', () => {
+    isLogin = !isLogin;
+    formTitle.textContent = isLogin ? 'LOGIN TO PRAVAAH' : 'CREATE YOUR PRAVAAH ACCOUNT';
+    submitBtn.textContent = isLogin ? 'LOGIN' : 'SIGN UP';
+    toggleForm.innerHTML  = isLogin
+      ? 'New user? <span>Create an account</span>'
+      : 'Already have an account? <span>Login</span>';
+    nameInput.classList.toggle("hidden", isLogin); // name only in signup
+    nameInput.value = ""; // clear any leftover
+  });
 
-  <!-- 🔹 Firebase SDK and Logic -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { 
-      getAuth, 
-      signInWithEmailAndPassword, 
-      createUserWithEmailAndPassword,
-      signInWithPopup, 
-      GoogleAuthProvider,
-      onAuthStateChanged,
-      updateProfile
-    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  /* -------------------------
+     Sheets helpers
+  ------------------------- */
+  const normalizeEmail = (e) => (e || "").trim().toLowerCase();
 
-    // 🔥 Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyCbXKleOw4F46gFDXz2Wynl3YzPuHsVwh8",
-      authDomain: "pravaah-55b1d.firebaseapp.com",
-      projectId: "pravaah-55b1d",
-      storageBucket: "pravaah-55b1d.appspot.com",
-      messagingSenderId: "287687647267",
-      appId: "1:287687647267:web:7aecd603ee202779b89196"
-    };
+  async function getProfileFromSheet(email) {
+    const url = `${scriptURL}?type=profile&email=${encodeURIComponent(normalizeEmail(email))}`;
+    try {
+      const r = await fetch(url, { method: "GET" });
+      if (!r.ok) return null;
+      const data = await r.json();
+      // If backend returns default empty, treat as not found
+      if (!data) return null;
+      const hasAny =
+        (data.name && String(data.name).trim()) ||
+        (data.email && String(data.email).trim()) ||
+        (data.phone && String(data.phone).trim()) ||
+        (data.college && String(data.college).trim()) ||
+        (data.photo && String(data.photo).trim());
+      return hasAny ? data : null;
+    } catch (_) {
+      return null;
+    }
+  }
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const provider = new GoogleAuthProvider();
-
-    // 🔗 Your Google Apps Script backend URL
-    const scriptURL =
-      "https://script.google.com/macros/s/AKfycbxf83XTqxvN7dNZQP3MJ_IIyh8oGQJr1ih8lRCxribB7tpwuirm7ew28Z6FrvvMk0NMKQ/exec";
-
-    // DOM Elements
-    const nameInput = document.getElementById('name');
-    const emailInput = document.getElementById('email');
-    const passInput = document.getElementById('password');
-    const submitBtn = document.getElementById('submitBtn');
-    const toggleForm = document.getElementById('toggleForm');
-    const formTitle = document.getElementById('formTitle');
-    const googleBtn = document.getElementById('googleSignIn');
-
-    let isLogin = true;
-
-    /* -------------------------
-       Toggle Login / Signup
-    ------------------------- */
-    toggleForm.addEventListener('click', () => {
-      isLogin = !isLogin;
-      formTitle.textContent = isLogin ? 'LOGIN TO PRAVAAH' : 'CREATE YOUR PRAVAAH ACCOUNT';
-      submitBtn.textContent = isLogin ? 'LOGIN' : 'SIGN UP';
-      toggleForm.innerHTML = isLogin 
-        ? 'New user? <span>Create an account</span>'
-        : 'Already have an account? <span>Login</span>';
-      nameInput.classList.toggle("hidden", isLogin);
+  // Create/Upsert minimal profile in Sheets (text/plain to avoid CORS preflight)
+  async function upsertProfileToSheet({ name = "", email = "", phone = "", college = "", photo = "" }) {
+    const payload = JSON.stringify({
+      name: (name || "").trim(),
+      email: normalizeEmail(email),
+      phone: (phone || "").trim(),
+      college: (college || "").trim(),
+      photo: (photo || "").trim()
     });
-
-    /* -------------------------
-       Helper: Save to Google Sheet
-    ------------------------- */
-    async function saveProfileToSheet(profile) {
-      const payload = JSON.stringify({
-        name: profile.name || "",
-        email: profile.email || "",
-        phone: profile.phone || "",
-        college: profile.college || "",
-        photo: profile.photo || ""
+    try {
+      await fetch(scriptURL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: payload
       });
-      try {
-        await fetch(scriptURL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: payload
-        });
-      } catch (err) {
-        console.error("⚠️ Could not save to Sheets:", err);
-      }
+    } catch (err) {
+      console.error("⚠️ Could not upsert to Sheets:", err);
+    }
+  }
+
+  // Ensure profile exists; if missing, create it
+  async function ensureProfileInSheet({ email, name = "", phone = "", college = "", photo = "" }) {
+    const existing = await getProfileFromSheet(email);
+    if (!existing) {
+      await upsertProfileToSheet({ name, email, phone, college, photo });
+    }
+  }
+
+  /* -------------------------
+     Email/Password Login or Signup
+  ------------------------- */
+  submitBtn.addEventListener('click', async () => {
+    const email = normalizeEmail(emailInput.value);
+    const password = passInput.value;
+
+    if (!email || !password) {
+      alert("Please enter email and password.");
+      return;
     }
 
-    /* -------------------------
-       Email/Password Login or Signup
-    ------------------------- */
-    submitBtn.addEventListener('click', async () => {
-      const email = emailInput.value.trim();
-      const password = passInput.value.trim();
-      const name = nameInput.value.trim();
-
-      try {
-        if (isLogin) {
-          await signInWithEmailAndPassword(auth, email, password);
-          // 🟢 After login, ensure profile exists in Sheets
-          await saveProfileToSheet({ name: "", email });
-        } else {
-          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-          await updateProfile(userCredential.user, { displayName: name });
-          await setDoc(doc(db, "users", userCredential.user.uid), {
-            name,
-            email,
-            phone: "",
-            college: "",
-            passes: []
-          });
-          // 🟢 Also save to Google Sheets
-          await saveProfileToSheet({ name, email });
+    try {
+      if (isLogin) {
+        // LOGIN (no name asked)
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        // After login: ensure profile exists in Sheets (minimal)
+        await ensureProfileInSheet({ email, name: cred.user.displayName || "" });
+      } else {
+        // SIGN UP (name required)
+        const name = (nameInput.value || "").trim();
+        if (!name) {
+          alert("Please enter your full name to sign up.");
+          return;
         }
-        window.location.href = "home.html";
-      } catch (err) {
-        alert(err.message);
-      }
-    });
-
-    /* -------------------------
-       Google Sign-In
-    ------------------------- */
-    googleBtn.addEventListener('click', async () => {
-      try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        await setDoc(doc(db, "users", user.uid), {
-          name: user.displayName,
-          email: user.email,
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        // Set displayName in Firebase
+        await updateProfile(userCredential.user, { displayName: name });
+        // Optional: Firestore bootstrap
+        await setDoc(doc(db, "users", userCredential.user.uid), {
+          name,
+          email,
           phone: "",
           college: "",
           passes: []
         }, { merge: true });
-
-        // 🟢 Save Google user to Sheets too
-        await saveProfileToSheet({ 
-          name: user.displayName, 
-          email: user.email 
-        });
-
-        window.location.href = "home.html";
-      } catch (err) {
-        alert(err.message);
+        // Add profile to Sheets now
+        await upsertProfileToSheet({ name, email });
       }
-    });
 
-    /* -------------------------
-       Auto redirect if logged in
-    ------------------------- */
-    onAuthStateChanged(auth, (user) => {
-      if (user) window.location.href = "home.html";
-    });
-  </script>
-</body>
-</html>
+      // Go to app
+      window.location.href = "home.html";
+    } catch (err) {
+      alert(err.message);
+    }
+  });
 
+  /* -------------------------
+     Google Sign-In
+  ------------------------- */
+  googleBtn.addEventListener('click', async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Optional: Firestore bootstrap
+      await setDoc(doc(db, "users", user.uid), {
+        name: user.displayName || "",
+        email: normalizeEmail(user.email),
+        phone: "",
+        college: "",
+        passes: []
+      }, { merge: true });
+
+      // Ensure Sheets profile exists (create only if missing)
+      await ensureProfileInSheet({
+        email: user.email,
+        name: user.displayName || "",
+        photo: user.photoURL || ""
+      });
+
+      window.location.href = "home.html";
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+
+  /* -------------------------
+     Auto redirect if already logged in
+  ------------------------- */
+  onAuthStateChanged(auth, (user) => {
+    if (user) window.location.href = "home.html";
+  });
+</script>
