@@ -43,73 +43,81 @@
   </nav>
 
   <!-- 👤 PROFILE SECTION -->
-  <!-- 👤 PROFILE SECTION -->
-<section class="profile-section">
-  <div class="profile-container is-view" id="profileContainer">
-    
-    <div class="profile-header">
-      <!-- 🖼️ PHOTO AREA -->
-      <div class="profile-photo" id="photoArea">
-        <div class="photo-wrapper">
-          <img id="userPhoto" src="default-avatar.png" alt="Profile Photo" title="Click the pen to edit" />
-          <div class="photo-overlay">
-            <i class="fas fa-camera"></i>
+  <section class="profile-section">
+    <div class="profile-container is-view" id="profileContainer">
+      <div class="profile-header">
+        <!-- 🖼️ PHOTO AREA -->
+        <div class="profile-photo" id="photoArea">
+          <div class="photo-wrapper">
+            <img id="userPhoto" src="default-avatar.png" alt="Profile Photo" title="Click the pen to edit" />
+            <div class="photo-overlay">
+              <i class="fas fa-camera"></i>
+            </div>
+            <!-- ✏️ Edit toggle button -->
+            <button id="editPen" class="edit-pen" title="Edit profile">
+              <i class="fas fa-pen"></i>
+            </button>
           </div>
 
-          <!-- ✏️ Edit toggle button -->
-          <button id="editPen" class="edit-pen" title="Edit profile">
-            <i class="fas fa-pen"></i>
-          </button>
+          <!-- Hidden file input -->
+          <input type="file" id="uploadPhoto" accept="image/*" hidden />
+
+          <!-- Upload Options (shown only in edit mode) -->
+          <div class="upload-options hidden" id="uploadOptions">
+            <button id="deviceUploadBtn" class="upload-btn">
+              <i class="fa-solid fa-desktop"></i> Upload from Device
+            </button>
+            <button id="driveUploadBtn" class="upload-btn drive-btn">
+              <i class="fab fa-google-drive"></i> Upload from Drive
+            </button>
+          </div>
         </div>
 
-        <!-- Hidden file input -->
-        <input type="file" id="uploadPhoto" accept="image/*" hidden />
+        <!-- 🧾 USER DETAILS -->
+        <div class="profile-info">
+          <p><strong>Name:</strong> <span id="userName">Loading...</span></p>
+          <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
 
-        <!-- Upload Options (shown only in edit mode) -->
-        <div class="upload-options hidden" id="uploadOptions">
-          <button id="deviceUploadBtn" class="upload-btn">
-            <i class="fa-solid fa-desktop"></i> Upload from Device
-          </button>
-          <button id="driveUploadBtn" class="upload-btn drive-btn">
-            <i class="fab fa-google-drive"></i> Upload from Drive
-          </button>
+          <!-- Phone -->
+          <p>
+            <strong>Phone:</strong>
+            <span class="field-text" id="userPhoneText">—</span>
+            <input
+              id="userPhone"
+              class="editable-input"
+              type="tel"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              maxlength="15"
+              placeholder="Enter phone"
+            />
+          </p>
+
+          <!-- College (now textarea that auto-grows) -->
+          <p>
+            <strong>College:</strong>
+            <span class="field-text" id="userCollegeText">—</span>
+            <textarea
+              id="userCollege"
+              class="editable-input auto-grow"
+              rows="1"
+              placeholder="Enter college"
+            ></textarea>
+          </p>
+
+          <!-- Save / Cancel (only visible in edit mode) -->
+          <div class="edit-actions" id="editActions">
+            <button id="saveProfileBtn" class="save-btn">Save</button>
+            <button id="cancelEditBtn" class="save-btn secondary">Cancel</button>
+          </div>
         </div>
       </div>
 
-      <!-- 🧾 USER DETAILS -->
-      <div class="profile-info">
-        <p><strong>Name:</strong> <span id="userName">Loading...</span></p>
-        <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
-
-        <!-- Phone: text for view mode + input for edit mode -->
-        <p>
-          <strong>Phone:</strong>
-          <span class="field-text" id="userPhoneText">—</span>
-          <input id="userPhone" class="editable-input" type="tel" placeholder="Enter phone" />
-        </p>
-
-        <!-- College: text for view mode + input for edit mode -->
-        <p>
-          <strong>College:</strong>
-          <span class="field-text" id="userCollegeText">—</span>
-          <input id="userCollege" class="editable-input" type="text" placeholder="Enter college" />
-        </p>
-
-        <!-- Save / Cancel (only visible in edit mode) -->
-        <div class="edit-actions" id="editActions">
-          <button id="saveProfileBtn" class="save-btn">Save</button>
-          <button id="cancelEditBtn" class="save-btn secondary">Cancel</button>
-        </div>
-      </div>
+      <!-- 🎟️ PASSES SECTION -->
+      <h2>🎟️ My Passes</h2>
+      <div id="passesList" class="passes-list">⏳ Loading passes...</div>
     </div>
-
-    <!-- 🎟️ PASSES SECTION -->
-    <h2>🎟️ My Passes</h2>
-    <div id="passesList" class="passes-list">⏳ Loading passes...</div>
-
-  </div>
-</section>
-
+  </section>
 
   <!-- ⚫ FOOTER -->
   <footer id="contact">
