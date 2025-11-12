@@ -27,8 +27,8 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0
 const auth = getAuth(app);
 const storage = getStorage(app);
 
-// 🔗 Google Apps Script Backend
-const scriptURL = "https://script.google.com/macros/s/AKfycbyC2AZkrZA1aIkIU0fGFUBswnn9usKOpV1VU2nYoh-tAnBYftx1jOV3GWV-8La-Q--I/exec";
+// 🔗 Google Apps Script Backend (Profiles + Registrations)
+const scriptURL = "https://script.google.com/macros/s/AKfycbzE3cOz2wpoGWQWIYdsF4pRDC0FhsPrcRFurkbAB0ogeFqDsD9dqqvoVQr022NfRgol-w/exec";
 
 // ===============================
 // 🔔 Toast Notification Utility
@@ -72,21 +72,57 @@ onAuthStateChanged(auth, async (user) => {
   userEmailEl.textContent = user.email;
   userNameEl.textContent = user.displayName || "PRAVAAH User";
   userPhoto.src = user.photoURL || "default-avatar.png";
-  // 🧠 Save profile data to localStorage for registration auto-fill
-localStorage.setItem(
-"profileData",
-JSON.stringify({
-    name: userNameEl.textContent.trim(),
-    email: userEmailEl.textContent.trim(),
-    phone: userPhoneEl.textContent.trim(),
-    college: userCollegeEl.textContent.trim(),
-})
-);
 
+  // ===============================
+  // 📡 Fetch Profile from Google Sheet (Profiles Sheet)
+  // ===============================
+  try {
+    const profileRes = await fetch(`${scriptURL}?type=profile&email=${encodeURIComponent(user.email)}`);
+    const profileData = await profileRes.json();
 
-  // ==========================================
-  // 🎟 LOAD PASSES FROM GOOGLE SHEET
-  // ==========================================
+    if (profileData && profileData.name) {
+      // ✅ Found in Profiles Sheet — use latest data
+      userPhoneEl.textContent = profileData.phone || "Not provided";
+      userCollegeEl.textContent = profileData.college || "Not provided";
+
+      // Update localStorage for registration autofill
+      localStorage.setItem(
+        "profileData",
+        JSON.stringify({
+          name: profileData.name,
+          email: profileData.email,
+          phone: profileData.phone,
+          college: profileData.college
+        })
+      );
+    } else {
+      // ❌ Not found — new login, add to Profiles Sheet
+      userPhoneEl.textContent = "Not provided";
+      userCollegeEl.textContent = "Not provided";
+
+      const newProfile = {
+        name: user.displayName || "PRAVAAH User",
+        email: user.email,
+        phone: "",
+        college: ""
+      };
+
+      await fetch(scriptURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newProfile)
+      });
+
+      localStorage.setItem("profileData", JSON.stringify(newProfile));
+      console.log("🆕 New user profile added to sheet:", newProfile);
+    }
+  } catch (err) {
+    console.error("⚠️ Error fetching or updating profile:", err);
+  }
+
+  // ===============================
+  // 🎟 LOAD PASSES FROM GOOGLE SHEET (Registrations)
+  // ===============================
   try {
     const res = await fetch(`${scriptURL}?email=${encodeURIComponent(user.email)}`);
     const passes = await res.json();
@@ -98,32 +134,38 @@ JSON.stringify({
 
     // Group passes by Payment ID
     const grouped = {};
-    passes.forEach(p => {
+    passes.forEach((p) => {
       if (!grouped[p.paymentId]) grouped[p.paymentId] = [];
       grouped[p.paymentId].push(p);
     });
 
     passesList.innerHTML = Object.entries(grouped)
-      .map(([paymentId, items]) => `
+      .map(
+        ([paymentId, items]) => `
         <div class="pass-item">
           <h3>${items[0].passType}</h3>
           <p><strong>Payment ID:</strong> ${paymentId}</p>
           <p><strong>Total Amount:</strong> ₹${items[0].totalAmount}</p>
           <p><strong>Participants:</strong></p>
           <ul>
-            ${items.map(p => `<li>${p.name} (${p.email}, ${p.phone}) — ${p.college}</li>`).join("")}
+            ${items
+              .map(
+                (p) => `<li>${p.name} (${p.email}, ${p.phone}) — ${p.college}</li>`
+              )
+              .join("")}
           </ul>
         </div>
-      `).join("");
-
+      `
+      )
+      .join("");
   } catch (err) {
     console.error("❌ Error fetching passes:", err);
     passesList.innerHTML = `<p class="no-passes">⚠️ Unable to load passes. Try again later.</p>`;
   }
 
-  // ==========================================
-  // 📸 UPLOAD PHOTO TOGGLE OPTIONS
-  // ==========================================
+  // ===============================
+  // 📸 UPLOAD PHOTO OPTIONS
+  // ===============================
   if (userPhoto && uploadOptions) {
     userPhoto.addEventListener("click", () => {
       const isHidden = uploadOptions.classList.toggle("hidden");
@@ -131,7 +173,7 @@ JSON.stringify({
     });
   }
 
-  // Add “Upload from Device” button dynamically if missing
+  // Add “Upload from Device” button if missing
   if (!document.getElementById("deviceUploadBtn")) {
     const deviceBtn = document.createElement("button");
     deviceBtn.id = "deviceUploadBtn";
@@ -146,9 +188,7 @@ JSON.stringify({
     });
   }
 
-  // ==========================================
-  // 📤 UPLOAD FROM DEVICE
-  // ==========================================
+  // 📤 Upload from device
   uploadPhotoInput.addEventListener("change", async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -171,9 +211,7 @@ JSON.stringify({
     }
   });
 
-  // ==========================================
-  // ☁️ UPLOAD FROM GOOGLE DRIVE
-  // ==========================================
+  // ☁️ Upload from Google Drive
   driveUploadBtn.addEventListener("click", async () => {
     uploadOptions.classList.add("hidden");
     uploadOptions.style.display = "none";
@@ -184,7 +222,7 @@ JSON.stringify({
       return;
     }
 
-    const fileIdMatch = driveLink.match(/[-\\w]{25,}/);
+    const fileIdMatch = driveLink.match(/[-\w]{25,}/);
     if (!fileIdMatch) {
       showToast("⚠️ Invalid link format.", "error");
       return;
