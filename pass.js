@@ -1,6 +1,6 @@
 // =====================
 // PRAVAAH 2026 Registration + Payment
-// (Profile email-only autofill + background Sheets sync)
+// (Auto-fill when typed name matches stored profile name)
 // =====================
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
@@ -22,8 +22,8 @@ if (!auth) {
   window.auth = auth;
 }
 
-// ---- Google Apps Script /exec URL (deployed: Execute as Me; Access: Anyone) ----
-const scriptURL = "https://script.google.com/macros/s/AKfycbyKGly5gR_OMt6LqAlIl166-Vucn2wAk8242XbnBU8hDRV67FY4lOQFWuFbE1oP5IvYuA/exec";
+// ---- Google Apps Script /exec URL (Execute as: Me; Access: Anyone) ----
+const scriptURL = "https://script.google.com/macros/s/AKfycbwUqB2hdgPajzGcEDp87MC4ecmywWqnpAalUswVuGSPADGV3hvJRfHP0XiW5AIm9b_SPw/exec";
 
 // ---- UI state ----
 let selectedPass = null;
@@ -77,14 +77,17 @@ passCards.forEach((card) => {
   });
 });
 
-// ---- Build participant form ----
+// ---- Build participant form (autofill only when typed name matches) ----
 function updateParticipantForm(count) {
   participantForm.innerHTML = "";
 
-  // Profile from localStorage (for email-only autofill)
+  // Stored profile (from profile page)
   const storedProfile = JSON.parse(localStorage.getItem("profileData") || "{}");
-  const storedName  = (storedProfile.name || "").trim().toLowerCase();
-  const storedEmail = storedProfile.email || "";
+  const storedName    = (storedProfile.name || "").trim();
+  const storedEmail   = (storedProfile.email || "").trim();
+  const storedPhone   = (storedProfile.phone || "").trim();
+  const storedCollege = (storedProfile.college || "").trim();
+  const storedNameLC  = storedName.toLowerCase();
 
   if (!count || count === 0) {
     totalAmount.textContent = "Total: ₹0";
@@ -105,21 +108,34 @@ function updateParticipantForm(count) {
     participantForm.appendChild(div);
   }
 
-  // email-only autofill when typed name matches stored profile name
-  const nameInputs  = participantForm.querySelectorAll(".pname");
-  const emailInputs = participantForm.querySelectorAll(".pemail");
+  // Bind "match name -> autofill" per participant row
+  const nameInputs    = participantForm.querySelectorAll(".pname");
+  const emailInputs   = participantForm.querySelectorAll(".pemail");
+  const phoneInputs   = participantForm.querySelectorAll(".pphone");
+  const collegeInputs = participantForm.querySelectorAll(".pcollege");
 
-  nameInputs.forEach((input, index) => {
-    let autoFilled = false;
-    input.addEventListener("input", () => {
-      const typed = input.value.trim().toLowerCase();
-      if (!autoFilled && typed && storedName && typed === storedName) {
-        if (storedEmail) {
-          emailInputs[index].value = storedEmail;
-          emailInputs[index].style.boxShadow = "0 0 10px cyan";
-          setTimeout(() => (emailInputs[index].style.boxShadow = ""), 800);
+  nameInputs.forEach((nameInput, idx) => {
+    let hasAutoFilled = false; // one-time autofill per row
+
+    nameInput.addEventListener("input", () => {
+      const typed = nameInput.value.trim().toLowerCase();
+
+      // Only autofill if typed name exactly equals stored name (case-insensitive)
+      if (!hasAutoFilled && storedName && typed === storedNameLC) {
+        // Only set fields that are currently empty (don’t overwrite user input)
+        if (storedEmail && !emailInputs[idx].value) {
+          emailInputs[idx].value = storedEmail;
+          flash(emailInputs[idx]);
         }
-        autoFilled = true; // do it once per field
+        if (storedPhone && !phoneInputs[idx].value) {
+          phoneInputs[idx].value = storedPhone;
+          flash(phoneInputs[idx]);
+        }
+        if (storedCollege && !collegeInputs[idx].value) {
+          collegeInputs[idx].value = storedCollege;
+          flash(collegeInputs[idx]);
+        }
+        hasAutoFilled = true;
       }
     });
   });
@@ -127,6 +143,12 @@ function updateParticipantForm(count) {
   total = selectedPrice * count;
   totalAmount.textContent = `Total: ₹${total}`;
   payBtn.style.display = "inline-block";
+
+  // small highlight helper
+  function flash(el) {
+    el.style.boxShadow = "0 0 10px cyan";
+    setTimeout(() => (el.style.boxShadow = ""), 900);
+  }
 }
 
 // ---- +/- handlers ----
@@ -157,7 +179,7 @@ payBtn.addEventListener("click", (e) => {
   const phones   = [...document.querySelectorAll(".pphone")].map((x) => x.value.trim());
   const colleges = [...document.querySelectorAll(".pcollege")].map((x) => x.value.trim());
 
-  // basic validation (keep UX quiet; just stop if invalid)
+  // basic validation (quiet fail if invalid)
   for (let i = 0; i < names.length; i++) {
     if (!names[i] || !emails[i] || !phones[i] || !colleges[i]) return;
     if (!emailRe.test(emails[i])) return;
@@ -169,7 +191,6 @@ payBtn.addEventListener("click", (e) => {
     return;
   }
 
-  // build Razorpay options
   const currentUserEmail = auth?.currentUser?.email || "Guest";
   let timerInterval;
 
@@ -182,7 +203,6 @@ payBtn.addEventListener("click", (e) => {
     image: "pravah-logo.png",
 
     handler: async (response) => {
-      // payment succeeded
       if (timerInterval) clearInterval(timerInterval);
       timerDisplay.style.display = "none";
 
@@ -214,14 +234,14 @@ payBtn.addEventListener("click", (e) => {
         try {
           fetch(scriptURL, {
             method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" }, // avoid preflight
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: payload,
             keepalive: true,
           }).catch(() => {});
         } catch (_) {}
       }
 
-      // Optional: update Firebase displayName & local profile if user's own name was among participants
+      // Optional: update Firebase displayName & local profile if user's own name appears
       try {
         const stored = JSON.parse(localStorage.getItem("profileData") || "{}");
         const storedName = (stored.name || "").trim().toLowerCase();
@@ -244,7 +264,6 @@ payBtn.addEventListener("click", (e) => {
         console.warn("Profile update skipped:", e);
       }
 
-      // redirect instantly (no alerts)
       window.location.href = "payment_success.html";
     },
 
@@ -253,7 +272,7 @@ payBtn.addEventListener("click", (e) => {
 
   const rzp = new Razorpay(options);
 
-  // start a 5-minute payment timer
+  // 5-minute payment timer UI
   setPaying(true);
   let timeLeft = 300;
   timerDisplay.style.display = "block";
