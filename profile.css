@@ -380,7 +380,7 @@ body {
   }
 }
 
-/* ---------- MOBILE (≤600px) ---------- */
+/* ---------- MOBILE (≤600px) - REPLACED ---------- */
 @media (max-width: 600px) {
   body {
     padding-top: 4rem;
@@ -392,66 +392,85 @@ body {
 
   .profile-container {
     width: 92%;
-    max-width: 400px;
+    max-width: 420px;
     margin: 0 auto;
-    padding: 25px 18px 45px 18px;
-    border-radius: 20px;
-    text-align: center;
+    padding: 22px 18px 36px 18px;
+    border-radius: 18px;
+    text-align: left;              /* default left for container (we'll center the photo separately) */
     box-shadow: 0 0 25px rgba(0, 255, 255, 0.25);
   }
 
+  /* Stack vertically but allow profile-info to be full width and left aligned */
   .profile-header {
+    display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 18px;
-    margin-bottom: 20px;
+    align-items: center;           /* centers photo */
+    gap: 14px;
+    margin-bottom: 18px;
   }
 
+  /* Smaller centered avatar */
   .photo-wrapper {
     width: 120px;
     height: 120px;
-    margin: 0 auto;
+    margin: 0 auto;                /* center the avatar */
+    position: relative;
   }
 
+  /* pen stays at the bottom-right of avatar without overflowing */
   .edit-pen {
     width: 34px;
     height: 34px;
-    right: 4px;
-    bottom: 4px;
+    right: 6px;
+    bottom: 6px;
+    position: absolute;
+    z-index: 4;
   }
 
+  /* Make the info area full width and left aligned under the avatar */
   .profile-info {
-    text-align: center;
-    margin-top: 8px;
+    width: 100%;
+    text-align: left;              /* important: left-align details */
+    margin-top: 6px;
+    padding: 0 6px;                /* small side padding so text won't touch edges */
+    box-sizing: border-box;
+  }
+
+  /* Make Name stand out and align left */
+  #userName {
+    display: block;
+    margin: 0 0 6px 0;
+    font-size: 1.18rem;
+    color: cyan;
+    text-shadow: 0 0 10px cyan;
+    line-height: 1.2;
+  }
+
+  #userEmail {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    color: #bff;
   }
 
   .profile-info p {
     margin: 6px 0;
     font-size: 0.95rem;
-    line-height: 1.4rem;
-    text-shadow: 0 0 6px rgba(0, 255, 255, 0.3);
+    line-height: 1.35rem;
+    text-shadow: 0 0 6px rgba(0, 255, 255, 0.22);
+    letter-spacing: 0.2px;
   }
 
-  #userName {
-    font-size: 1.2rem;
-    color: cyan;
-    text-shadow: 0 0 12px cyan;
-    display: block;
-    margin-bottom: 5px;
-  }
-
-  #userEmail {
-    display: block;
-    margin-bottom: 10px;
-    font-size: 0.9rem;
-    color: #bff;
+  /* keep field-text visible for read-only mode on mobile */
+  .field-text {
+    display: inline-block;
+    margin-left: 8px;
   }
 
   .editable-input {
-    width: 90%;
+    width: calc(100% - 16px);
     margin-top: 6px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     border-radius: 8px;
     padding: 8px;
   }
@@ -459,7 +478,7 @@ body {
   .save-btn {
     width: 100%;
     padding: 10px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     border-radius: 10px;
   }
 
@@ -467,19 +486,20 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 10px;
-    width: 100%;
+    margin-top: 12px;
   }
 
   .profile-container h2 {
-    margin-top: 25px;
+    margin-top: 18px;
     font-size: 1.35rem;
     letter-spacing: 0.5px;
     animation: pulseGlow 2.5s infinite ease-in-out;
+    text-align: center;
   }
 
   .passes-list {
-    margin-top: 15px;
-    gap: 18px;
+    margin-top: 14px;
+    gap: 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -487,15 +507,15 @@ body {
 
   .pass-item {
     width: 95%;
-    padding: 18px;
-    border-radius: 16px;
+    padding: 16px;
+    border-radius: 14px;
   }
 
   .pass-item h3 {
-    font-size: 1.25rem;
+    font-size: 1.22rem;
   }
 
   footer {
-    margin-top: 50px;
+    margin-top: 42px;
   }
 }
