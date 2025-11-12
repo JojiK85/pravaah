@@ -14,6 +14,7 @@
     <div class="login-box">
       <h1 id="formTitle">LOGIN TO PRAVAAH</h1>
 
+      <!-- 👇 Hidden by default, visible only on signup -->
       <input type="text" id="name" placeholder="Full Name" class="hidden">
       <input type="email" id="email" placeholder="Enter your email" required>
       <input type="password" id="password" placeholder="Enter your password" required>
@@ -26,7 +27,9 @@
         <i class="fab fa-google"></i> Continue with Google
       </button>
 
-      <p class="toggle-text" id="toggleForm">New user? <span>Create an account</span></p>
+      <p class="toggle-text" id="toggleForm">
+        New user? <span>Create an account</span>
+      </p>
     </div>
   </div>
 
@@ -57,10 +60,11 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
-    // 🔗 Your Google Apps Script backend URL
-    const scriptURL = "https://script.google.com/macros/s/AKfycbxf83XTqxvN7dNZQP3MJ_IIyh8oGQJr1ih8lRCxribB7tpwuirm7ew28Z6FrvvMk0NMKQ/exec";
+    // 🔗 Google Apps Script endpoint (your backend)
+    const scriptURL =
+      "https://script.google.com/macros/s/AKfycbxf83XTqxvN7dNZQP3MJ_IIyh8oGQJr1ih8lRCxribB7tpwuirm7ew28Z6FrvvMk0NMKQ/exec";
 
-    // DOM Elements
+    // 🧩 DOM Elements
     const nameInput = document.getElementById('name');
     const emailInput = document.getElementById('email');
     const passInput = document.getElementById('password');
@@ -85,7 +89,7 @@
     });
 
     /* -------------------------
-       Helper: Ensure Profile Exists
+       Helper: Ensure profile exists in Google Sheets
     ------------------------- */
     async function ensureProfileExists(profile) {
       const payload = JSON.stringify({
@@ -102,12 +106,12 @@
           body: payload
         });
       } catch (err) {
-        console.error("⚠️ Could not ensure profile in Sheets:", err);
+        console.error("⚠️ Could not save to Sheets:", err);
       }
     }
 
     /* -------------------------
-       Email/Password Login or Signup
+       Login / Signup Handler
     ------------------------- */
     submitBtn.addEventListener('click', async () => {
       const email = emailInput.value.trim();
@@ -118,11 +122,12 @@
 
       try {
         if (isLogin) {
-          // Login existing user
+          // ✅ LOGIN
           const userCred = await signInWithEmailAndPassword(auth, email, password);
-          await ensureProfileExists({ email: userCred.user.email });
+          await ensureProfileExists({ email: userCred.user.email }); // create if missing
         } else {
-          // Sign up new user
+          // ✅ SIGNUP
+          if (!name) return alert("Please enter your full name.");
           const userCred = await createUserWithEmailAndPassword(auth, email, password);
           await updateProfile(userCred.user, { displayName: name });
           await ensureProfileExists({ name, email });
@@ -152,7 +157,7 @@
     });
 
     /* -------------------------
-       Auto redirect if logged in
+       Auto redirect if already logged in
     ------------------------- */
     onAuthStateChanged(auth, (user) => {
       if (user) window.location.href = "home.html";
