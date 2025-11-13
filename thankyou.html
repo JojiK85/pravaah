@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Thank You | PRAVAAH</title>
 
-  <!-- Fonts + Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -13,7 +12,7 @@
     /* ---------- BASE ---------- */
     body {
       font-family: 'Orbitron', sans-serif;
-      color: #fff;
+      color: white;
       background: linear-gradient(120deg, #2c1a55, #3e5d75, #022c43, #5b2a86);
       background-size: 400% 400%;
       animation: gradientMove 15s ease infinite;
@@ -23,7 +22,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 0 1rem;
+      padding: 2rem 1rem;
+      overflow-x: hidden;
     }
 
     @keyframes gradientMove {
@@ -34,29 +34,35 @@
 
     /* ---------- THANK YOU BOX ---------- */
     .thankyou-box {
-      width: 90%;
+      width: 85%;
       max-width: 600px;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 3rem 2rem;
-      border-radius: 18px;
-      border: 2px solid cyan;
-      box-shadow: 0 0 25px rgba(0,255,255,0.5);
+      background: rgba(0, 0, 0, 0.7);
+      border: 1.5px solid rgba(0, 255, 255, 0.5);
+      border-radius: 20px;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
       backdrop-filter: blur(12px);
       text-align: center;
+      padding: 3rem 2rem;
       animation: fadeIn 1.2s ease;
-      margin: 5rem auto 4rem;
+      margin: 4rem auto;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(25px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     .thankyou-box i {
-      font-size: 3.2rem;
+      font-size: 3rem;
       color: cyan;
       text-shadow: 0 0 20px cyan;
       margin-bottom: 1.2rem;
+      animation: pulse 2s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { text-shadow: 0 0 10px cyan, 0 0 25px rgba(0,255,255,0.3); }
+      to { text-shadow: 0 0 20px cyan, 0 0 40px rgba(0,255,255,0.7); }
     }
 
     .thankyou-box h1 {
@@ -64,44 +70,45 @@
       color: cyan;
       text-shadow: 0 0 15px cyan;
       margin-bottom: 1rem;
+      letter-spacing: 1px;
     }
 
     .thankyou-box p {
-      color: #ccc;
+      color: #cfdfff;
       font-size: 1rem;
       line-height: 1.6rem;
       margin-bottom: 2rem;
     }
 
     .back-btn {
-      background: linear-gradient(90deg, cyan, #00ffff);
+      background: cyan;
       color: black;
       font-weight: 700;
       border: none;
-      border-radius: 12px;
-      padding: 14px 35px;
+      border-radius: 10px;
+      padding: 12px 32px;
       cursor: pointer;
       box-shadow: 0 0 15px cyan;
-      transition: 0.3s ease;
-      font-size: 1rem;
+      transition: all 0.3s ease;
     }
 
     .back-btn:hover {
-      transform: scale(1.06);
-      box-shadow: 0 0 25px cyan, 0 0 40px rgba(0,255,255,0.5);
+      background: #00ffff;
+      transform: scale(1.05);
+      box-shadow: 0 0 25px cyan, 0 0 45px rgba(0,255,255,0.6);
     }
 
     /* ---------- FOOTER ---------- */
     footer {
-      margin-top: auto;
       width: 100%;
-      background: rgba(0,0,0,0.3);
+      background: rgba(0, 0, 0, 0.3);
       padding: 2rem 1rem;
       border-top: 1px solid rgba(0,255,255,0.3);
       text-align: center;
       color: #bbb;
       font-size: 0.9rem;
       backdrop-filter: blur(6px);
+      margin-top: auto;
     }
 
     footer .footer-social {
@@ -114,7 +121,7 @@
     footer .footer-social a {
       color: cyan;
       font-size: 1.4rem;
-      transition: 0.3s ease;
+      transition: all 0.3s ease;
     }
 
     footer .footer-social a:hover {
@@ -130,52 +137,36 @@
       width: 80%;
     }
 
-    /* ---------- RESPONSIVE ---------- */
-    @media (max-width: 900px) {
+    /* ---------- RESPONSIVE (Like Pass Box on Mobile) ---------- */
+    @media (max-width: 768px) {
       .thankyou-box {
-        padding: 2.5rem 1.8rem;
-        margin: 4rem auto 3rem;
+        width: 92%;
+        padding: 2rem 1.5rem;
+        border: 1.5px solid rgba(0,255,255,0.6);
+        background: rgba(0, 0, 0, 0.75);
+        border-radius: 18px;
+        box-shadow: 0 0 22px rgba(0,255,255,0.4);
       }
 
       .thankyou-box i {
-        font-size: 2.8rem;
+        font-size: 2.5rem;
       }
 
       .thankyou-box h1 {
-        font-size: 1.8rem;
-      }
-
-      .thankyou-box p {
-        font-size: 0.95rem;
-      }
-
-      .back-btn {
-        width: 80%;
-        font-size: 0.95rem;
-        padding: 12px 24px;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .thankyou-box {
-        width: 95%;
-        padding: 2rem 1.5rem;
-        border-radius: 15px;
-      }
-
-      .thankyou-box h1 {
-        font-size: 1.6rem;
+        font-size: 1.7rem;
+        margin-bottom: 0.8rem;
       }
 
       .thankyou-box p {
         font-size: 0.9rem;
-        line-height: 1.4rem;
+        line-height: 1.5rem;
+        margin-bottom: 1.8rem;
       }
 
       .back-btn {
         width: 100%;
         padding: 12px;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         border-radius: 10px;
       }
 
@@ -183,9 +174,25 @@
         padding: 1.5rem 0.8rem;
         font-size: 0.8rem;
       }
+    }
 
-      footer .footer-social a {
-        font-size: 1.3rem;
+    @media (max-width: 400px) {
+      .thankyou-box {
+        padding: 1.8rem 1.2rem;
+        border-radius: 15px;
+      }
+
+      .thankyou-box h1 {
+        font-size: 1.5rem;
+      }
+
+      .thankyou-box p {
+        font-size: 0.85rem;
+      }
+
+      .back-btn {
+        font-size: 0.85rem;
+        padding: 10px;
       }
     }
   </style>
@@ -212,9 +219,7 @@
       <a href="#"><i class="fab fa-youtube"></i></a>
     </div>
     <hr class="footer-line">
-    <div class="footer-bottom">
-      <p>@PRAVAAH'26 IIT BHUBANESWAR | MADE WITH 💜 BY WEB TEAM | All Rights Reserved</p>
-    </div>
+    <p>@PRAVAAH'26 IIT BHUBANESWAR | MADE WITH 💜 BY WEB TEAM | All Rights Reserved</p>
   </footer>
 
 </body>
