@@ -201,24 +201,25 @@ nav {
   }
 }
 
-/* ---------- NAVBAR IITBBS LOGO ---------- */
+/* ---------- NAVBAR IITBBS LOGO (Visible, Clean, Larger) ---------- */
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .iitbbs-logo img {
-  height: 40px;
+  height: 54px;           /* 🔹 Larger for visibility */
   width: auto;
-  border-radius: 6px;
+  border-radius: 4px;
   transition: all 0.3s ease;
-  filter: drop-shadow(0 0 8px rgba(0,255,255,0.4));
+  filter: none !important; /* 🔹 Removes the cyan/blue glow completely */
+  opacity: 0.95;          /* subtle blend */
 }
 
 .iitbbs-logo:hover img {
-  transform: scale(1.08);
-  filter: drop-shadow(0 0 12px cyan);
+  transform: scale(1.05);
+  opacity: 1;
 }
 
 /* ---------- Mobile Adjustments ---------- */
@@ -228,13 +229,14 @@ nav {
   }
 
   .iitbbs-logo img {
-    height: 32px;
+    height: 46px; /* 🔹 Still clear and visible on phones */
   }
 
   .logo {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
   }
 }
+
 
 /* ---------- HIGHLIGHTS SECTION ---------- */
 .highlights {
@@ -1321,4 +1323,5 @@ footer {
     font-size: 0.75rem;
   }
 }
+
 
