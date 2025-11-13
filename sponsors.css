@@ -57,7 +57,7 @@ body {
 }
 
 .pdf-box:hover i {
-  text-shadow: 0 0 10px #ff4b4b, 0 0 20px #ff0000;
+  text-shadow: 0 0 10px cyan, 0 0 20px cyan;
   transform: scale(1.1);
 }
 
@@ -210,4 +210,5 @@ body {
     border-radius: 10px;
   }
 }
+
 
