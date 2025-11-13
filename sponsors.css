@@ -42,7 +42,7 @@ body {
 
 .pdf-box i {
   font-size: 1.8rem;
-  color: #ff4b4b; /* Red like a PDF icon */
+  color: cyan; /* Red like a PDF icon */
   transition: 0.3s ease;
 }
 
@@ -210,3 +210,4 @@ body {
     border-radius: 10px;
   }
 }
+
