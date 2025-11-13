@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thank You | PRAVAAH</title>
+
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body {
+      font-family: 'Orbitron', sans-serif;
+      text-align: center;
+      color: #fff;
+      background: linear-gradient(120deg, #2c1a55, #3e5d75, #022c43, #5b2a86);
+      background-size: 400% 400%;
+      animation: gradientMove 15s ease infinite;
+      padding-top: 8rem;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .thankyou-box {
+      width: 80%;
+      max-width: 600px;
+      margin: auto;
+      background: rgba(0,0,0,0.5);
+      padding: 2.5rem 2rem;
+      border-radius: 18px;
+      border: 2px solid cyan;
+      box-shadow: 0 0 25px rgba(0,255,255,0.5);
+      backdrop-filter: blur(10px);
+      animation: fadeIn 1.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .thankyou-box i {
+      font-size: 3.2rem;
+      color: cyan;
+      text-shadow: 0 0 15px cyan;
+      margin-bottom: 1rem;
+    }
+
+    .thankyou-box h1 {
+      font-size: 2rem;
+      text-shadow: 0 0 15px cyan;
+      margin-bottom: 1rem;
+    }
+
+    .thankyou-box p {
+      color: #ccc;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      line-height: 1.5rem;
+    }
+
+    .back-btn {
+      background: linear-gradient(90deg, cyan, #00ffff);
+      color: black;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 30px;
+      cursor: pointer;
+      box-shadow: 0 0 15px cyan;
+      transition: 0.3s;
+    }
+
+    .back-btn:hover {
+      transform: scale(1.06);
+      box-shadow: 0 0 25px cyan;
+    }
+
+    @media (max-width: 600px) {
+      .thankyou-box {
+        width: 92%;
+        padding: 2rem 1.5rem;
+      }
+      .thankyou-box h1 {
+        font-size: 1.6rem;
+      }
+      .thankyou-box p {
+        font-size: 0.9rem;
+      }
+      .back-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 🔹 NAVBAR -->
+  <nav>
+    <div class="logo">PRAVAAH</div>
+    <div class="menu-toggle" id="menuToggle">&#9776;</div>
+
+    <ul id="menu">
+      <li><a href="home.html">Home</a></li>
+      <li><a href="events.html">Events</a></li>
+      <li><a href="workshop.html">Workshop</a></li>
+      <li><a href="registrationPravaah.html">Register</a></li>
+      <li><a href="accommodation.html">Accommodation</a></li>
+      <li><a href="sponsors.html">Sponsors</a></li>
+      <li><a href="contact_us.html">Contact Us</a></li>
+      <li><a href="profile.html">Profile</a></li>
+      <li class="mobile-only"><a href="#" id="logoutMobile">Logout</a></li>
+    </ul>
+
+    <button id="logoutDesktop" class="logout-btn">Logout</button>
+  </nav>
+
+  <!-- ✔ THANK YOU BOX -->
+  <div class="thankyou-box">
+    <i class="fa-solid fa-circle-check"></i>
+    <h1>Thank You!</h1>
+    <p>
+      Thank you for showing interest in <strong>Pravaah 2026</strong>.<br>
+      Our team will contact you within two business days.
+    </p>
+    <button class="back-btn" onclick="window.location.href='home.html'">Back to Home</button>
+  </div>
+
+  <!-- ⚫ FOOTER -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-left">
+        <img src="pravah-logo.png" alt="PRAVAAH Logo" class="footer-logo">
+        <a href="registrationPravaah.html" class="register-btn">Register Now</a>
+      </div>
+
+      <div class="footer-links">
+        <div class="footer-column">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="#">Events Portal</a></li>
+            <li><a href="#">CA Portal</a></li>
+            <li><a href="#">Join the Community</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h3>Explore More</h3>
+          <ul>
+            <li><a href="#">Star Attractions</a></li>
+            <li><a href="#">Hall of Fame</a></li>
+            <li><a href="#">Brochure</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h3>Reach Out to Us</h3>
+          <ul>
+            <li><a href="contact_us.html">Contact Us</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-social">
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-linkedin-in"></i></a>
+      <a href="#"><i class="fab fa-youtube"></i></a>
+    </div>
+
+    <hr class="footer-line">
+    <div class="footer-bottom">
+      <p>@PRAVAAH'26 IIT BHUBANESWAR | MADE WITH 💜 BY WEB TEAM | All Rights Reserved</p>
+    </div>
+  </footer>
+
+</body>
+</html>
