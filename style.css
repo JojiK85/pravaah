@@ -201,6 +201,41 @@ nav {
   }
 }
 
+/* ---------- NAVBAR IITBBS LOGO ---------- */
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.iitbbs-logo img {
+  height: 40px;
+  width: auto;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 0 8px rgba(0,255,255,0.4));
+}
+
+.iitbbs-logo:hover img {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 12px cyan);
+}
+
+/* ---------- Mobile Adjustments ---------- */
+@media (max-width: 900px) {
+  .nav-left {
+    gap: 10px;
+  }
+
+  .iitbbs-logo img {
+    height: 32px;
+  }
+
+  .logo {
+    font-size: 1.3rem;
+  }
+}
+
 /* ---------- HIGHLIGHTS SECTION ---------- */
 .highlights {
   width: 100%;
@@ -1286,3 +1321,4 @@ footer {
     font-size: 0.75rem;
   }
 }
+
