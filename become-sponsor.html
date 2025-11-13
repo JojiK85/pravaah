@@ -297,43 +297,54 @@
 
   <!-- FORM SCRIPT -->
   <script>
-    const scriptURL =
-      "https://script.google.com/macros/s/AKfycbwqQlb7TdTweyQFbPlCloOF61PB3bMs54ZpbOhSCyO2NEfbvnahgBT9dAB2tFp1R_IdZw/exec";
+  // ← put the exact deploy URL you want to call here:
+  const scriptURL = "https://script.google.com/macros/s/AKfycbwYVDIbAXsRAX5ZpI8ztlFHFhgbYYJjwEGRZuvOAk8yP-2InM85_cjVwNcI9YgXXP4vMg/exec";
 
-    document.getElementById("sponsorForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+  document.getElementById("sponsorForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const status = document.getElementById("statusMessage");
+    status.textContent = "Submitting...";
 
-      const status = document.getElementById("statusMessage");
-      status.textContent = "Submitting...";
+    const formData = {
+      name: document.getElementById("name").value.trim(),
+      company: document.getElementById("company").value.trim(),
+      email: document.getElementById("email").value.trim(),
+      phone: document.getElementById("phone").value.trim(),
+      message: document.getElementById("message").value.trim(),
+    };
 
-      const formData = {
-        name: document.getElementById("name").value.trim(),
-        company: document.getElementById("company").value.trim(),
-        email: document.getElementById("email").value.trim(),
-        phone: document.getElementById("phone").value.trim(),
-        message: document.getElementById("message").value.trim(),
-      };
+    try {
+      const res = await fetch(scriptURL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" }, // avoids preflight
+        body: JSON.stringify(formData),
+        // keepalive: true // optional for background send on page unload
+      });
 
-      try {
-        const res = await fetch(scriptURL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        });
-
-        const result = await res.json();
-
-        if (result.status === "success") {
-          status.textContent = "✅ Thank you! Our team will contact you soon.";
-          setTimeout(() => (window.location.href = "thankyou.html"), 1500);
-        } else {
-          status.textContent = "⚠️ Failed to record data. Try again.";
-        }
-      } catch (err) {
-        status.textContent = "❌ Network error. Please try again later.";
+      if (!res.ok) {
+        status.textContent = "⚠️ Server error. Try again.";
+        console.error("Network response not ok", res.status, res.statusText);
+        return;
       }
-    });
-  </script>
+
+      const result = await res.json().catch(() => null);
+      // accept both {status:'success'} or {ok:true} styles from server
+      const succeeded = result && (result.status === "success" || result.ok === true);
+
+      if (succeeded) {
+        status.textContent = "✅ Thank you! Our team will contact you soon.";
+        setTimeout(() => (window.location.href = "thankyou.html"), 900);
+      } else {
+        console.warn("Server returned:", result);
+        status.textContent = "⚠️ Failed to record data. Try again.";
+      }
+    } catch (err) {
+      console.error("Submit error:", err);
+      status.textContent = "❌ Network error. Please try again later.";
+    }
+  });
+</script>
+
 
 </body>
 </html>
