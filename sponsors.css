@@ -42,7 +42,8 @@ body {
 
 .pdf-box i {
   font-size: 1.8rem;
-  color: cyan; /* Red like a PDF icon */
+  color: cyan;
+  text-shadow: 0 0 10px cyan, 0 0 20px #00ffff, 0 0 40px #00eaff;
   transition: 0.3s ease;
 }
 
@@ -57,7 +58,7 @@ body {
 }
 
 .pdf-box:hover i {
-  text-shadow: 0 0 10px cyan, 0 0 20px cyan;
+  text-shadow: 0 0 20px cyan, 0 0 40px #00ffff, 0 0 60px #00eaff;
   transform: scale(1.1);
 }
 
@@ -81,10 +82,13 @@ body {
 /* ---------- SPONSOR GRID ---------- */
 .sponsor-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   justify-items: center;
+  align-items: center;
   gap: 2rem;
   padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 .sponsor-card {
@@ -101,7 +105,7 @@ body {
 
 .sponsor-card:hover {
   transform: scale(1.08);
-  box-shadow: 0 0 20px cyan;
+  box-shadow: 0 0 20px cyan, 0 0 40px rgba(0,255,255,0.4);
 }
 
 .sponsor-card img {
@@ -155,7 +159,6 @@ body {
     font-size: 2rem;
   }
 
-  /* One logo per row on mobile */
   .sponsor-grid {
     grid-template-columns: 1fr;
     padding: 1rem;
@@ -210,5 +213,3 @@ body {
     border-radius: 10px;
   }
 }
-
-
