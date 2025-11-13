@@ -9,8 +9,6 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="sponsors.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  
-  
 </head>
 
 <body>
@@ -57,11 +55,15 @@
 
   <!-- 🔹 NAVBAR -->
   <nav>
-    <a href="https://www.iitbbs.ac.in/" target="_blank" class="iitbbs-logo">
-    <img src="iitbbs-logo.png" alt="IIT Bhubaneswar Logo">
-  </a>
-    <div class="logo">PRAVAAH</div>
+    <div class="nav-left">
+      <a href="https://www.iitbbs.ac.in/" target="_blank" class="iitbbs-logo">
+        <img src="iitbbs-logo.png" alt="IIT Bhubaneswar Logo">
+      </a>
+      <div class="logo">PRAVAAH</div>
+    </div>
+
     <div class="menu-toggle" id="menuToggle">&#9776;</div>
+
     <ul id="menu">
       <li><a href="home.html">Home</a></li>
       <li><a href="events.html">Events</a></li>
@@ -93,18 +95,15 @@
     </div>
 
     <div class="pdf-box" onclick="window.open('sponsorship-brochure.pdf', '_blank')">
-  <i class="fa-solid fa-file-pdf"></i>
-  <span>Click here to open the Sponsorship Brochure (PDF)</span>
-</div>
+      <i class="fa-solid fa-file-pdf"></i>
+      <span>Click here to open the Sponsorship Brochure (PDF)</span>
+    </div>
 
-
-    <!-- 🌟 BECOME A SPONSOR BUTTON SECTION -->
-<div class="become-sponsor">
-  <button class="become-sponsor-btn" onclick="window.location.href='become-sponsor.html'">
-    <i class="fa-solid fa-handshake"></i> Become a Sponsor
-  </button>
-</div>
-
+    <div class="become-sponsor">
+      <button class="become-sponsor-btn" onclick="window.location.href='become-sponsor.html'">
+        <i class="fa-solid fa-handshake"></i> Become a Sponsor
+      </button>
+    </div>
   </section>
 
   <!-- 🔹 PAST SPONSORS -->
@@ -169,6 +168,64 @@
       <p>@PRAVAAH'26 IIT BHUBANESWAR | MADE WITH 💜 BY WEB TEAM | All Rights Reserved</p>
     </div>
   </footer>
+
+  <!-- ✅ INLINE MOBILE MENU SCRIPT -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const menuToggle = document.getElementById('menuToggle');
+      const navMenu = document.getElementById('menu');
+
+      if (menuToggle && navMenu) {
+        // Open/close menu
+        menuToggle.addEventListener('click', (e) => {
+          e.stopPropagation();
+          navMenu.classList.toggle('active');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!navMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+            navMenu.classList.remove('active');
+          }
+        });
+
+        // Close when clicking a menu link
+        navMenu.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', () => {
+            navMenu.classList.remove('active');
+          });
+        });
+      }
+    });
+  </script>
+
+  <!-- ✅ IITBBS LOGO STYLE -->
+  <style>
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .iitbbs-logo img {
+      height: 54px;
+      width: auto;
+      border-radius: 4px;
+      filter: none !important;
+      opacity: 0.95;
+      transition: all 0.3s ease;
+    }
+    .iitbbs-logo img:hover {
+      transform: scale(1.05);
+      opacity: 1;
+    }
+    @media (max-width: 900px) {
+      .iitbbs-logo img {
+        height: 46px;
+      }
+      .logo {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
 </body>
 </html>
-
