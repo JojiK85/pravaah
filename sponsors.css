@@ -26,25 +26,39 @@ body {
   border-radius: 12px;
   width: 55%;
   margin: 2rem auto;
-  padding: 1rem;
+  padding: 1.2rem;
   color: cyan;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: 0.3s ease;
+  font-family: 'Orbitron', sans-serif;
   font-size: 1.1rem;
-}
-
-.pdf-box:hover {
-  background: rgba(0,255,255,0.15);
-  box-shadow: 0 0 15px cyan;
+  letter-spacing: 0.5px;
+  text-align: center;
 }
 
 .pdf-box i {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
+  color: #ff4b4b; /* Red like a PDF icon */
+  transition: 0.3s ease;
+}
+
+.pdf-box span {
   color: cyan;
+}
+
+.pdf-box:hover {
+  background: rgba(0, 255, 255, 0.1);
+  box-shadow: 0 0 20px cyan, 0 0 40px rgba(0,255,255,0.4);
+  transform: scale(1.03);
+}
+
+.pdf-box:hover i {
+  text-shadow: 0 0 10px #ff4b4b, 0 0 20px #ff0000;
+  transform: scale(1.1);
 }
 
 /* ---------- SPONSOR SECTIONS ---------- */
@@ -132,7 +146,6 @@ body {
 /* ========================================================= */
 /* ==================== 📱 MOBILE STYLING ==================== */
 /* ========================================================= */
-
 @media (max-width: 900px) {
   body {
     padding-top: 80px;
@@ -142,8 +155,9 @@ body {
     font-size: 2rem;
   }
 
+  /* One logo per row on mobile */
   .sponsor-grid {
-    grid-template-columns: 1fr; /* One logo per row on mobile */
+    grid-template-columns: 1fr;
     padding: 1rem;
     gap: 1.5rem;
   }
@@ -157,10 +171,12 @@ body {
     width: 90%;
     padding: 15px;
     font-size: 0.9rem;
+    flex-direction: column;
+    gap: 10px;
   }
 
   .pdf-box i {
-    font-size: 1.2rem;
+    font-size: 1.6rem;
   }
 
   .become-sponsor-btn {
