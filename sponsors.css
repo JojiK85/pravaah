@@ -1,6 +1,8 @@
 /* ---------- BASE ---------- */
 body {
-  background: linear-gradient(120deg, #0b141a, #15232e, #020c15);
+  background: linear-gradient(120deg, #2c1a55, #3e5d75, #022c43, #5b2a86);
+  background-size: 400% 400%;
+  animation: gradientMove 15s ease infinite;
   color: #fff;
   font-family: 'Orbitron', sans-serif;
   text-align: center;
@@ -230,3 +232,4 @@ body {
     border-radius: 10px;
   }
 }
+
