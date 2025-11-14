@@ -22,21 +22,40 @@ if (menuToggle && menu) {
 // 🎭 Event Category Switch
 const techBtn = document.getElementById("techBtn");
 const cultBtn = document.getElementById("cultBtn");
+const workBtn = document.getElementById("workBtn");
+
 const techSection = document.querySelector(".tech-events");
 const cultSection = document.querySelector(".cult-events");
+const workSection = document.querySelector(".work-events");
 
-if (techBtn && cultBtn && techSection && cultSection) {
-  techBtn.addEventListener("click", () => {
-    techSection.classList.add("active");
-    cultSection.classList.remove("active");
-    techBtn.classList.add("active");
-    cultBtn.classList.remove("active");
-  });
+// Helper to reset all
+function resetTabs() {
+  techSection.classList.remove("active");
+  cultSection.classList.remove("active");
+  workSection.classList.remove("active");
 
-  cultBtn.addEventListener("click", () => {
-    cultSection.classList.add("active");
-    techSection.classList.remove("active");
-    cultBtn.classList.add("active");
-    techBtn.classList.remove("active");
-  });
+  techBtn.classList.remove("active");
+  cultBtn.classList.remove("active");
+  workBtn.classList.remove("active");
 }
+
+// ---- Technopreneurship ----
+techBtn.addEventListener("click", () => {
+  resetTabs();
+  techSection.classList.add("active");
+  techBtn.classList.add("active");
+});
+
+// ---- Cultural ----
+cultBtn.addEventListener("click", () => {
+  resetTabs();
+  cultSection.classList.add("active");
+  cultBtn.classList.add("active");
+});
+
+// ---- Workshops ----
+workBtn.addEventListener("click", () => {
+  resetTabs();
+  workSection.classList.add("active");
+  workBtn.classList.add("active");
+});
