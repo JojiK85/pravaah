@@ -98,6 +98,12 @@
       box-shadow: 0 0 12px cyan;
     }
 
+    .file-upload {
+      color: cyan;
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+    }
+
     .sponsor-form button {
       background: cyan;
       color: black;
@@ -118,51 +124,6 @@
       color: cyan;
       margin-top: 1.2rem;
       font-size: 1.05rem;
-    }
-
-    /* MOBILE RESPONSIVE FIXES */
-    @media (max-width: 900px) {
-      .sponsor-section {
-        padding-top: 6rem;
-      }
-      .sponsor-section h1 {
-        font-size: 2.2rem;
-      }
-      .sponsor-section p {
-        font-size: 1rem;
-      }
-      .pdf-box,
-      .sponsor-form {
-        width: 90%;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .sponsor-section {
-        padding-top: 5.5rem;
-      }
-      .sponsor-section h1 {
-        font-size: 1.8rem;
-      }
-      .sponsor-section p {
-        font-size: 0.9rem;
-      }
-      .pdf-box {
-        padding: 15px;
-        width: 92%;
-      }
-      .pdf-box i {
-        font-size: 1.3rem;
-      }
-      .sponsor-form input,
-      .sponsor-form textarea {
-        font-size: 0.9rem;
-        padding: 12px;
-      }
-      .sponsor-form button {
-        font-size: 0.9rem;
-        padding: 12px 20px;
-      }
     }
   </style>
 </head>
@@ -210,96 +171,68 @@
 
     <!-- FORM -->
     <form id="sponsorForm" class="sponsor-form">
+
       <input type="text" id="name" placeholder="Your Full Name" required />
       <input type="text" id="company" placeholder="Company / Brand Name" required />
       <input type="email" id="email" placeholder="Email Address" required />
       <input type="tel" id="phone" placeholder="Phone Number" required />
       <textarea id="message" rows="4" placeholder="Message (Optional)"></textarea>
+
+      <label class="file-upload">Upload your deck / proposal (PDF/PNG/JPG)</label>
+      <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg,.ppt,.pptx,.doc,.docx" />
+
       <button type="submit">Submit</button>
     </form>
 
     <p id="statusMessage" class="status-text"></p>
   </section>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-container">
-      <div class="footer-left">
-        <img src="pravah-logo.png" class="footer-logo">
-        <a href="registrationPravaah.html" class="register-btn">Register Now</a>
-      </div>
-
-      <div class="footer-links">
-        <div class="footer-column">
-          <h3>Quick Links</h3>
-          <ul>
-            <li><a href="#">Events Portal</a></li>
-            <li><a href="#">CA Portal</a></li>
-            <li><a href="#">Join the Community</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-column">
-          <h3>Explore More</h3>
-          <ul>
-            <li><a href="#">Star Attractions</a></li>
-            <li><a href="#">Hall of Fame</a></li>
-            <li><a href="#">Brochure</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-column">
-          <h3>Reach Out to Us</h3>
-          <ul>
-            <li><a href="contact_us.html">Contact Us</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer-social">
-      <a href="#"><i class="fab fa-instagram"></i></a>
-      <a href="#"><i class="fab fa-linkedin-in"></i></a>
-      <a href="#"><i class="fab fa-youtube"></i></a>
-    </div>
-
-    <hr class="footer-line">
-  </footer>
-
-  <!-- 🌟 MENU TOGGLE SCRIPT (WORKING) -->
+  <!-- 🌟 MENU TOGGLE SCRIPT -->
   <script>
     const menuToggle = document.getElementById("menuToggle");
     const navMenu = document.getElementById("menu");
 
-    // Open / Close menu
     menuToggle.addEventListener("click", (e) => {
       e.stopPropagation();
       navMenu.classList.toggle("active");
     });
 
-    // Close when clicking outside
     document.addEventListener("click", (e) => {
       if (!navMenu.contains(e.target) && !menuToggle.contains(e.target)) {
         navMenu.classList.remove("active");
       }
     });
-
-    // Close when clicking a menu item
-    navMenu.querySelectorAll("a").forEach(link => {
-      link.addEventListener("click", () => {
-        navMenu.classList.remove("active");
-      });
-    });
   </script>
 
-  <!-- FORM SUBMIT SCRIPT -->
+  <!-- 🌟 FORM SUBMISSION SCRIPT WITH FILE UPLOAD -->
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwsRNsfLwkZAf-P2B3pVdsoQgu198_h1qKC-LP8G3bzEddI7RD-Wnr4Jgu_H1so9_K68A/exec";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbxK_1fia90r2uDqSlTJR4AQm2qMh4CSQ6XRiaJuM3OkV-wVqToolplM6ZGwk1nj1udI/exec";
 
     document.getElementById("sponsorForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const status = document.getElementById("statusMessage");
-      status.textContent = "Submitting...";
+      status.textContent = "Uploading...";
+
+      const fileInput = document.getElementById("fileInput");
+      let fileName = "";
+      let fileData = "";
+      let fileType = "";
+
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        fileName = file.name;
+        fileType = file.type;
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        await new Promise(resolve => {
+          reader.onload = () => {
+            fileData = reader.result.split(",")[1]; 
+            resolve();
+          };
+        });
+      }
 
       const formData = {
         name: document.getElementById("name").value.trim(),
@@ -307,6 +240,9 @@
         email: document.getElementById("email").value.trim(),
         phone: document.getElementById("phone").value.trim(),
         message: document.getElementById("message").value.trim(),
+        fileName,
+        fileData,
+        fileType
       };
 
       try {
@@ -317,9 +253,9 @@
         });
 
         const result = await res.json().catch(() => null);
-        if (result && (result.status === "success" || result.ok)) {
+        if (result && result.status === "success") {
           status.textContent = "✅ Thank you! Our team will contact you soon.";
-          setTimeout(() => window.location.href = "thankyou.html", 800);
+          setTimeout(() => window.location.href = "thankyou.html", 900);
         } else {
           status.textContent = "⚠️ Failed. Try again.";
         }
