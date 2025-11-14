@@ -183,12 +183,19 @@
 }
 
 /* ---------- BUTTON GROUP ---------- */
-.btn-group {
+/* Move button group to the bottom of overlay */
+.overlay {
   display: flex;
-  gap: 10px;
-  justify-content: center;
-  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: space-between;   /* pushes content top + buttons bottom */
+  padding-bottom: 25px;             /* nice spacing from bottom */
 }
+
+/* button group stays fixed at bottom */
+.btn-group {
+  margin-top: auto; /* pushes it down */
+}
+
 
 /* ---------- EVENT CARD BUTTONS (SMALL) ---------- */
 .register-btn {
@@ -282,3 +289,4 @@ footer .register-btn:hover {
   transform: scale(1.08);
   box-shadow: 0 0 15px cyan;
 }
+
