@@ -41,7 +41,37 @@
       color: #ccc;
       font-size: 1.1rem;
       line-height: 1.5rem;
-      margin-bottom: 2.5rem;
+      margin-bottom: 2.2rem;
+    }
+
+    /* PDF BOX */
+    .pdf-box {
+      border: 2px dashed cyan;
+      border-radius: 12px;
+      width: 70%;
+      margin: 1.5rem auto 3rem;
+      padding: 1.2rem;
+      color: cyan;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+      text-align: center;
+    }
+    .pdf-box i {
+      font-size: 1.8rem;
+      color: cyan;
+      text-shadow: 0 0 12px cyan;
+    }
+    .pdf-box:hover {
+      background: rgba(0,255,255,0.1);
+      box-shadow: 0 0 20px cyan;
+      transform: scale(1.03);
     }
 
     /* Upload Box */
@@ -61,9 +91,6 @@
       gap: 12px;
       transition: 0.3s ease;
     }
-    .file-upload-label i {
-      font-size: 1.5rem;
-    }
     .file-upload-label:hover {
       transform: scale(1.03);
       box-shadow: 0 0 18px cyan;
@@ -82,19 +109,11 @@
       align-items: center;
       color: cyan;
       font-size: 0.95rem;
-      animation: fadeIn 0.3s ease;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(5px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
     .remove-file {
       cursor: pointer;
       color: red;
       font-size: 1.2rem;
-      margin-left: 12px;
     }
 
     /* Form */
@@ -119,12 +138,6 @@
       font-size: 1rem;
     }
 
-    .sponsor-form input:focus,
-    .sponsor-form textarea:focus {
-      outline: none;
-      box-shadow: 0 0 12px cyan;
-    }
-
     .sponsor-form button {
       background: cyan;
       color: black;
@@ -134,10 +147,6 @@
       padding: 14px 35px;
       cursor: pointer;
       transition: 0.3s;
-    }
-    .sponsor-form button:hover {
-      transform: scale(1.06);
-      box-shadow: 0 0 20px cyan;
     }
 
     .status-text {
@@ -164,8 +173,8 @@
       <li><a href="events.html">Events</a></li>
       <li><a href="registrationPravaah.html">Register</a></li>
       <li><a href="accommodation.html">Accommodation</a></li>
-      <li><a href="photogallery.html" >Gallery</a></li>
-      <li><a href="sponsors.html" class="active">Sponsors</a></li>
+      <li><a href="photogallery.html">Gallery</a></li>
+      <li><a href="sponsors.html">Sponsors</a></li>
       <li><a href="contact_us.html">Contact Us</a></li>
       <li><a href="profile.html">Profile</a></li>
       <li class="mobile-only"><a href="#">Logout</a></li>
@@ -174,16 +183,16 @@
     <button id="logoutDesktop" class="logout-btn">Logout</button>
   </nav>
 
-  <!-- 📄 Sponsorship Brochure Box -->
-<div class="pdf-box" onclick="window.open('sponsorship-brochure.pdf', '_blank')">
-  <i class="fa-solid fa-file-pdf"></i>
-  <span>Click here to open the Sponsorship Brochure (PDF)</span>
-</div>
-
   <!-- FORM SECTION -->
   <section class="sponsor-section">
     <h1>Become a Sponsor</h1>
     <p>Join hands with PRAVAAH to make the next edition even more extraordinary!</p>
+
+    <!-- 📄 Sponsorship Brochure Box -->
+    <div class="pdf-box" onclick="window.open('sponsorship-brochure.pdf', '_blank')">
+      <i class="fa-solid fa-file-pdf"></i>
+      <span>Click here to open the Sponsorship Brochure (PDF)</span>
+    </div>
 
     <form id="sponsorForm" class="sponsor-form" enctype="multipart/form-data">
       <input type="text" id="name" name="name" placeholder="Your Full Name" required />
@@ -207,122 +216,14 @@
       <button type="submit">Submit</button>
     </form>
 
-    <p id="statusMessage" class="status-text" role="status" aria-live="polite"></p>
+    <p id="statusMessage" class="status-text"></p>
   </section>
 
-  <!-- UPLOAD LOGIC -->
-  <script>
-    const fileInput = document.getElementById("fileInput");
-    const filePreview = document.getElementById("filePreview");
-    const fileNameEl = document.getElementById("fileName");
-    const removeFileBtn = document.getElementById("removeFile");
-    const statusEl = document.getElementById("statusMessage");
-
-    let selectedFile = null;
-    let selectedBase64 = null; // base64 without data: prefix
-
-    fileInput.addEventListener("change", () => {
-      if (fileInput.files.length > 0) {
-        selectedFile = fileInput.files[0];
-        fileNameEl.textContent = selectedFile.name;
-        filePreview.style.display = "flex";
-
-        // convert to base64 now (so submission is quick)
-        const reader = new FileReader();
-        reader.onload = () => {
-          const dataUrl = reader.result || "";
-          const comma = dataUrl.indexOf(",");
-          selectedBase64 = comma >= 0 ? dataUrl.slice(comma + 1) : dataUrl;
-        };
-        reader.onerror = () => {
-          selectedBase64 = null;
-          statusEl.textContent = "❌ Failed to read file.";
-        };
-        reader.readAsDataURL(selectedFile);
-      } else {
-        selectedFile = null;
-        selectedBase64 = null;
-        filePreview.style.display = "none";
-      }
-    });
-
-    removeFileBtn.addEventListener("click", () => {
-      fileInput.value = "";
-      selectedFile = null;
-      selectedBase64 = null;
-      filePreview.style.display = "none";
-    });
-  </script>
-
-  <!-- FORM SUBMIT SCRIPT -->
-  <script>
-    // your Apps Script (server) URL — keep the same as you had
-    const scriptURL = "https://script.google.com/macros/s/AKfycbxRF637G8IMtRR5VXM7a5ZUvbKg3OU1IMDfy5pRFSg1A_21P-wmd2jwsw3UV4-naELosA/exec";
-
-    document.getElementById("sponsorForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      statusEl.textContent = "Submitting...";
-
-      // gather fields
-      const name = document.getElementById("name").value.trim();
-      const company = document.getElementById("company").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const message = document.getElementById("message").value.trim();
-
-      // basic client validation (server will also validate)
-      if (!name || !company || !email || !phone) {
-        statusEl.textContent = "⚠️ Please fill all required fields.";
-        return;
-      }
-
-      // prepare payload
-      const payload = { name, company, email, phone, message };
-
-      if (selectedFile && selectedBase64) {
-        // approximate size check (same as server: ~8MB)
-        const approxBytes = Math.ceil((selectedBase64.length * 3) / 4);
-        if (approxBytes > 8 * 1024 * 1024) {
-          statusEl.textContent = "⚠️ File too large (limit ~8 MB).";
-          return;
-        }
-        payload.fileName = selectedFile.name;
-        payload.fileType = selectedFile.type || "application/octet-stream";
-        payload.fileData = selectedBase64; // already stripped of data: prefix
-      }
-
-      try {
-        // send as plain text body so Apps Script gets e.postData.contents reliably
-        const res = await fetch(scriptURL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload),
-          keepalive: true
-        });
-
-        // parse Apps Script JSON response
-        let result = null;
-        try { result = await res.json(); } catch (err) { /* parse failed */ }
-
-        if (result && result.status === "success") {
-          statusEl.textContent = "✔ Submitted! Redirecting...";
-          setTimeout(() => (window.location.href = "thankyou.html"), 800);
-        } else {
-          const msg = (result && result.message) ? result.message : `Server error (status ${res.status})`;
-          statusEl.textContent = "⚠️ " + msg;
-          console.warn("Submission response:", result);
-        }
-      } catch (err) {
-        console.error("Submit error:", err);
-        statusEl.textContent = "❌ Network error. Please try again.";
-      }
-    });
-  </script>
   <!-- FOOTER -->
-<footer id="contact">
+  <footer>
     <div class="footer-container">
       <div class="footer-left">
-        <img src="pravah-logo.png" alt="Pravaah Logo" class="footer-logo">
+        <img src="pravah-logo.png" alt="PRAVAAH Logo" class="footer-logo">
         <a href="registrationPravaah.html" class="register-btn">Register Now</a>
       </div>
 
@@ -335,6 +236,7 @@
             <li><a href="#">Join the Community</a></li>
           </ul>
         </div>
+
         <div class="footer-column">
           <h3>Explore More</h3>
           <ul>
@@ -343,10 +245,11 @@
             <li><a href="#">Brochure</a></li>
           </ul>
         </div>
+
         <div class="footer-column">
           <h3>Reach Out to Us</h3>
           <ul>
-            <li><a href="#">Contact Us</a></li>
+            <li><a href="contact_us.html">Contact Us</a></li>
           </ul>
         </div>
       </div>
@@ -359,15 +262,88 @@
     </div>
 
     <hr class="footer-line">
+
     <div class="footer-bottom">
-      <p><span>@PRAVAAH'26 IIT BHUBANESWAR</span> | MADE WITH 💜 BY WEB TEAM | All Rights Reserved</p>
+      <p>@PRAVAAH'26 IIT BHUBANESWAR | MADE WITH 💜 BY WEB TEAM | All Rights Reserved</p>
     </div>
   </footer>
 
+  <!-- FILE UPLOAD SCRIPT -->
+  <script>
+    const fileInput = document.getElementById("fileInput");
+    const filePreview = document.getElementById("filePreview");
+    const fileNameEl = document.getElementById("fileName");
+    const removeFileBtn = document.getElementById("removeFile");
+    const statusEl = document.getElementById("statusMessage");
+
+    let selectedFile = null;
+    let selectedBase64 = null;
+
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files.length > 0) {
+        selectedFile = fileInput.files[0];
+        fileNameEl.textContent = selectedFile.name;
+        filePreview.style.display = "flex";
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          const dataUrl = reader.result || "";
+          const comma = dataUrl.indexOf(",");
+          selectedBase64 = comma >= 0 ? dataUrl.slice(comma + 1) : dataUrl;
+        };
+        reader.readAsDataURL(selectedFile);
+      }
+    });
+
+    removeFileBtn.addEventListener("click", () => {
+      fileInput.value = "";
+      selectedFile = null;
+      selectedBase64 = null;
+      filePreview.style.display = "none";
+    });
+  </script>
+
+  <!-- SUBMIT SCRIPT -->
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbxRF637G8IMtRR5VXM7a5ZUvbKg3OU1IMDfy5pRFSg1A_21P-wmd2jwsw3UV4-naELosA/exec";
+
+    document.getElementById("sponsorForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      statusEl.textContent = "Submitting...";
+
+      const payload = {
+        name: document.getElementById("name").value.trim(),
+        company: document.getElementById("company").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        message: document.getElementById("message").value.trim()
+      };
+
+      if (selectedFile && selectedBase64) {
+        payload.fileName = selectedFile.name;
+        payload.fileType = selectedFile.type;
+        payload.fileData = selectedBase64;
+      }
+
+      try {
+        const res = await fetch(scriptURL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await res.json();
+        if (result.status === "success") {
+          statusEl.textContent = "✔ Submitted! Redirecting...";
+          setTimeout(() => window.location.href = "thankyou.html", 800);
+        } else {
+          statusEl.textContent = "⚠️ " + result.message;
+        }
+      } catch (err) {
+        statusEl.textContent = "❌ Network error. Please try again.";
+      }
+    });
+  </script>
+
 </body>
 </html>
-
-
-
-
-
