@@ -98,12 +98,6 @@
       box-shadow: 0 0 12px cyan;
     }
 
-    .file-upload {
-      color: cyan;
-      font-size: 0.9rem;
-      margin-bottom: 5px;
-    }
-
     .sponsor-form button {
       background: cyan;
       color: black;
@@ -125,6 +119,64 @@
       margin-top: 1.2rem;
       font-size: 1.05rem;
     }
+
+    /* ---- Upload Field (Improved) ---- */
+    .file-upload-label {
+      width: 100%;
+      padding: 14px;
+      border: 2px dashed cyan;
+      border-radius: 15px;
+      background: rgba(0,0,0,0.35);
+      color: cyan;
+      font-size: 1rem;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: 0.3s ease;
+    }
+
+    .file-upload-label i {
+      font-size: 1.5rem;
+      color: cyan;
+    }
+
+    .file-upload-label:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 18px cyan;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    /* MOBILE */
+    @media (max-width: 900px) {
+      .sponsor-section {
+        padding-top: 6rem;
+      }
+      .sponsor-section h1 {
+        font-size: 2.2rem;
+      }
+      .pdf-box, .sponsor-form {
+        width: 90%;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .sponsor-section h1 {
+        font-size: 1.8rem;
+      }
+      .file-upload-label {
+        font-size: 0.9rem;
+        padding: 12px;
+      }
+      .file-upload-label i {
+        font-size: 1.2rem;
+      }
+    }
   </style>
 </head>
 
@@ -137,7 +189,6 @@
     </a>
 
     <div class="logo">PRAVAAH</div>
-
     <div class="menu-toggle" id="menuToggle">&#9776;</div>
 
     <ul id="menu">
@@ -163,23 +214,25 @@
       Fill out the form below — our team will contact you shortly.
     </p>
 
-    <!-- PDF BOX -->
+    <!-- PDF Box -->
     <div class="pdf-box" onclick="window.open('sponsorship-brochure.pdf', '_blank')">
       <i class="fa-solid fa-file-pdf"></i>
       <span>Click here to open the Sponsorship Brochure (PDF)</span>
     </div>
 
     <!-- FORM -->
-    <form id="sponsorForm" class="sponsor-form">
-
+    <form id="sponsorForm" class="sponsor-form" enctype="multipart/form-data">
       <input type="text" id="name" placeholder="Your Full Name" required />
       <input type="text" id="company" placeholder="Company / Brand Name" required />
       <input type="email" id="email" placeholder="Email Address" required />
       <input type="tel" id="phone" placeholder="Phone Number" required />
       <textarea id="message" rows="4" placeholder="Message (Optional)"></textarea>
 
-      <label class="file-upload">Upload your deck / proposal (PDF/PNG/JPG)</label>
-      <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg,.ppt,.pptx,.doc,.docx" />
+      <!-- Upload Field -->
+      <label for="fileInput" class="file-upload-label">
+        <i class="fa-solid fa-upload"></i> Upload your deck / proposal (PDF/PNG/JPG)
+      </label>
+      <input type="file" id="fileInput" class="file-input" accept=".pdf,.png,.jpg,.jpeg" />
 
       <button type="submit">Submit</button>
     </form>
@@ -187,7 +240,12 @@
     <p id="statusMessage" class="status-text"></p>
   </section>
 
-  <!-- 🌟 MENU TOGGLE SCRIPT -->
+  <!-- FOOTER -->
+  <footer>
+    <hr class="footer-line">
+  </footer>
+
+  <!-- MENU TOGGLE -->
   <script>
     const menuToggle = document.getElementById("menuToggle");
     const navMenu = document.getElementById("menu");
@@ -196,15 +254,19 @@
       e.stopPropagation();
       navMenu.classList.toggle("active");
     });
-
     document.addEventListener("click", (e) => {
       if (!navMenu.contains(e.target) && !menuToggle.contains(e.target)) {
         navMenu.classList.remove("active");
       }
     });
+    navMenu.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => {
+        navMenu.classList.remove("active");
+      });
+    });
   </script>
 
-  <!-- 🌟 FORM SUBMISSION SCRIPT WITH FILE UPLOAD -->
+  <!-- FORM SUBMIT SCRIPT -->
   <script>
     const scriptURL = "https://script.google.com/macros/s/AKfycbxK_1fia90r2uDqSlTJR4AQm2qMh4CSQ6XRiaJuM3OkV-wVqToolplM6ZGwk1nj1udI/exec";
 
@@ -213,51 +275,29 @@
       const status = document.getElementById("statusMessage");
       status.textContent = "Uploading...";
 
-      const fileInput = document.getElementById("fileInput");
-      let fileName = "";
-      let fileData = "";
-      let fileType = "";
+      const file = document.getElementById("fileInput").files[0];
+      const formData = new FormData();
 
-      if (fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-        fileName = file.name;
-        fileType = file.type;
+      formData.append("name", document.getElementById("name").value);
+      formData.append("company", document.getElementById("company").value);
+      formData.append("email", document.getElementById("email").value);
+      formData.append("phone", document.getElementById("phone").value);
+      formData.append("message", document.getElementById("message").value);
 
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-
-        await new Promise(resolve => {
-          reader.onload = () => {
-            fileData = reader.result.split(",")[1]; 
-            resolve();
-          };
-        });
-      }
-
-      const formData = {
-        name: document.getElementById("name").value.trim(),
-        company: document.getElementById("company").value.trim(),
-        email: document.getElementById("email").value.trim(),
-        phone: document.getElementById("phone").value.trim(),
-        message: document.getElementById("message").value.trim(),
-        fileName,
-        fileData,
-        fileType
-      };
+      if (file) formData.append("file", file);
 
       try {
         const res = await fetch(scriptURL, {
           method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(formData),
+          body: formData
         });
 
-        const result = await res.json().catch(() => null);
-        if (result && result.status === "success") {
-          status.textContent = "✅ Thank you! Our team will contact you soon.";
-          setTimeout(() => window.location.href = "thankyou.html", 900);
+        const json = await res.json().catch(() => null);
+        if (json && json.status === "success") {
+          status.textContent = "✔ Submitted successfully!";
+          setTimeout(() => window.location.href = "thankyou.html", 800);
         } else {
-          status.textContent = "⚠️ Failed. Try again.";
+          status.textContent = "⚠ Submission failed.";
         }
       } catch (err) {
         status.textContent = "❌ Network error.";
