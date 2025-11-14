@@ -257,3 +257,21 @@
     height: 240px;
   }
 }
+
+/* FORCE FOOTER REGISTER BUTTON TO USE STYLE.CSS VERSION */
+footer .register-btn {
+  background: linear-gradient(90deg, #6a5acd, #00ffff) !important;
+  border: none !important;
+  padding: 12px 30px !important;
+  border-radius: 30px !important;
+  color: #fff !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  box-shadow: none !important;
+}
+
+footer .register-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 15px cyan;
+}
