@@ -5,144 +5,279 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Become a Sponsor | PRAVAAH</title>
 
-  <!-- Styles (kept inline for convenience) -->
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
   <style>
-    body { font-family: 'Orbitron', sans-serif; color:#fff; background:linear-gradient(120deg,#2c1a55,#3e5d75,#022c43,#5b2a86); background-size:400% 400%; animation:gradientMove 15s ease infinite; margin:0; padding-bottom:4rem; }
-    @keyframes gradientMove { 0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%} }
-    nav{display:flex;align-items:center;gap:1rem;padding:0.8rem 1.2rem}
-    .logo{font-weight:700}
-    .sponsor-section{max-width:900px;margin:4.5rem auto;padding:1rem;text-align:center}
-    h1{font-size:2.2rem;text-shadow:0 0 12px cyan;margin-bottom:.6rem}
-    p.lead{color:#cfdfe6;margin-bottom:1.5rem}
-    .sponsor-form{display:flex;flex-direction:column;gap:12px;margin:0 auto;width:86%}
-    .sponsor-form input,.sponsor-form textarea{padding:12px;border-radius:8px;border:1px solid cyan;background:rgba(0,0,0,0.45);color:#fff}
-    .file-upload-label{display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;border:2px dashed cyan;border-radius:12px;cursor:pointer;background:rgba(0,0,0,0.35);color:cyan}
-    .file-input{display:none}
-    .file-preview{display:none;margin-top:6px;padding:8px;border-radius:8px;border:1px solid cyan;background:rgba(0,255,255,0.06);color:cyan;justify-content:space-between;align-items:center}
-    .btn{background:cyan;color:black;padding:12px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
-    .status-text{color:cyan;margin-top:10px}
-    @media(max-width:600px){ .sponsor-form{width:94%} h1{font-size:1.6rem} }
+    body {
+      font-family: 'Orbitron', sans-serif;
+      color: #fff;
+      background: linear-gradient(120deg, #2c1a55, #3e5d75, #022c43, #5b2a86);
+      background-size: 400% 400%;
+      animation: gradientMove 15s ease infinite;
+    }
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .sponsor-section {
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+      max-width: 850px;
+      margin: auto;
+    }
+
+    .sponsor-section h1 {
+      font-size: 2.6rem;
+      text-shadow: 0 0 15px cyan;
+      margin-bottom: 1rem;
+    }
+
+    .sponsor-section p {
+      color: #ccc;
+      font-size: 1.1rem;
+      line-height: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    /* Upload Box */
+    .file-upload-label {
+      width: 100%;
+      padding: 14px;
+      border: 2px dashed cyan;
+      border-radius: 15px;
+      background: rgba(0,0,0,0.35);
+      color: cyan;
+      font-size: 1rem;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: 0.3s ease;
+    }
+    .file-upload-label i {
+      font-size: 1.5rem;
+    }
+    .file-upload-label:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 18px cyan;
+    }
+    .file-input { display: none; }
+
+    /* File preview popup */
+    .file-preview {
+      margin-top: 8px;
+      padding: 10px 15px;
+      background: rgba(0,255,255,0.1);
+      border: 1px solid cyan;
+      border-radius: 10px;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      color: cyan;
+      font-size: 0.95rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .remove-file {
+      cursor: pointer;
+      color: red;
+      font-size: 1.2rem;
+      margin-left: 12px;
+    }
+
+    /* Form */
+    .sponsor-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
+      width: 75%;
+      margin: 2rem auto;
+    }
+
+    .sponsor-form input,
+    .sponsor-form textarea {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid cyan;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+    }
+
+    .sponsor-form input:focus,
+    .sponsor-form textarea:focus {
+      outline: none;
+      box-shadow: 0 0 12px cyan;
+    }
+
+    .sponsor-form button {
+      background: cyan;
+      color: black;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 35px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .sponsor-form button:hover {
+      transform: scale(1.06);
+      box-shadow: 0 0 20px cyan;
+    }
+
+    .status-text {
+      color: cyan;
+      margin-top: 1.2rem;
+      font-size: 1.05rem;
+    }
   </style>
 </head>
+
 <body>
 
+  <!-- NAVBAR -->
   <nav>
+    <a href="https://www.iitbbs.ac.in/" target="_blank" class="iitbbs-logo">
+      <img src="iitbbs-logo.png" alt="IIT Bhubaneswar Logo">
+    </a>
+
     <div class="logo">PRAVAAH</div>
+    <div class="menu-toggle" id="menuToggle">&#9776;</div>
+
+    <ul id="menu">
+      <li><a href="home.html">Home</a></li>
+      <li><a href="events.html">Events</a></li>
+      <li><a href="workshop.html">Workshop</a></li>
+      <li><a href="registrationPravaah.html">Register</a></li>
+      <li><a href="accommodation.html">Accommodation</a></li>
+      <li><a href="sponsors.html" class="active">Sponsors</a></li>
+      <li><a href="contact_us.html">Contact Us</a></li>
+      <li><a href="profile.html">Profile</a></li>
+      <li class="mobile-only"><a href="#">Logout</a></li>
+    </ul>
+
+    <button id="logoutDesktop" class="logout-btn">Logout</button>
   </nav>
 
+  <!-- FORM SECTION -->
   <section class="sponsor-section">
     <h1>Become a Sponsor</h1>
-    <p class="lead">Fill this form and upload your proposal deck (PDF / PNG / JPG). We'll get back to you soon.</p>
+    <p>Join hands with PRAVAAH to make the next edition even more extraordinary!</p>
 
-    <form id="sponsorForm" class="sponsor-form" autocomplete="off">
-      <input id="name" name="name" type="text" placeholder="Your Full Name" required />
-      <input id="company" name="company" type="text" placeholder="Company / Brand Name" required />
-      <input id="email" name="email" type="email" placeholder="Email Address" required />
-      <input id="phone" name="phone" type="tel" placeholder="Phone Number" required />
+    <form id="sponsorForm" class="sponsor-form" enctype="multipart/form-data">
+      <input type="text" id="name" name="name" placeholder="Your Full Name" required />
+      <input type="text" id="company" name="company" placeholder="Company / Brand Name" required />
+      <input type="email" id="email" name="email" placeholder="Email Address" required />
+      <input type="tel" id="phone" name="phone" placeholder="Phone Number" required />
       <textarea id="message" name="message" rows="4" placeholder="Message (Optional)"></textarea>
 
-      <label class="file-upload-label" for="fileInput">
-        <i class="fa-solid fa-upload"></i><span id="fileLabelText">Upload your deck / proposal (optional)</span>
+      <!-- Upload Box -->
+      <label for="fileInput" class="file-upload-label">
+        <i class="fa-solid fa-upload"></i> Upload your deck / proposal (PDF/PNG/JPG)
       </label>
-      <input id="fileInput" class="file-input" type="file" accept=".pdf,.png,.jpg,.jpeg" />
+      <input type="file" id="fileInput" class="file-input" accept=".pdf,.png,.jpg,.jpeg" />
 
+      <!-- File Preview -->
       <div class="file-preview" id="filePreview">
-        <div id="fileName">—</div>
-        <button type="button" id="removeFile" style="background:transparent;border:none;color:#ff6b6b;font-size:1.1rem;cursor:pointer">Remove</button>
+        <span id="fileName"></span>
+        <i class="fa-solid fa-circle-xmark remove-file" id="removeFile"></i>
       </div>
 
-      <button id="submitBtn" type="submit" class="btn">Submit</button>
+      <button type="submit">Submit</button>
     </form>
 
-    <div id="statusMessage" class="status-text" role="status" aria-live="polite"></div>
+    <p id="statusMessage" class="status-text" role="status" aria-live="polite"></p>
   </section>
 
+  <!-- UPLOAD LOGIC -->
   <script>
-    // ***** IMPORTANT: replace with your deployed Apps Script URL *****
-    const SCRIPT_URL = "https://script.google.com/macros/s/YOUR_DEPLOYED_WEBAPP_ID/exec";
-
-    const sponsorForm = document.getElementById("sponsorForm");
     const fileInput = document.getElementById("fileInput");
     const filePreview = document.getElementById("filePreview");
     const fileNameEl = document.getElementById("fileName");
     const removeFileBtn = document.getElementById("removeFile");
-    const statusMessage = document.getElementById("statusMessage");
-    const submitBtn = document.getElementById("submitBtn");
-    const fileLabelText = document.getElementById("fileLabelText");
+    const statusEl = document.getElementById("statusMessage");
 
     let selectedFile = null;
     let selectedBase64 = null; // base64 without data: prefix
 
-    // File selection UI
     fileInput.addEventListener("change", () => {
-      const f = fileInput.files[0];
-      if (!f) {
+      if (fileInput.files.length > 0) {
+        selectedFile = fileInput.files[0];
+        fileNameEl.textContent = selectedFile.name;
+        filePreview.style.display = "flex";
+
+        // convert to base64 now (so submission is quick)
+        const reader = new FileReader();
+        reader.onload = () => {
+          const dataUrl = reader.result || "";
+          const comma = dataUrl.indexOf(",");
+          selectedBase64 = comma >= 0 ? dataUrl.slice(comma + 1) : dataUrl;
+        };
+        reader.onerror = () => {
+          selectedBase64 = null;
+          statusEl.textContent = "❌ Failed to read file.";
+        };
+        reader.readAsDataURL(selectedFile);
+      } else {
         selectedFile = null;
         selectedBase64 = null;
-        filePreview.style.display = 'none';
-        fileLabelText.textContent = 'Upload your deck / proposal (optional)';
-        return;
+        filePreview.style.display = "none";
       }
-      selectedFile = f;
-      fileNameEl.textContent = f.name;
-      filePreview.style.display = 'flex';
-      fileLabelText.textContent = 'Change file';
-      // Convert to base64 now (so submit is simpler)
-      const reader = new FileReader();
-      reader.onload = () => {
-        // reader.result is "data:*/*;base64,AAAA..."
-        const dataUrl = reader.result || "";
-        const commaIndex = dataUrl.indexOf(',');
-        selectedBase64 = commaIndex >= 0 ? dataUrl.slice(commaIndex + 1) : dataUrl;
-      };
-      reader.onerror = () => {
-        selectedBase64 = null;
-        statusMessage.textContent = "❌ Failed to read file.";
-      };
-      reader.readAsDataURL(f);
     });
 
     removeFileBtn.addEventListener("click", () => {
       fileInput.value = "";
       selectedFile = null;
       selectedBase64 = null;
-      filePreview.style.display = 'none';
-      fileLabelText.textContent = 'Upload your deck / proposal (optional)';
+      filePreview.style.display = "none";
     });
+  </script>
 
-    // Submit handler: build JSON payload and POST as text/plain
-    sponsorForm.addEventListener("submit", async (e) => {
+  <!-- FORM SUBMIT SCRIPT -->
+  <script>
+    // your Apps Script (server) URL — keep the same as you had
+    const scriptURL = "https://script.google.com/macros/s/AKfycbxRF637G8IMtRR5VXM7a5ZUvbKg3OU1IMDfy5pRFSg1A_21P-wmd2jwsw3UV4-naELosA/exec";
+
+    document.getElementById("sponsorForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      statusMessage.textContent = "";
-      submitBtn.disabled = true;
+      statusEl.textContent = "Submitting...";
 
-      // Gather values
+      // gather fields
       const name = document.getElementById("name").value.trim();
       const company = document.getElementById("company").value.trim();
       const email = document.getElementById("email").value.trim();
       const phone = document.getElementById("phone").value.trim();
       const message = document.getElementById("message").value.trim();
 
-      // Basic client validation
+      // basic client validation (server will also validate)
       if (!name || !company || !email || !phone) {
-        statusMessage.textContent = "⚠️ Please fill required fields.";
-        submitBtn.disabled = false;
+        statusEl.textContent = "⚠️ Please fill all required fields.";
         return;
       }
 
-      // Prepare payload
-      const payload = {
-        name, company, email, phone, message
-      };
+      // prepare payload
+      const payload = { name, company, email, phone, message };
 
       if (selectedFile && selectedBase64) {
-        // limit size approx 8MB (same as server check)
+        // approximate size check (same as server: ~8MB)
         const approxBytes = Math.ceil((selectedBase64.length * 3) / 4);
         if (approxBytes > 8 * 1024 * 1024) {
-          statusMessage.textContent = "⚠️ File too large (limit ~8MB).";
-          submitBtn.disabled = false;
+          statusEl.textContent = "⚠️ File too large (limit ~8 MB).";
           return;
         }
         payload.fileName = selectedFile.name;
@@ -151,31 +286,29 @@
       }
 
       try {
-        statusMessage.textContent = "Submitting…";
-        // Use Content-Type text/plain so Apps Script receives e.postData.contents reliably
-        const res = await fetch(SCRIPT_URL, {
+        // send as plain text body so Apps Script gets e.postData.contents reliably
+        const res = await fetch(scriptURL, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify(payload),
           keepalive: true
         });
 
-        // parse response (Apps Script returns JSON)
-        const result = await res.json().catch(() => null);
+        // parse Apps Script JSON response
+        let result = null;
+        try { result = await res.json(); } catch (err) { /* parse failed */ }
+
         if (result && result.status === "success") {
-          statusMessage.textContent = "✔ Submitted! Redirecting…";
-          setTimeout(() => { window.location.href = "thankyou.html"; }, 900);
+          statusEl.textContent = "✔ Submitted! Redirecting...";
+          setTimeout(() => (window.location.href = "thankyou.html"), 800);
         } else {
-          // show error from server if available
-          const msg = (result && result.message) ? result.message : "Server error. Try again.";
-          statusMessage.textContent = "⚠️ " + msg;
+          const msg = (result && result.message) ? result.message : `Server error (status ${res.status})`;
+          statusEl.textContent = "⚠️ " + msg;
           console.warn("Submission response:", result);
         }
       } catch (err) {
         console.error("Submit error:", err);
-        statusMessage.textContent = "❌ Network error. Please try again.";
-      } finally {
-        submitBtn.disabled = false;
+        statusEl.textContent = "❌ Network error. Please try again.";
       }
     });
   </script>
