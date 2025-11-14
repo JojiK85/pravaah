@@ -23,7 +23,7 @@ if (!auth) {
 }
 
 // ---- Google Apps Script /exec URL (deployed: Execute as Me; Access: Anyone) ----
-const scriptURL = "https://script.google.com/macros/s/AKfycbyyWQJfKsLtHHFAmnaZS-C8oWVZB05QObaiCCAkznZ__dqgjcJGMlTTLVmkLoe1mQGgTQ/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbz7OcpYMy3gk5cQR4H4ljc_6MFJw5ocfkwGOOe1fT5e-6a7Gc1t7YNxZJNvcXuM-jMVbw/exec";
 
 // ---- UI state ----
 let selectedPass = null;
@@ -294,4 +294,5 @@ payBtn.addEventListener("click", (e) => {
 
   rzp.open();
 });
+
 
