@@ -225,32 +225,81 @@
   </script>
 
   <!-- FORM SUBMIT SCRIPT -->
-  <script>
-    const scriptURL =
-      "https://script.google.com/macros/s/AKfycbxRF637G8IMtRR5VXM7a5ZUvbKg3OU1IMDfy5pRFSg1A_21P-wmd2jwsw3UV4-naELosA/exec";
+ <!-- FIXED FORM SUBMIT SCRIPT (JSON + Base64) -->
+<script>
+  const scriptURL =
+    "https://script.google.com/macros/s/AKfycbxRF637G8IMtRR5VXM7a5ZUvbKg3OU1IMDfy5pRFSg1A_21P-wmd2jwsw3UV4-naELosA/exec";
 
-    document.getElementById("sponsorForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const status = document.getElementById("statusMessage");
-      status.textContent = "Submitting...";
+  const form = document.getElementById("sponsorForm");
+  const fileInput = document.getElementById("fileInput");
+  const statusEl = document.getElementById("statusMessage");
 
-      const formData = new FormData(e.target);
-
-      try {
-        const response = await fetch(scriptURL, { method: "POST", body: formData });
-        const result = await response.json();
-
-        if (result.status === "success") {
-          status.textContent = "✔ Submitted! Redirecting...";
-          setTimeout(() => (window.location.href = "thankyou.html"), 800);
-        } else status.textContent = "⚠ Something went wrong.";
-      } catch (err) {
-        status.textContent = "❌ Network Error.";
-      }
+  // Convert file → Base64
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject("Failed to read file.");
+      reader.readAsDataURL(file);
     });
-  </script>
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    statusEl.textContent = "Submitting...";
+
+    // Collect form fields
+    const name = document.getElementById("name").value.trim();
+    const company = document.getElementById("company").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const message = document.getElementById("message").value.trim();
+
+    const payload = { name, company, email, phone, message };
+
+    // If a file is selected, convert it to Base64
+    if (fileInput.files.length > 0) {
+      try {
+        const file = fileInput.files[0];
+        const dataURL = await fileToBase64(file);
+
+        payload.fileName = file.name;
+        payload.fileType = file.type || "application/octet-stream";
+        payload.fileData = dataURL.replace(/^data:.*;base64,/, "");
+      } catch (err) {
+        statusEl.textContent = "❌ Failed to process file.";
+        return;
+      }
+    }
+
+    // Send JSON payload
+    try {
+      const response = await fetch(scriptURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+      console.log("Server:", result);
+
+      if (result.status === "success") {
+        statusEl.textContent = "✔ Submitted! Redirecting...";
+        setTimeout(() => (window.location.href = "thankyou.html"), 800);
+      } else {
+        statusEl.textContent = "⚠ Error: " + (result.message || "Something went wrong.");
+      }
+    } catch (err) {
+      console.log(err);
+      statusEl.textContent = "❌ Network Error.";
+    }
+  });
+</script>
+
 
 </body>
 </html>
+
 
 
